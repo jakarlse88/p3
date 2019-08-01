@@ -25,9 +25,9 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
             _orderRepository = orderRepository;
             _localizer = localizer;
         }
+
         public List<ProductViewModel> GetAllProductsViewModel()
         {
-             
             IEnumerable<Product> productEntities = GetAllProducts();
             return MapToViewModel(productEntities);
         }
@@ -116,7 +116,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
 
             if (product.Stock == null || string.IsNullOrWhiteSpace(product.Stock))
             {
-                modelErrors.Add(_localizer["MissingQuantity"]);
+                modelErrors.Add(_localizer["MissingStock"]);
             }
 
             if (!int.TryParse(product.Stock, out int qt))
