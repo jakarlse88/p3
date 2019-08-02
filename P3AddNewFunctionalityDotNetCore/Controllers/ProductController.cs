@@ -47,7 +47,7 @@ namespace P3AddNewFunctionalityDotNetCore.Controllers
             // must be of List<string>.
 
             foreach (string error in modelErrors)
-            {
+            { 
                 ModelState.AddModelError("", error);
             }
 
