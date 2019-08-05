@@ -513,5 +513,70 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Assert.Null(result);
             }
         }
+
+        public class TheGetProductMethodReturnListOverload
+        {
+            [Fact]
+            public async Task ReturnsCorrectListOfAllProductsPopulated()
+            {
+                // Arrange 
+                IList<Product> mockAllProducts = new List<Product>()
+                {
+                    new Product
+                    {
+                        Id = 1,
+                        Description = "one",
+                        Details = "one_details"
+                    },
+                    new Product
+                    {
+                        Id = 2,
+                        Description = "two",
+                        Details = "two_details"
+                    },
+                    new Product
+                    {
+                        Id = 3,
+                        Description = "three",
+                        Details = "three_details"
+                    },
+                };
+
+                var mockRepository = new Mock<IProductRepository>();
+                mockRepository
+                    .Setup(x => x.GetProduct())
+                    .Returns(Task.FromResult(mockAllProducts));
+
+                var productService = new ProductService(null, mockRepository.Object, null, null);
+
+                // Act
+                var result = await productService.GetProduct();
+
+                // Assert
+                Assert.NotNull(result);
+                Assert.Equal(3, result.Count);
+            }
+
+            [Fact]
+            public async Task ReturnsEmptyListWithProductsNotPopulated()
+            {
+                // Arrange 
+                IList<Product> mockAllProducts = new List<Product>();
+
+                var mockRepository = new Mock<IProductRepository>();
+                mockRepository
+                    .Setup(x => x.GetProduct())
+                    .Returns(Task.FromResult(mockAllProducts));
+
+                var productService = new ProductService(null, mockRepository.Object, null, null);
+
+                // Act
+                var result = await productService.GetProduct();
+
+                // Assert
+                Assert.NotNull(result);
+                Assert.Equal(0, result.Count);
+            }
+        }
     }
 }
