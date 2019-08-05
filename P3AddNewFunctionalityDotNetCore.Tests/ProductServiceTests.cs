@@ -4,6 +4,8 @@ using P3AddNewFunctionalityDotNetCore.Data;
 using P3AddNewFunctionalityDotNetCore.Models.Entities;
 using P3AddNewFunctionalityDotNetCore.Models.Repositories;
 using P3AddNewFunctionalityDotNetCore.Models.Services;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -11,10 +13,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 {
     public class ProductServiceTests
     {
-        public class ExampleTestMethods
+        public class TheExampleTestMethods
         {
             private P3Referential _context;
-            public ExampleTestMethods()
+            public TheExampleTestMethods()
             {
                 var options = new DbContextOptionsBuilder<P3Referential>().
                            UseSqlServer("Server=.;Database=P3Referential-2f561d3b-493f-46fd-83c9-6e2643e7bd0a;Trusted_Connection=True;MultipleActiveResultSets=true")
@@ -46,7 +48,6 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                     Id = 1,
                     Description = "one",
                     Details = "onedetails",
-
                 };
 
                 var mockProductRepository = new Mock<IProductRepository>();
@@ -102,9 +103,71 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             }
         }
 
-        // TODO write test methods to ensure a correct coverage of all possibilities
+        public class TheGetAllProductsMethd
+        {
+            [Fact]
+            public void ReturnsAListOfAllProductsMock()
+            {
+                // Arrange
+                List<Product> mockAllProducts = new List<Product>()
+                {
+                    new Product
+                    {
+                        Id = 1,
+                        Description = "one",
+                        Details = "one_details"
+                    },
+                    new Product
+                    {
+                        Id = 2,
+                        Description = "two",
+                        Details = "two_details"
+                    },
+                    new Product
+                    {
+                        Id = 3,
+                        Description = "three",
+                        Details = "three_details"
+                    },
+                };
+
+                var mockProductRepository = new Mock<IProductRepository>();
+                mockProductRepository
+                    .Setup(x => x.GetAllProducts())
+                    .Returns(mockAllProducts);
+
+                var productService = new ProductService(null, mockProductRepository.Object, null, null);
+                
+                // Act
+                List<Product> result = productService.GetAllProducts();
+                Product resultTwo = result.FirstOrDefault(x => x.Id == 2);
+
+                // Assert
+                Assert.NotNull(result);
+                Assert.NotNull(resultTwo);
+                Assert.Equal(3, result.Count);
+                Assert.Equal("two", resultTwo.Description);
+            }
+
+            [Fact]
+            public void ReturnsNullWhenRepositoryMockSetToNull()
+            {
+                // Arrange
+                List<Product> mockAllProductsNull = null;
+
+                var mockProductRepository = new Mock<IProductRepository>();
+                mockProductRepository
+                    .Setup(x => x.GetAllProducts())
+                    .Returns(mockAllProductsNull);
+
+                var productService = new ProductService(null, mockProductRepository.Object, null, null);
+
+                // Act
+                List<Product> result = productService.GetAllProducts();
+
+                // Assert
+                Assert.Null(result);
+            }
+        }
     }
-
-
-
 }

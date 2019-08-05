@@ -15,6 +15,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Repositories
         {
                 _context = context;
         }
+
         public async Task<Product> GetProduct(int id)
         {
             var product = await _context.Product.SingleOrDefaultAsync(m => m.Id == id);
@@ -26,6 +27,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Repositories
             var products = await _context.Product.ToListAsync();
             return products;
         }
+
         /// <summary>
         /// Get all products from the inventory
         /// </summary>
