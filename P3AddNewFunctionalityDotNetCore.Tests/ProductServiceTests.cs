@@ -137,7 +137,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                     .Returns(mockAllProducts);
 
                 var productService = new ProductService(null, mockProductRepository.Object, null, null);
-                
+
                 // Act
                 List<Product> result = productService.GetAllProducts();
                 Product resultTwo = result.FirstOrDefault(x => x.Id == 2);
@@ -164,6 +164,90 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
                 // Act
                 List<Product> result = productService.GetAllProducts();
+
+                // Assert
+                Assert.Null(result);
+            }
+        }
+
+        public class TheGetProductByIdMethod
+        {
+            [Fact]
+            public void ReturnsCorrectProductMockedRepository()
+            {
+                // Arrange
+                List<Product> mockAllProducts = new List<Product>()
+                {
+                    new Product
+                    {
+                        Id = 1,
+                        Description = "one",
+                        Details = "one_details"
+                    },
+                    new Product
+                    {
+                        Id = 2,
+                        Description = "two",
+                        Details = "two_details"
+                    },
+                    new Product
+                    {
+                        Id = 3,
+                        Description = "three",
+                        Details = "three_details"
+                    },
+                };
+
+                var mockRepository = new Mock<IProductRepository>();
+                mockRepository
+                    .Setup(x => x.GetAllProducts())
+                    .Returns(mockAllProducts);
+
+                var productService = new ProductService(null, mockRepository.Object, null, null);
+
+                // Act
+                var result = productService.GetProductById(3);
+
+                // Assert
+                Assert.NotNull(result);
+                Assert.Equal("three", result.Description);
+            }
+
+            [Fact]
+            public void ReturnsNullWhenPassedInvalidIdMockRepository()
+            {
+                // Arrange
+                List<Product> mockAllProducts = new List<Product>()
+                {
+                    new Product
+                    {
+                        Id = 1,
+                        Description = "one",
+                        Details = "one_details"
+                    },
+                    new Product
+                    {
+                        Id = 2,
+                        Description = "two",
+                        Details = "two_details"
+                    },
+                    new Product
+                    {
+                        Id = 3,
+                        Description = "three",
+                        Details = "three_details"
+                    },
+                };
+
+                var mockRepository = new Mock<IProductRepository>();
+                mockRepository
+                    .Setup(x => x.GetAllProducts())
+                    .Returns(mockAllProducts);
+
+                var productService = new ProductService(null, mockRepository.Object, null, null);
+
+                // Act
+                var result = productService.GetProductById(4);
 
                 // Assert
                 Assert.Null(result);
