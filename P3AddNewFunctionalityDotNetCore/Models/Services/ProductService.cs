@@ -148,6 +148,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
                 Description = product.Description,
                 Details = product.Details
             };
+
             return productEntity;
         }
 
