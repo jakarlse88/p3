@@ -63,7 +63,6 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
             return products.Find(p => p.Id == id);
         }
 
-
         public Product GetProductById(int id)
         {
             List<Product> products = GetAllProducts().ToList();

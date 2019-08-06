@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using P3AddNewFunctionalityDotNetCore.Data;
-using P3AddNewFunctionalityDotNetCore.Models.Entities;
 using P3AddNewFunctionalityDotNetCore.Models.Repositories;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -141,5 +139,6 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Assert.Equal(5, result.Count);
             }
         }
+
     }
 }

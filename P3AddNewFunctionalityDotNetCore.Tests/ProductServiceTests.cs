@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using System;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
@@ -698,6 +699,163 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Assert.NotNull(resultSpecific);
                 Assert.Equal("2", resultSpecific.Stock);
                 Assert.Null(resultSpecific.Description);
+            }
+        }
+
+        public class TheGetProductViewModelByIdMethod
+        {
+            [Fact]
+            public void ReturnsCorrectViewModelGivenGoodId()
+            {
+                // Arrange
+                List<Product> mockAllProducts = new List<Product>()
+                {
+                    new Product
+                    {
+                        Id = 1,
+                        Quantity = 1,
+                        Price = 10D,
+                        Name = "One",
+                        Description = "one_description",
+                        Details = "one_details"
+                    },
+                    new Product
+                    {
+                        Id = 2,
+                        Quantity = 2,
+                        Price = 20D,
+                        Name = "Two",
+                        Description = "two_description",
+                        Details = "two_details"
+                    },
+                    new Product
+                    {
+                        Id = 3,
+                        Quantity = 3,
+                        Price = 30D,
+                        Name = "Three",
+                        Description = "three_description",
+                        Details = "three_details"
+                    },
+                };
+
+                int testId = 2;
+
+                var mockProductRepository = new Mock<IProductRepository>();
+                mockProductRepository
+                    .Setup(x => x.GetAllProducts())
+                    .Returns(mockAllProducts);
+
+                var productService = new ProductService(null, mockProductRepository.Object, null, null);
+
+                // Act
+                ProductViewModel result = productService.GetProductByIdViewModel(testId);
+
+                // Assert
+                Assert.NotNull(result);
+                Assert.Equal(testId, result.Id);
+            }
+
+            [Fact]
+            public void ReturnsNullGivenInvalidId()
+            {
+                // Arrange
+                List<Product> mockAllProducts = new List<Product>()
+                {
+                    new Product
+                    {
+                        Id = 1,
+                        Quantity = 1,
+                        Price = 10D,
+                        Name = "One",
+                        Description = "one_description",
+                        Details = "one_details"
+                    },
+                    new Product
+                    {
+                        Id = 2,
+                        Quantity = 2,
+                        Price = 20D,
+                        Name = "Two",
+                        Description = "two_description",
+                        Details = "two_details"
+                    },
+                    new Product
+                    {
+                        Id = 3,
+                        Quantity = 3,
+                        Price = 30D,
+                        Name = "Three",
+                        Description = "three_description",
+                        Details = "three_details"
+                    },
+                };
+
+                int testId = 10;
+
+                var mockProductRepository = new Mock<IProductRepository>();
+                mockProductRepository
+                    .Setup(x => x.GetAllProducts())
+                    .Returns(mockAllProducts);
+
+                var productService = new ProductService(null, mockProductRepository.Object, null, null);
+
+                // Act
+                ProductViewModel result = productService.GetProductByIdViewModel(testId);
+
+                // Assert
+                Assert.Null(result);
+            }
+
+            [Fact]
+            public void ReturnsNullGivenInvalidIdNegative()
+            {
+                // Arrange
+                List<Product> mockAllProducts = new List<Product>()
+                {
+                    new Product
+                    {
+                        Id = 1,
+                        Quantity = 1,
+                        Price = 10D,
+                        Name = "One",
+                        Description = "one_description",
+                        Details = "one_details"
+                    },
+                    new Product
+                    {
+                        Id = 2,
+                        Quantity = 2,
+                        Price = 20D,
+                        Name = "Two",
+                        Description = "two_description",
+                        Details = "two_details"
+                    },
+                    new Product
+                    {
+                        Id = 3,
+                        Quantity = 3,
+                        Price = 30D,
+                        Name = "Three",
+                        Description = "three_description",
+                        Details = "three_details"
+                    },
+                };
+
+                int testId = -10;
+
+                var mockProductRepository = new Mock<IProductRepository>();
+                mockProductRepository
+                    .Setup(x => x.GetAllProducts())
+                    .Returns(mockAllProducts);
+
+                var productService = new ProductService(null, mockProductRepository.Object, null, null);
+
+                // Act
+                ProductViewModel result = productService.GetProductByIdViewModel(testId);
+
+                // Assert
+                Assert.Null(result);
             }
         }
     }
