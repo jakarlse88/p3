@@ -34,7 +34,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
 
         private static List<ProductViewModel> MapToViewModel(IEnumerable<Product> productEntities)
         {
-            List <ProductViewModel> products = new List<ProductViewModel>();
+            List<ProductViewModel> products = new List<ProductViewModel>();
             foreach (Product product in productEntities)
             {
                 products.Add(new ProductViewModel
