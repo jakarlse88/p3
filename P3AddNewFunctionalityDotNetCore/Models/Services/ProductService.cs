@@ -80,6 +80,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
             var products = await _productRepository.GetProduct();
             return products;
         }
+
         public void UpdateProductQuantities()
         {
             Cart cart = (Cart) _cart;
