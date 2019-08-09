@@ -31,7 +31,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models
 
         public double GetTotalValue()
         {
-            return _cartLines.Any() ? _cartLines.Sum(l => l.Product.Price) : 0;
+            return _cartLines.Any() ? _cartLines.Sum(l => l.Product.Price * l.Quantity) : 0;
         }
 
         public double GetAverageValue()
