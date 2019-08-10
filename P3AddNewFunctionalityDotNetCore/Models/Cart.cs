@@ -51,3 +51,4 @@ namespace P3AddNewFunctionalityDotNetCore.Models
         public int Quantity { get; set; }
     }
 }
+
