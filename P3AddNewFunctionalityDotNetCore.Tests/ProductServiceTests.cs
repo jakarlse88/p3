@@ -1298,7 +1298,6 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             };
 
             var _mockRepository = new Mock<IProductRepository>();
-
             _mockRepository
                 .Setup(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()))
                 .Callback((int id, int quantityToRemove) =>
@@ -1318,5 +1317,185 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
         }
+<<<<<<< HEAD
+=======
+
+        [Fact]
+        public void DeleteProductRemovesCartLineAndDeletesProductFromDb()
+        {
+            // Arrange
+            var _mockDb = new List<Product>
+            {
+                new Product
+                {
+                    Id = 1,
+                    Quantity = 2,
+                    Price = 1,
+                    Name = "One Name",
+                    Description = "one description",
+                    Details = "one details"
+                },
+                new Product
+                {
+                    Id = 2,
+                    Quantity = 3,
+                    Price = 2,
+                    Name = "Two Name",
+                    Description = "two description",
+                    Details = "two details"
+                },
+                new Product
+                {
+                    Id = 3,
+                    Quantity = 4,
+                    Price = 3,
+                    Name = "Three Name",
+                    Description = "three description",
+                    Details = "three details"
+                },
+            };
+
+            var _mockCartLines = new List<CartLine>();
+
+            var _mockCart = new Mock<ICart>();
+            _mockCart
+                .Setup(x => x.AddItem(It.IsAny<Product>(), It.IsAny<int>()))
+                .Callback((Product product, int quantity) => {
+                    CartLine line = _mockCartLines.FirstOrDefault(p => p.Product.Id == product.Id);
+
+                    if (line == null)
+                    {
+                        _mockCartLines.Add(new CartLine { Product = product, Quantity = quantity });
+                    }
+                    else
+                    {
+                        line.Quantity += quantity;
+                    }
+                });
+
+            _mockCart
+                .Setup(x => x.RemoveLine(It.IsAny<Product>()))
+                .Callback((Product product) => _mockCartLines.RemoveAll(l => l.Product.Id == product.Id));
+
+
+            var _mockRepository = new Mock<IProductRepository>();
+            _mockRepository
+                .Setup(x => x.DeleteProduct(It.IsAny<int>()))
+                .Callback((int id) =>
+                {
+                    Product product = _mockDb.FirstOrDefault(p => p.Id == id);
+                    if (product != null)
+                    {
+                        _mockDb.Remove(product);
+                    }
+                });
+
+            _mockRepository
+                .Setup(x => x.GetAllProducts())
+                .Returns(_mockDb.Where(p => p.Id > 0).ToList());
+
+            var _productService = new ProductService(_mockCart.Object, _mockRepository.Object, null, null);
+
+            foreach (var p in _mockDb)
+            {
+                _mockCart.Object.AddItem(p, 1);
+            }
+
+            // Act
+            _productService.DeleteProduct(1);
+
+            // Assert
+            Assert.Equal(2, _mockDb.Count);
+            Assert.Equal(2, _mockCartLines.Count);
+        }
+
+        [Fact]
+        public void DeleteProductThrowsGivenInvalidId()
+        {
+            // Arrange
+            var _mockDb = new List<Product>
+            {
+                new Product
+                {
+                    Id = 1,
+                    Quantity = 2,
+                    Price = 1,
+                    Name = "One Name",
+                    Description = "one description",
+                    Details = "one details"
+                },
+                new Product
+                {
+                    Id = 2,
+                    Quantity = 3,
+                    Price = 2,
+                    Name = "Two Name",
+                    Description = "two description",
+                    Details = "two details"
+                },
+                new Product
+                {
+                    Id = 3,
+                    Quantity = 4,
+                    Price = 3,
+                    Name = "Three Name",
+                    Description = "three description",
+                    Details = "three details"
+                },
+            };
+
+            var _mockCartLines = new List<CartLine>();
+
+            var _mockCart = new Mock<ICart>();
+            _mockCart
+                .Setup(x => x.AddItem(It.IsAny<Product>(), It.IsAny<int>()))
+                .Callback((Product product, int quantity) => {
+                    CartLine line = _mockCartLines.FirstOrDefault(p => p.Product.Id == product.Id);
+
+                    if (line == null)
+                    {
+                        _mockCartLines.Add(new CartLine { Product = product, Quantity = quantity });
+                    }
+                    else
+                    {
+                        line.Quantity += quantity;
+                    }
+                });
+
+            _mockCart
+                .Setup(x => x.RemoveLine(It.IsAny<Product>()))
+                .Callback((Product product) => _mockCartLines.RemoveAll(l => l.Product.Id == product.Id));
+
+
+            var _mockRepository = new Mock<IProductRepository>();
+            _mockRepository
+                .Setup(x => x.DeleteProduct(It.IsAny<int>()))
+                .Callback((int id) =>
+                {
+                    Product product = _mockDb.FirstOrDefault(p => p.Id == id);
+                    if (product != null)
+                    {
+                        _mockDb.Remove(product);
+                    }
+                });
+
+            _mockRepository
+                .Setup(x => x.GetAllProducts())
+                .Returns(_mockDb.Where(p => p.Id > 0).ToList());
+
+            var _productService = new ProductService(_mockCart.Object, _mockRepository.Object, null, null);
+
+            foreach (var p in _mockDb)
+            {
+                _mockCart.Object.AddItem(p, 1);
+            }
+
+            // Act
+            Action testAction = () => _productService.DeleteProduct(-1);
+
+            // Assert
+            Assert.Throws<NullReferenceException>(testAction);
+        }
+>>>>>>> 57fe56e640d30388fc9945f71cbd6457e2069446
     }
 }
