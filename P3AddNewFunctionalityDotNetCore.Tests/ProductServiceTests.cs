@@ -1,16 +1,14 @@
 ﻿using Moq;
+using P3AddNewFunctionalityDotNetCore.Models;
 using P3AddNewFunctionalityDotNetCore.Models.Entities;
 using P3AddNewFunctionalityDotNetCore.Models.Repositories;
 using P3AddNewFunctionalityDotNetCore.Models.Services;
 using P3AddNewFunctionalityDotNetCore.Models.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using P3AddNewFunctionalityDotNetCore.Data;
 using Xunit;
-using Xunit.Sdk;
-using System;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
@@ -67,7 +65,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var mockProductRepository = new Mock<IProductRepository>();
             mockProductRepository
                 .Setup(x => x.GetAllProducts())
-                .Returns((List<Product>) null);
+                .Returns((List<Product>)null);
 
             var productService = new ProductService(null, mockProductRepository.Object, null, null);
 
@@ -938,6 +936,387 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             // Assert
             Assert.Collection(productsMockDb, p => p.Details?.Equals(null));
+        }
+
+        [Fact]
+        public void UpdateProductStocksDecrementsProductQuantityGivenPositiveQtyToRemove()
+        {
+            // Arrange
+            var _mockCart = new Cart();
+            var _mockDb = new List<Product>
+            {
+                new Product
+                {
+                    Id = 1,
+                    Quantity = 2,
+                    Price = 1,
+                    Name = "One Name",
+                    Description = "one description",
+                    Details = "one details"
+                },
+                new Product
+                {
+                    Id = 2,
+                    Quantity = 3,
+                    Price = 2,
+                    Name = "Two Name",
+                    Description = "two description",
+                    Details = "two details"
+                },
+                new Product
+                {
+                    Id = 3,
+                    Quantity = 4,
+                    Price = 3,
+                    Name = "Three Name",
+                    Description = "three description",
+                    Details = "three details"
+                },
+            };
+
+            foreach (var p in _mockDb)
+            {
+                _mockCart.AddItem(p, 1);
+            }
+
+            var _mockRepository = new Mock<IProductRepository>();
+            _mockRepository
+                .Setup(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()))
+                .Callback((int id, int quantityToRemove) =>
+                {
+                    Product product = _mockDb.FirstOrDefault(p => p.Id == id);
+                    product.Quantity -= quantityToRemove;
+
+                    if (product.Quantity == 0)
+                        _mockDb.Remove(product);
+                });
+
+            var _productService = new ProductService(_mockCart, _mockRepository.Object, null, null);
+
+            // Act
+            _productService.UpdateProductQuantities();
+
+            // Assert
+            Assert.Equal(3, _mockDb.Count);
+            Assert.Equal(1, _mockDb.First(p => p.Id == 1).Quantity);
+            Assert.Equal(2, _mockDb.First(p => p.Id == 2).Quantity);
+            Assert.Equal(3, _mockDb.First(p => p.Id == 3).Quantity);
+        }
+
+        [Fact]
+        public void UpdateProductStocksRemovesProductFromDbGivenQuantityZero()
+        {
+            // Arrange
+            var _mockCart = new Cart();
+            var _mockDb = new List<Product>
+            {
+                new Product
+                {
+                    Id = 1,
+                    Quantity = 2,
+                    Price = 1,
+                    Name = "One Name",
+                    Description = "one description",
+                    Details = "one details"
+                },
+                new Product
+                {
+                    Id = 2,
+                    Quantity = 3,
+                    Price = 2,
+                    Name = "Two Name",
+                    Description = "two description",
+                    Details = "two details"
+                },
+                new Product
+                {
+                    Id = 3,
+                    Quantity = 4,
+                    Price = 3,
+                    Name = "Three Name",
+                    Description = "three description",
+                    Details = "three details"
+                },
+            };
+
+            foreach (var p in _mockDb)
+            {
+                _mockCart.AddItem(p, 2);
+            }
+
+            var _mockRepository = new Mock<IProductRepository>();
+            _mockRepository
+                .Setup(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()))
+                .Callback((int id, int quantityToRemove) =>
+                {
+                    Product product = _mockDb.FirstOrDefault(p => p.Id == id);
+                    product.Quantity -= quantityToRemove;
+
+                    if (product.Quantity == 0)
+                        _mockDb.Remove(product);
+                });
+
+            var _productService = new ProductService(_mockCart, _mockRepository.Object, null, null);
+
+            // Act
+            _productService.UpdateProductQuantities();
+
+            // Assert
+            Assert.Equal(2, _mockDb.Count);
+            Assert.Equal(1, _mockDb.First(p => p.Id == 2).Quantity);
+            Assert.Equal(2, _mockDb.First(p => p.Id == 3).Quantity);
+        }
+
+        [Fact]
+        public void UpdateProductStocksSetsNegativeProductQtyGivenTooLargeQtyToRemove()
+        {
+            // Arrange
+            var _mockCart = new Cart();
+            var _mockDb = new List<Product>
+            {
+                new Product
+                {
+                    Id = 1,
+                    Quantity = 2,
+                    Price = 1,
+                    Name = "One Name",
+                    Description = "one description",
+                    Details = "one details"
+                },
+                new Product
+                {
+                    Id = 2,
+                    Quantity = 3,
+                    Price = 2,
+                    Name = "Two Name",
+                    Description = "two description",
+                    Details = "two details"
+                },
+                new Product
+                {
+                    Id = 3,
+                    Quantity = 4,
+                    Price = 3,
+                    Name = "Three Name",
+                    Description = "three description",
+                    Details = "three details"
+                },
+            };
+
+            foreach (var p in _mockDb)
+            {
+                _mockCart.AddItem(p, 3);
+            }
+
+            var _mockRepository = new Mock<IProductRepository>();
+            _mockRepository
+                .Setup(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()))
+                .Callback((int id, int quantityToRemove) =>
+                {
+                    Product product = _mockDb.FirstOrDefault(p => p.Id == id);
+                    product.Quantity -= quantityToRemove;
+
+                    if (product.Quantity == 0)
+                        _mockDb.Remove(product);
+                });
+
+            var _productService = new ProductService(_mockCart, _mockRepository.Object, null, null);
+
+            // Act
+            _productService.UpdateProductQuantities();
+
+            // Assert
+            Assert.Equal(2, _mockDb.Count);
+            Assert.Equal(-1, _mockDb.First(p => p.Id == 1).Quantity);
+            Assert.Equal(1, _mockDb.First(p => p.Id == 3).Quantity);
+        }
+
+        [Fact]
+        public void UpdateProductQuantityIncrementsQuantityGivenNegativeArg()
+        {
+            // Arrange
+            var _mockCart = new Cart();
+
+            var _mockDb = new List<Product>
+            {
+                new Product
+                {
+                    Id = 1,
+                    Quantity = 2,
+                    Price = 1,
+                    Name = "One Name",
+                    Description = "one description",
+                    Details = "one details"
+                },
+                new Product
+                {
+                    Id = 2,
+                    Quantity = 3,
+                    Price = 2,
+                    Name = "Two Name",
+                    Description = "two description",
+                    Details = "two details"
+                },
+                new Product
+                {
+                    Id = 3,
+                    Quantity = 4,
+                    Price = 3,
+                    Name = "Three Name",
+                    Description = "three description",
+                    Details = "three details"
+                },
+            };
+
+            foreach (var p in _mockDb)
+            {
+                _mockCart.AddItem(p, -1);
+            }
+
+            var _mockRepository = new Mock<IProductRepository>();
+
+            _mockRepository
+                .Setup(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()))
+                .Callback((int id, int quantityToRemove) =>
+                {
+                    Product product = _mockDb.FirstOrDefault(p => p.Id == id);
+                    product.Quantity -= quantityToRemove;
+
+                    if (product.Quantity == 0)
+                        _mockDb.Remove(product);
+                });
+
+            var _productService = new ProductService(_mockCart, _mockRepository.Object, null, null);
+
+            // Act
+            _productService.UpdateProductQuantities();
+
+            // Assert
+            Assert.Equal(3, _mockDb.Count);
+            Assert.Equal(3, _mockDb.First(p => p.Id == 1).Quantity);
+            Assert.Equal(4, _mockDb.First(p => p.Id == 2).Quantity);
+            Assert.Equal(5, _mockDb.First(p => p.Id == 3).Quantity);
+        }
+
+        [Fact]
+        public void UpdateProductQuantityDoesNothingGivenEmptyCart()
+        {
+            // Arrange
+            var _mockCart = new Cart();
+
+            var _mockDb = new List<Product>
+            {
+                new Product
+                {
+                    Id = 1,
+                    Quantity = 2,
+                    Price = 1,
+                    Name = "One Name",
+                    Description = "one description",
+                    Details = "one details"
+                },
+                new Product
+                {
+                    Id = 2,
+                    Quantity = 3,
+                    Price = 2,
+                    Name = "Two Name",
+                    Description = "two description",
+                    Details = "two details"
+                },
+                new Product
+                {
+                    Id = 3,
+                    Quantity = 4,
+                    Price = 3,
+                    Name = "Three Name",
+                    Description = "three description",
+                    Details = "three details"
+                },
+            };
+
+            var _mockRepository = new Mock<IProductRepository>();
+
+            _mockRepository
+                .Setup(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()))
+                .Callback((int id, int quantityToRemove) =>
+                {
+                    Product product = _mockDb.FirstOrDefault(p => p.Id == id);
+                    product.Quantity -= quantityToRemove;
+
+                    if (product.Quantity == 0)
+                        _mockDb.Remove(product);
+                });
+
+            var _productService = new ProductService(_mockCart, _mockRepository.Object, null, null);
+
+            // Act
+            _productService.UpdateProductQuantities();
+
+            // Assert
+            Assert.Equal(3, _mockDb.Count);
+            Assert.Equal(2, _mockDb.First(p => p.Id == 1).Quantity);
+            Assert.Equal(3, _mockDb.First(p => p.Id == 2).Quantity);
+            Assert.Equal(4, _mockDb.First(p => p.Id == 3).Quantity);
+        }
+
+        [Fact]
+        public void UpdateProductQuantityThrowsGivenEmptyCart()
+        {
+            // Arrange
+            Cart _mockCart = null;
+
+            var _mockDb = new List<Product>
+            {
+                new Product
+                {
+                    Id = 1,
+                    Quantity = 2,
+                    Price = 1,
+                    Name = "One Name",
+                    Description = "one description",
+                    Details = "one details"
+                },
+                new Product
+                {
+                    Id = 2,
+                    Quantity = 3,
+                    Price = 2,
+                    Name = "Two Name",
+                    Description = "two description",
+                    Details = "two details"
+                },
+                new Product
+                {
+                    Id = 3,
+                    Quantity = 4,
+                    Price = 3,
+                    Name = "Three Name",
+                    Description = "three description",
+                    Details = "three details"
+                },
+            };
+
+            var _mockRepository = new Mock<IProductRepository>();
+
+            _mockRepository
+                .Setup(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()))
+                .Callback((int id, int quantityToRemove) =>
+                {
+                    Product product = _mockDb.FirstOrDefault(p => p.Id == id);
+                    product.Quantity -= quantityToRemove;
+
+                    if (product.Quantity == 0)
+                        _mockDb.Remove(product);
+                });
+
+            var _productService = new ProductService(_mockCart, _mockRepository.Object, null, null);
+
+            // Act
+            Action testAction = () => _productService.UpdateProductQuantities();
+
+            // Assert
+            Assert.Throws<NullReferenceException>(testAction);
         }
     }
 }
