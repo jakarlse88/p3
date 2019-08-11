@@ -34,8 +34,12 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Repositories
 
         public async Task<IList<Order>> GetOrders()
         {
-            var orders = await _context.Order.Include(x => x.OrderLine)
-                .ThenInclude(product => product.Product).ToListAsync();
+            var orders = 
+                await _context.Order
+                .Include(x => x.OrderLine)
+                .ThenInclude(product => product.Product)
+                .ToListAsync();
+                
             return orders;
         }
     }
