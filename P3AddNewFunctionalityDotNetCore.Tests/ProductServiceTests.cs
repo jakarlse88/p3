@@ -1317,8 +1317,6 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
         }
-<<<<<<< HEAD
-=======
 
         [Fact]
         public void DeleteProductRemovesCartLineAndDeletesProductFromDb()
@@ -1496,6 +1494,5 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
         }
->>>>>>> 57fe56e640d30388fc9945f71cbd6457e2069446
     }
 }

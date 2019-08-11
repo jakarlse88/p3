@@ -23,8 +23,12 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Repositories
 
         public async Task<Order> GetOrder(int? id)
         {
-            var orderEntity = await _context.Order.Include(x => x.OrderLine)
-                .ThenInclude(product => product.Product).SingleOrDefaultAsync(m => m.Id == id);
+            var orderEntity = 
+                await _context.Order
+                .Include(x => x.OrderLine)
+                .ThenInclude(product => product.Product)
+                .SingleOrDefaultAsync(m => m.Id == id);
+                
             return orderEntity;
         }
 
