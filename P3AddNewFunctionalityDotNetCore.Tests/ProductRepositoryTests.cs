@@ -1,8 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using P3AddNewFunctionalityDotNetCore.Data;
 using P3AddNewFunctionalityDotNetCore.Models.Repositories;
 using System.Threading.Tasks;
+using Moq;
+using P3AddNewFunctionalityDotNetCore.Models.Entities;
 using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
@@ -18,6 +21,28 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 .Options;
 
             _context = new P3Referential(options);
+        }
+
+        // https://www.loganfranken.com/blog/517/mocking-dbset-queries-in-ef6/?fbclid=IwAR3WRTViz-9uk9QZhODGzWhtd5VcZ0gl4I58Wg16iWt0wUN8tlrwLDyVQ_8
+        private DbSet<T> GetQueryableMockDbSet<T>(params T[] sourceList) where T : class
+        {
+            var queryable = sourceList.AsQueryable();
+
+            var dbSet = new Mock<DbSet<T>>();
+
+            dbSet.As<IQueryable<T>>()
+                .Setup(m => m.Provider).Returns(queryable.Provider);
+
+            dbSet.As<IQueryable<T>>()
+                .Setup(m => m.Expression).Returns(queryable.Expression);
+            
+            dbSet.As<IQueryable<T>>()
+                .Setup(m => m.ElementType).Returns(queryable.ElementType);
+
+            dbSet.As<IQueryable<T>>()
+                .Setup(m => m.GetEnumerator()).Returns(() => queryable.GetEnumerator());
+
+            return dbSet.Object;
         }
 
         [Theory]
@@ -107,6 +132,43 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Assert
             Assert.NotNull(result);
             Assert.Equal(5, result.Count);
+        }
+
+        [Fact]
+        public void SaveProductSavesValidProductToDb()
+        {
+            // Arrange
+            var productList = new List<Product>();
+
+            var testProduct = new Product
+            {
+                Id = 1,
+                Name = "Name"
+            };
+
+            // Hacky, but seems necessary to mock P3Referential
+            var options = new DbContextOptionsBuilder<P3Referential>()
+                .UseSqlServer(
+                    "asdasd")
+                .Options;
+
+            var mockContext = new Mock<P3Referential>(options);
+            mockContext
+                .Setup(x => x.Product.Add(It.IsAny<Product>()))
+                .Callback((Product product) => productList.Add(product));
+
+            mockContext
+                .Setup(x => x.SaveChanges());
+
+            var productRepository = new ProductRepository(mockContext.Object);
+
+
+            // Act
+            productRepository.SaveProduct(testProduct);
+
+            // Assert
+            Assert.Single(productList);
+            Assert.Equal("Name", productList.First(p => p.Id == 1).Name);
         }
     }
 }
