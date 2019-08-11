@@ -37,7 +37,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
         {
             var orderToAdd = MapToOrderEntity(order);
             _orderRepository.Save(orderToAdd);
-             UpdateInventory();
+            UpdateInventory();
         }
 
         private static Order MapToOrderEntity(OrderViewModel order)
@@ -52,9 +52,15 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
                 Date = DateTime.UtcNow,
                 OrderLine = new List<OrderLine>()
             };
+            
             foreach (var orderLine in order.Lines)
             {
-                OrderLine lineOrder = new OrderLine { ProductId = orderLine.Product.Id, Quantity = orderLine.Quantity };
+                OrderLine lineOrder = new OrderLine 
+                { 
+                    ProductId = orderLine.Product.Id, 
+                    Quantity = orderLine.Quantity 
+                };
+
                 orderToAdd.OrderLine.Add(lineOrder);
             }
 

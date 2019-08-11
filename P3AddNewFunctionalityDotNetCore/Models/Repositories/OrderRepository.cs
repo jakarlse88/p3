@@ -39,7 +39,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Repositories
                 .Include(x => x.OrderLine)
                 .ThenInclude(product => product.Product)
                 .ToListAsync();
-                
+
             return orders;
         }
     }
