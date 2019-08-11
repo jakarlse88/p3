@@ -6,24 +6,14 @@ using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
-    public class CartTests : IDisposable
+    public class CartTests
     {
-        private readonly Cart _cart;
-
-        public CartTests()
-        {
-            _cart = new Cart();
-        }
-
-        public void Dispose()
-        {
-            _cart.Clear();
-        }
-
         [Fact]
         public void ClearCorrectlyClearsCart()
         {
             // Arrange
+            var _cart = new Cart();
+            
             Product[] testProducts = new Product[]
             {
                     new Product { Id = 1 },
@@ -49,6 +39,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void AddItemCorrectlyAddsSingleProductToCart()
         {
             // Arrange
+            var _cart = new Cart();
+
             var testProduct = new Product
             {
                 Name = "TestObject",
@@ -72,6 +64,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void AddItemIncrementsAlreadyPresentProductInCart()
         {
             // Arrange
+            var _cart = new Cart();
+
             var testProduct = new Product
             {
                 Name = "TestObject",
@@ -100,6 +94,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void AddItemDecrementsQuantityGivenNegativeQuantityExceedingStock()
         {
             // Arrange
+            var _cart = new Cart();
+
             var testProduct = new Product
             {
                 Name = "TestObject",
@@ -125,6 +121,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void AddItemToleratesNullProductArgument()
         {
             // Arrange
+            var _cart = new Cart();
+
             Product testProduct = null;
 
             const int testQuantity = 1;
@@ -140,6 +138,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void RemoveLineCorrectlyRemovesCartLine()
         {
             // Arrange
+            var _cart = new Cart();
+
             var testProducts = new Product[]
             {
                     new Product { Id = 1 },
@@ -167,6 +167,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void GetTotalValueReturnsCorrectTotalForEmptyCart()
         {
             // Arrange
+            var _cart = new Cart();
+
             const double expected = 0;
 
             // Act
@@ -180,6 +182,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void GetTotalValueReturnsCorrectTotalGivenSingleItemInCart()
         {
             // Arrange
+            var _cart = new Cart();
+
             var testProduct = new Product
             {
                 Id = 1,
@@ -201,6 +205,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void GetTotalValueReturnsCorrectTotalGivenMultipleItemsInCart()
         {
             // Arrange
+            var _cart = new Cart();
+
             var testProducts = new Product[]
             {
                     new Product { Id = 1, Price = 10 },
@@ -226,6 +232,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void GetTotalValueReturnsCorrectTotalGivenMultipleItemsInCartWithVaryingQuantities()
         {
             // Arrange
+            var _cart = new Cart();
+
             var testProducts = new Product[]
             {
                     new Product { Id = 1, Price = 10 },
@@ -251,6 +259,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void GetAverageValueReturnsCorrectAverageForEmptyCart()
         {
             // Arrange
+            var _cart = new Cart();
+
             const double expected = 0;
 
             // Act
@@ -264,6 +274,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void GetAverageValueReturnsCorrectTotalGivenSingleItemInCart()
         {
             // Arrange
+            var _cart = new Cart();
+
             var testProduct = new Product
             {
                 Id = 1,
@@ -285,6 +297,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void GetAverageValueReturnsCorrectTotalGivenMultipleItemsInCart()
         {
             // Arrange
+            var _cart = new Cart();
+
             var testProducts = new Product[]
             {
                     new Product { Id = 1, Price = 10 },
@@ -304,12 +318,14 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             // Assert
             Assert.Equal(expected, result);
-        }
+    }
 
         [Fact]
         public void GetAverageValueReturnsCorrectTotalGivenMultipleItemsInCartWithVaryingQuantities()
         {
             // Arrange
+            var _cart = new Cart();
+
             var testProducts = new Product[]
             {
                     new Product { Id = 1, Price = 10 },
