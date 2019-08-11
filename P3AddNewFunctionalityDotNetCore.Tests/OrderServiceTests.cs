@@ -1,3 +1,4 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using P3AddNewFunctionalityDotNetCore.Models;
@@ -7,6 +8,7 @@ using P3AddNewFunctionalityDotNetCore.Models.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using P3AddNewFunctionalityDotNetCore.Models.ViewModels;
 using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
@@ -204,7 +206,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             };
             testCartLine.Quantity = 10;
 
-            var testObject = new Models.ViewModels.OrderViewModel
+            var testObject = new OrderViewModel
             {
                 OrderId = 1,
                 Name = "Name",
@@ -225,7 +227,205 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var mockProductService = new Mock<IProductService>();
             mockProductService
                 .Setup(x => x.UpdateProductQuantities())
-                .Callback(() => System.Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
+                .Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
+
+            var mockCart = new Cart();
+
+            var mockOrderService = new OrderService(mockCart, mockOrderRepository.Object, mockProductService.Object);
+
+            // Act
+            mockOrderService.SaveOrder(testObject);
+
+            // Assert
+            Assert.Single(mockOrderList);
+        }
+
+        [Fact]
+        public void SaveOrdersSavesSeveralProductsToDbGivenGoodArgs()
+        {
+            // Arrange
+            var mockOrderList = new List<Order>();
+
+            var testCartLine1 = new CartLine();
+            testCartLine1.OrderLineId = 1;
+            testCartLine1.Product = new Product{
+                Id = 1
+            };
+            testCartLine1.Quantity = 10;
+
+            var testObject1 = new OrderViewModel
+            {
+                OrderId = 1,
+                Name = "Name One",
+                Address = "Address One",
+                City = "City",
+                Zip = "Zip",
+                Country = "Country",
+                Lines = new List<CartLine>()
+            };
+
+            testObject1.Lines.Add(testCartLine1);
+
+            var testObject2 = new OrderViewModel
+            {
+                OrderId = 2,
+                Name = "Name Two",
+                Address = "Address Two",
+                City = "City",
+                Zip = "Zip",
+                Country = "Country",
+                Lines = new List<CartLine>()
+            };
+
+            var testCartLine2 = new CartLine();
+            testCartLine2.OrderLineId = 2;
+            testCartLine2.Product = new Product{
+                Id = 2
+            };
+            testCartLine2.Quantity = 20;
+
+            testObject2.Lines.Add(testCartLine1);
+
+            var mockOrderRepository = new Mock<IOrderRepository>();
+            mockOrderRepository
+                .Setup(x => x.Save(It.IsAny<Order>()))
+                .Callback((Order order) => mockOrderList.Add(order));
+
+            var mockProductService = new Mock<IProductService>();
+            mockProductService
+                .Setup(x => x.UpdateProductQuantities())
+                .Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
+
+            var mockCart = new Cart();
+
+            var mockOrderService = new OrderService(mockCart, mockOrderRepository.Object, mockProductService.Object);
+
+            // Act
+            mockOrderService.SaveOrder(testObject1);
+            mockOrderService.SaveOrder(testObject2);
+
+            // Assert
+            Assert.Equal(2, mockOrderList.Count);
+            Assert.Equal("Address One", mockOrderList.First(o => o.Name == "Name One").Address);
+            Assert.Equal("Address Two", mockOrderList.First(o => o.Name == "Name Two").Address);
+        }
+
+        [Fact]
+        public void SaveOrderThrowsGivenNullArgument()
+        {
+            // Arrange
+            var mockOrderList = new List<Order>();
+
+            var testCartLine = new CartLine();
+            testCartLine.OrderLineId = 1;
+            testCartLine.Product = new Product{
+                Id = 1
+            };
+            testCartLine.Quantity = 10;
+
+            var testObject = new OrderViewModel
+            {
+                OrderId = 1,
+                Name = "Name",
+                Address = "Address",
+                City = "City",
+                Zip = "Zip",
+                Country = "Country",
+                Lines = new List<CartLine>()
+            };
+
+            testObject.Lines.Add(testCartLine);
+
+            var mockOrderRepository = new Mock<IOrderRepository>();
+            mockOrderRepository
+                .Setup(x => x.Save(It.IsAny<Order>()))
+                .Callback((Order order) => mockOrderList.Add(order));
+
+            var mockProductService = new Mock<IProductService>();
+            mockProductService
+                .Setup(x => x.UpdateProductQuantities())
+                .Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
+
+            var mockCart = new Cart();
+
+            var mockOrderService = new OrderService(mockCart, mockOrderRepository.Object, mockProductService.Object);
+
+            // Act
+            Action testAction = () => mockOrderService.SaveOrder(null);
+
+            // Assert
+            Assert.Throws<NullReferenceException>(testAction);
+        }
+
+        [Fact]
+        public void SaveOrderThrowsGivenArgWithNullLinesField()
+        {
+            // Arrange
+            var mockOrderList = new List<Order>();
+
+            var testObject = new OrderViewModel
+            {
+                OrderId = 1,
+                Name = "Name",
+                Address = "Address",
+                City = "City",
+                Zip = "Zip",
+                Country = "Country",
+            };
+
+            var mockOrderRepository = new Mock<IOrderRepository>();
+            mockOrderRepository
+                .Setup(x => x.Save(It.IsAny<Order>()))
+                .Callback((Order order) => mockOrderList.Add(order));
+
+            var mockProductService = new Mock<IProductService>();
+            mockProductService
+                .Setup(x => x.UpdateProductQuantities())
+                .Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
+
+            var mockCart = new Cart();
+
+            var mockOrderService = new OrderService(mockCart, mockOrderRepository.Object, mockProductService.Object);
+
+            // Act
+            Action testAction = () => mockOrderService.SaveOrder(testObject);
+
+            // Assert
+            Assert.Throws<NullReferenceException>(testAction);
+        }
+
+        [Fact]
+        public void SaveOrderToleratesMissingAndNullFieldsNotLines()
+        {
+            // Arrange
+            var mockOrderList = new List<Order>();
+
+            var testCartLine = new CartLine();
+            testCartLine.OrderLineId = 1;
+            testCartLine.Product = new Product{
+                Id = 1
+            };
+            testCartLine.Quantity = 10;
+
+            var testObject = new OrderViewModel
+            {
+                Name = null,
+                City = null,
+                Country = null,
+                Lines = new List<CartLine>()
+            };
+
+            testObject.Lines.Add(testCartLine);
+
+            var mockOrderRepository = new Mock<IOrderRepository>();
+            mockOrderRepository
+                .Setup(x => x.Save(It.IsAny<Order>()))
+                .Callback((Order order) => mockOrderList.Add(order));
+
+            var mockProductService = new Mock<IProductService>();
+            mockProductService
+                .Setup(x => x.UpdateProductQuantities())
+                .Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
 
             var mockCart = new Cart();
 
