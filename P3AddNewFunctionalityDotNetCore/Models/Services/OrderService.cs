@@ -20,16 +20,19 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
             _cart = cart;
             _productService = productService;
         }
+
         public async Task<Order> GetOrder(int id)
         {
             var orderEntity = await _orderRepository.GetOrder(id);
             return orderEntity;
         }
+
         public async Task<IList<Order>> GetOrders()
         {
             var orders = await _orderRepository.GetOrders();
             return orders;
         }
+
         public void SaveOrder(OrderViewModel order)
         {
             var orderToAdd = MapToOrderEntity(order);

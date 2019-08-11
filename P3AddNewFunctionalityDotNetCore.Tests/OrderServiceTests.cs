@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using P3AddNewFunctionalityDotNetCore.Models.Entities;
 using P3AddNewFunctionalityDotNetCore.Models.Repositories;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using P3AddNewFunctionalityDotNetCore.Data;
 using P3AddNewFunctionalityDotNetCore.Models.Services;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
@@ -14,66 +13,40 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
     public class OrderServiceTests
     {
         [Fact]
-        public async void GetOrderReturnsCorrectOrder()
+        public async void GetOrderReturnsCorrectOrderGivenValidId()
         {
             // Arrange
-            var _mockContext = new P3Referential(null);
-
-            var _mockOrderList = new List<Product>
+            var _mockOrderList = new List<Order>
             {
-                new Product {
+                new Order {
                     Id = 1,
                     Name = "One"
                 },
-                new Product {
+                new Order {
                     Id = 2,
                     Name = "Two"
                 },
-                new Product {
+                new Order {
                     Id = 3,
                     Name = "Three"
                 },
             };
 
-            IQueryable<Product> _mockQueryableList = 
+            IQueryable<Order> _mockQueryableList =
                 _mockOrderList.AsQueryable();
-
-            var _mockSet = new Mock<DbSet<Product>>();
-            _mockSet
-                .As<IQueryable<Product>>()
-                .Setup(x => x.Provider)
-                .Returns(_mockQueryableList.Provider);
-
-            _mockSet
-                .As<IQueryable<Product>>()
-                .Setup(x => x.Expression)
-                .Returns(_mockQueryableList.Expression);
-
-            _mockSet
-                .As<IQueryable<Product>>()
-                .Setup(x => x.ElementType)
-                .Returns(_mockQueryableList.ElementType);
-
-            _mockSet
-                .As<IQueryable<Product>>()
-                .Setup(x => x.GetEnumerator())
-                .Returns(_mockQueryableList.GetEnumerator);
-
-            _mockContext.Product = _mockSet.Object;
 
             var _mockOrderRepository = new Mock<IOrderRepository>();
 
             _mockOrderRepository
                 .Setup(x => x.GetOrder(It.IsAny<int?>()))
-                .Callback((int? id) =>
-                {
-                    var orderEntity = _mockContext.Order
+                .ReturnsAsync((int? id) => 
+                    _mockQueryableList
                         .Include(x => x.OrderLine)
                         .ThenInclude(product => product.Product)
-                        .FirstOrDefault(m => m.Id == id);
-                });
+                        .FirstOrDefault(m => m.Id == id)
+                );
 
-            var _mockOrderService = 
+            var _mockOrderService =
                 new OrderService(null, _mockOrderRepository.Object, null);
 
             // Act
@@ -81,6 +54,94 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             // Assert
             Assert.Equal("One", result.Name);
+        }
+
+        [Fact]
+        public async void GetOrderReturnsNothingGivenInvalidId()
+        {
+            // Arrange
+            var _mockOrderList = new List<Order>
+            {
+                new Order {
+                    Id = 1,
+                    Name = "One"
+                },
+                new Order {
+                    Id = 2,
+                    Name = "Two"
+                },
+                new Order {
+                    Id = 3,
+                    Name = "Three"
+                },
+            };
+
+            IQueryable<Order> _mockQueryableList =
+                _mockOrderList.AsQueryable();
+
+            var _mockOrderRepository = new Mock<IOrderRepository>();
+
+            _mockOrderRepository
+                .Setup(x => x.GetOrder(It.IsAny<int?>()))
+                .ReturnsAsync((int? id) => 
+                    _mockQueryableList
+                        .Include(x => x.OrderLine)
+                        .ThenInclude(product => product.Product)
+                        .FirstOrDefault(m => m.Id == id)
+                );
+
+            var _mockOrderService =
+                new OrderService(null, _mockOrderRepository.Object, null);
+
+            // Act
+            var result = await _mockOrderService.GetOrder(5);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task GetOrderReturnsNothingGivenNegativeInvalidId()
+        {
+            // Arrange
+            var _mockOrderList = new List<Order>
+            {
+                new Order {
+                    Id = 1,
+                    Name = "One"
+                },
+                new Order {
+                    Id = 2,
+                    Name = "Two"
+                },
+                new Order {
+                    Id = 3,
+                    Name = "Three"
+                },
+            };
+
+            IQueryable<Order> _mockQueryableList =
+                _mockOrderList.AsQueryable();
+
+            var _mockOrderRepository = new Mock<IOrderRepository>();
+
+            _mockOrderRepository
+                .Setup(x => x.GetOrder(It.IsAny<int?>()))
+                .ReturnsAsync((int? id) => 
+                    _mockQueryableList
+                        .Include(x => x.OrderLine)
+                        .ThenInclude(product => product.Product)
+                        .FirstOrDefault(m => m.Id == id)
+                );
+
+            var _mockOrderService =
+                new OrderService(null, _mockOrderRepository.Object, null);
+
+            // Act
+            var result = await _mockOrderService.GetOrder(-5);
+
+            // Assert
+            Assert.Null(result);
         }
     }
 }
