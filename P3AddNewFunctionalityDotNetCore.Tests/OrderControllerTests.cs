@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Moq;
@@ -91,6 +90,25 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.False(orderController.ModelState.IsValid);
+        }
+
+        [Fact]
+        public void CompletedClearsCartAndReturnsView()
+        {
+            // Arrange
+            var cart = new Cart();
+            cart.AddItem(new Product {Name = "Produt One" }, 1);
+            cart.AddItem(new Product {Name = "Produt Two" }, 2);
+            cart.AddItem(new Product {Name = "Produt Three" }, 3);
+
+            var orderController = new OrderController(cart, null, null);
+
+            // Act
+            var result = orderController.Completed();
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            Assert.Empty(cart.Lines);
         }
     }
 }
