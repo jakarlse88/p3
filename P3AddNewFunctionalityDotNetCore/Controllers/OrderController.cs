@@ -32,6 +32,7 @@ namespace P3AddNewFunctionalityDotNetCore.Controllers
             {
                 ModelState.AddModelError("", _localizer["CartEmpty"]);
             }
+            
             if (ModelState.IsValid)
             {
                 order.Lines = ((Cart) _cart)?.Lines.ToArray();

@@ -1,18 +1,14 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using P3AddNewFunctionalityDotNetCore.Controllers;
 using P3AddNewFunctionalityDotNetCore.Models;
 using P3AddNewFunctionalityDotNetCore.Models.Entities;
 using P3AddNewFunctionalityDotNetCore.Models.Services;
-using P3AddNewFunctionalityDotNetCore.Models.ViewModels;
 using Xunit;
 
-namespace P3AddNewFunctionalityDotNetCore.Tests 
+namespace P3AddNewFunctionalityDotNetCore.Tests
 {
     public class CartControllerTests
     {
