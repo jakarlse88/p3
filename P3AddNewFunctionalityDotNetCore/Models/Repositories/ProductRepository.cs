@@ -65,7 +65,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Repositories
 
         public void DeleteProduct(int id)
         {
-            Product product = _context.Product.First(p => p.Id == id);
+            Product product = _context.Product.ToList().First(p => p.Id == id);
             if (product != null)
             {
                 _context.Product.Remove(product);
