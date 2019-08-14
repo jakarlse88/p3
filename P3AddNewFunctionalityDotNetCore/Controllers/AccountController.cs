@@ -35,10 +35,11 @@ namespace P3AddNewFunctionalityDotNetCore.Controllers
             if (ModelState.IsValid)
             {
                 IdentityUser user =
-                await _userManager.FindByNameAsync(loginModel.Name);
+                    await _userManager.FindByNameAsync(loginModel.Name);
                 if (user != null)
                 {
                     await _signInManager.SignOutAsync();
+                    
                     if ((await _signInManager.PasswordSignInAsync(user,
                         loginModel.Password, false, false)).Succeeded)
                     {
@@ -46,6 +47,7 @@ namespace P3AddNewFunctionalityDotNetCore.Controllers
                     }
                 }
             }
+            
             ModelState.AddModelError("", "Invalid name or password");
             return View(loginModel);
         }
