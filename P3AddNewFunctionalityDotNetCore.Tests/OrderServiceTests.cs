@@ -57,6 +57,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             // Assert
             Assert.Equal("One", result.Name);
+            mockOrderRepository
+                .Verify(x => x.GetOrder(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]
@@ -101,6 +103,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             // Assert
             Assert.Null(result);
+            mockOrderRepository
+                .Verify(x => x.GetOrder(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]
@@ -145,6 +149,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             // Assert
             Assert.Null(result);
+            mockOrderRepository
+                .Verify(x => x.GetOrder(It.IsAny<int>()), Times.Once);
         }
 
         [Fact]
@@ -187,6 +193,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var result = await orderService.GetOrders();
 
             // Assert
+            mockOrderRepository.Verify(x => x.GetOrders(), Times.Once);
             Assert.Equal(3, result.Count);
             Assert.Equal("One", result.FirstOrDefault(o => o.Id == 1).Name);
             Assert.Equal("Two", result.FirstOrDefault(o => o.Id == 2).Name);
@@ -226,8 +233,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             var mockProductService = new Mock<IProductService>();
             mockProductService
-                .Setup(x => x.UpdateProductQuantities())
-                .Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
+                .Setup(x => x.UpdateProductQuantities());
+                // .Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
 
             var mockCart = new Cart();
 
@@ -237,6 +244,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             mockOrderService.SaveOrder(testObject);
 
             // Assert
+            mockOrderRepository.Verify(x => x.Save(It.IsAny<Order>()), Times.Once);
+            mockProductService.Verify(x => x.UpdateProductQuantities(), Times.Once);
             Assert.Single(mockOrderList);
         }
 
@@ -293,8 +302,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             var mockProductService = new Mock<IProductService>();
             mockProductService
-                .Setup(x => x.UpdateProductQuantities())
-                .Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
+                .Setup(x => x.UpdateProductQuantities());
+                // .Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
 
             var mockCart = new Cart();
 
@@ -305,6 +314,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             mockOrderService.SaveOrder(testObject2);
 
             // Assert
+            mockOrderRepository.Verify(x => x.Save(It.IsAny<Order>()), Times.AtLeastOnce);
+            mockProductService.Verify(x => x.UpdateProductQuantities(), Times.AtLeastOnce);
             Assert.Equal(2, mockOrderList.Count);
             Assert.Equal("Address One", mockOrderList.First(o => o.Name == "Name One").Address);
             Assert.Equal("Address Two", mockOrderList.First(o => o.Name == "Name Two").Address);
@@ -343,8 +354,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             var mockProductService = new Mock<IProductService>();
             mockProductService
-                .Setup(x => x.UpdateProductQuantities())
-                .Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
+                .Setup(x => x.UpdateProductQuantities());
+                // .Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
 
             var mockCart = new Cart();
 
@@ -355,6 +366,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
+            mockOrderRepository.Verify(x => x.Save(It.IsAny<Order>()), Times.Never);
+            mockProductService.Verify(x => x.UpdateProductQuantities(), Times.Never);
         }
 
         [Fact]
@@ -380,8 +393,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             var mockProductService = new Mock<IProductService>();
             mockProductService
-                .Setup(x => x.UpdateProductQuantities())
-                .Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
+                .Setup(x => x.UpdateProductQuantities());
+                // .Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
 
             var mockCart = new Cart();
 
@@ -392,6 +405,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
+            mockOrderRepository.Verify(x => x.Save(It.IsAny<Order>()), Times.Never);
+            mockProductService.Verify(x => x.UpdateProductQuantities(), Times.Never);
         }
 
         [Fact]
@@ -424,8 +439,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             var mockProductService = new Mock<IProductService>();
             mockProductService
-                .Setup(x => x.UpdateProductQuantities())
-                .Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
+                .Setup(x => x.UpdateProductQuantities());
+                //.Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
 
             var mockCart = new Cart();
 
@@ -436,6 +451,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             // Assert
             Assert.Single(mockOrderList);
+            mockOrderRepository.Verify(x => x.Save(It.IsAny<Order>()), Times.Once);
+            mockProductService.Verify(x => x.UpdateProductQuantities(), Times.Once);
         }
     }
 }

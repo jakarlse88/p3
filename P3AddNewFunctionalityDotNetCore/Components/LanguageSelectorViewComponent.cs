@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using P3AddNewFunctionalityDotNetCore.Models.Services;
+// ReSharper disable All
 
 namespace P3AddNewFunctionalityDotNetCore.Components
 {

@@ -49,13 +49,12 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             // Act
             var result = productService.GetAllProducts();
-            var resultTwo = result.FirstOrDefault(x => x.Id == 2);
 
             // Assert
+            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
             Assert.NotNull(result);
-            Assert.NotNull(resultTwo);
             Assert.Equal(3, result.Count);
-            Assert.Equal("two", resultTwo.Description);
+            Assert.Equal("two", result.FirstOrDefault(x => x.Id == 2)?.Description);
         }
 
         [Fact]
@@ -73,6 +72,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var result = productService.GetAllProducts();
 
             // Assert
+            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
             Assert.Null(result);
         }
 
@@ -104,17 +104,18 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             const int testId = 3;
 
-            var mockRepository = new Mock<IProductRepository>();
-            mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.GetAllProducts())
                 .Returns(mockAllProducts);
 
-            var productService = new ProductService(null, mockRepository.Object, null, null);
+            var productService = new ProductService(null, mockProductRepository.Object, null, null);
 
             // Act
             var result = productService.GetProductById(testId);
 
             // Assert
+            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
             Assert.NotNull(result);
             Assert.Equal("three", result.Description);
         }
@@ -147,17 +148,18 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             const int testId = -1;
 
-            var mockRepository = new Mock<IProductRepository>();
-            mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.GetAllProducts())
                 .Returns(mockAllProducts);
 
-            var productService = new ProductService(null, mockRepository.Object, null, null);
+            var productService = new ProductService(null, mockProductRepository.Object, null, null);
 
             // Act
             var result = productService.GetProductById(testId);
 
             // Assert
+            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
             Assert.Null(result);
         }
 
@@ -189,17 +191,18 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             const int testId = 0;
 
-            var mockRepository = new Mock<IProductRepository>();
-            mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.GetAllProducts())
                 .Returns(mockAllProducts);
 
-            var productService = new ProductService(null, mockRepository.Object, null, null);
+            var productService = new ProductService(null, mockProductRepository.Object, null, null);
 
             // Act
             var result = productService.GetProductById(testId);
 
             // Assert
+            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
             Assert.Null(result);
         }
 
@@ -231,17 +234,18 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             const int testId = 10;
 
-            var mockRepository = new Mock<IProductRepository>();
-            mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.GetAllProducts())
                 .Returns(mockAllProducts);
 
-            var productService = new ProductService(null, mockRepository.Object, null, null);
+            var productService = new ProductService(null, mockProductRepository.Object, null, null);
 
             // Act
             var result = productService.GetProductById(testId);
 
             // Assert
+            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
             Assert.Null(result);
         }
 
@@ -273,17 +277,18 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             const int testId = 1;
 
-            var mockRepository = new Mock<IProductRepository>();
-            mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.GetProduct(testId))
                 .Returns(Task.FromResult(mockAllProducts.First(y => y.Id == testId)));
 
-            var productService = new ProductService(null, mockRepository.Object, null, null);
+            var productService = new ProductService(null, mockProductRepository.Object, null, null);
 
             // Act
             var result = await productService.GetProduct(testId);
 
             // Assert
+            mockProductRepository.Verify(x => x.GetProduct(It.IsAny<int>()), Times.Once);
             Assert.NotNull(result);
             Assert.Equal("one", result.Description);
         }
@@ -316,17 +321,18 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             const int testId = -1;
 
-            var mockRepository = new Mock<IProductRepository>();
-            mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.GetProduct(testId))
                 .Returns(Task.FromResult(mockAllProducts.SingleOrDefault(y => y.Id == testId)));
 
-            var productService = new ProductService(null, mockRepository.Object, null, null);
+            var productService = new ProductService(null, mockProductRepository.Object, null, null);
 
             // Act
             var result = await productService.GetProduct(testId);
 
             // Assert
+            mockProductRepository.Verify(x => x.GetProduct(It.IsAny<int>()), Times.Once);
             Assert.Null(result);
         }
 
@@ -358,17 +364,18 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             const int testId = 666;
 
-            var mockRepository = new Mock<IProductRepository>();
-            mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.GetProduct(testId))
                 .Returns(Task.FromResult(mockAllProducts.SingleOrDefault(y => y.Id == testId)));
 
-            var productService = new ProductService(null, mockRepository.Object, null, null);
+            var productService = new ProductService(null, mockProductRepository.Object, null, null);
 
             // Act
             var result = await productService.GetProduct(testId);
 
             // Assert
+            mockProductRepository.Verify(x => x.GetProduct(It.IsAny<int>()), Times.Once);
             Assert.Null(result);
         }
 
@@ -400,17 +407,18 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             const int testId = 0;
 
-            var mockRepository = new Mock<IProductRepository>();
-            mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.GetProduct(testId))
                 .Returns(Task.FromResult(mockAllProducts.SingleOrDefault(y => y.Id == testId)));
 
-            var productService = new ProductService(null, mockRepository.Object, null, null);
+            var productService = new ProductService(null, mockProductRepository.Object, null, null);
 
             // Act
             var result = await productService.GetProduct(testId);
 
             // Assert
+            mockProductRepository.Verify(x => x.GetProduct(It.IsAny<int>()), Times.Once);
             Assert.Null(result);
         }
 
@@ -440,17 +448,18 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 },
             };
 
-            var mockRepository = new Mock<IProductRepository>();
-            mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.GetProduct())
                 .Returns(Task.FromResult(mockAllProducts));
 
-            var productService = new ProductService(null, mockRepository.Object, null, null);
+            var productService = new ProductService(null, mockProductRepository.Object, null, null);
 
             // Act
             var result = await productService.GetProduct();
 
             // Assert
+            mockProductRepository.Verify(x => x.GetProduct(), Times.Once);
             Assert.NotNull(result);
             Assert.Equal(3, result.Count);
         }
@@ -461,17 +470,18 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange 
             IList<Product> mockAllProducts = new List<Product>();
 
-            var mockRepository = new Mock<IProductRepository>();
-            mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.GetProduct())
                 .Returns(Task.FromResult(mockAllProducts));
 
-            var productService = new ProductService(null, mockRepository.Object, null, null);
+            var productService = new ProductService(null, mockProductRepository.Object, null, null);
 
             // Act
             var result = await productService.GetProduct();
 
             // Assert
+            mockProductRepository.Verify(x => x.GetProduct(), Times.Once);
             Assert.NotNull(result);
             Assert.Equal(0, result.Count);
         }
@@ -525,9 +535,9 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             ProductViewModel resultSpecific = result.FirstOrDefault(x => x.Id == testId);
 
             // Assert
+            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
             Assert.NotNull(result);
             Assert.Equal(3, result.Count);
-
             Assert.NotNull(resultSpecific);
             Assert.Equal(testId, resultSpecific.Id);
             Assert.Equal("2", resultSpecific.Stock);
@@ -586,9 +596,9 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             ProductViewModel resultSpecific = result.FirstOrDefault(x => x.Id == testId);
 
             // Assert
+            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
             Assert.NotNull(result);
             Assert.Equal(3, result.Count);
-
             Assert.NotNull(resultSpecific);
             Assert.Equal("2", resultSpecific.Stock);
             Assert.Null(resultSpecific.Description);
@@ -642,6 +652,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var result = productService.GetProductByIdViewModel(testId);
 
             // Assert
+            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
             Assert.NotNull(result);
             Assert.Equal(testId, result.Id);
         }
@@ -694,6 +705,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var result = productService.GetProductByIdViewModel(testId);
 
             // Assert
+            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
             Assert.Null(result);
         }
 
@@ -745,6 +757,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var result = productService.GetProductByIdViewModel(testId);
 
             // Assert
+            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
             Assert.Null(result);
         }
 
@@ -764,20 +777,21 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Details = "test details"
             };
 
-            var mockRepository = new Mock<IProductRepository>();
-            mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.SaveProduct(It.IsAny<Product>()))
                 .Callback((Product product) =>
                 {
                     if (product != null) productsMockDb.Add(product);
                 });
 
-            var productService = new ProductService(null, mockRepository.Object, null, null);
+            var productService = new ProductService(null, mockProductRepository.Object, null, null);
 
             // Act
             productService.SaveProduct(testProductViewModel);
 
             // Assert
+            mockProductRepository.Verify(x => x.SaveProduct(It.IsAny<Product>()), Times.Once);
             Assert.Single(productsMockDb);
             Assert.Contains(productsMockDb, p => p.Name == "Test Product");
         }
@@ -790,21 +804,22 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             ProductViewModel testProductViewModel = null;
 
-            var mockRepository = new Mock<IProductRepository>();
-            mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.SaveProduct(It.IsAny<Product>()))
                 .Callback((Product product) =>
                 {
                     if (product != null) productsMockDb.Add(product);
                 });
 
-            var productService = new ProductService(null, mockRepository.Object, null, null);
+            var productService = new ProductService(null, mockProductRepository.Object, null, null);
 
             // Act
             Action testAction = () => productService.SaveProduct(testProductViewModel);
 
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
+            mockProductRepository.Verify(x => x.SaveProduct(It.IsAny<Product>()), Times.Never);
         }
 
         [Theory]
@@ -825,21 +840,22 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Details = details
             };
 
-            var mockRepository = new Mock<IProductRepository>();
-            mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.SaveProduct(It.IsAny<Product>()))
                 .Callback((Product product) =>
                 {
                     if (product != null) productsMockDb.Add(product);
                 });
 
-            var productService = new ProductService(null, mockRepository.Object, null, null);
+            var productService = new ProductService(null, mockProductRepository.Object, null, null);
 
             // Act
             Action testAction = () => productService.SaveProduct(testProductViewModel);
 
             // Assert
             Assert.Throws<ArgumentNullException>(testAction);
+            mockProductRepository.Verify(x => x.SaveProduct(It.IsAny<Product>()), Times.Never);
         }
 
         [Fact]
@@ -857,21 +873,22 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Details = "details"
             };
 
-            var mockRepository = new Mock<IProductRepository>();
-            mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.SaveProduct(It.IsAny<Product>()))
                 .Callback((Product product) =>
                 {
                     if (product != null) productsMockDb.Add(product);
                 });
 
-            var productService = new ProductService(null, mockRepository.Object, null, null);
+            var productService = new ProductService(null, mockProductRepository.Object, null, null);
 
             // Act
             productService.SaveProduct(testProductViewModel);
 
             // Assert
-            Assert.Collection(productsMockDb, p => p.Name?.Equals(null));
+            mockProductRepository.Verify(x => x.SaveProduct(It.IsAny<Product>()), Times.Once);
+            Assert.Null(productsMockDb.First().Name);
         }
 
         [Fact]
@@ -889,21 +906,22 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Details = "details"
             };
 
-            var mockRepository = new Mock<IProductRepository>();
-            mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.SaveProduct(It.IsAny<Product>()))
                 .Callback((Product product) =>
                 {
                     if (product != null) productsMockDb.Add(product);
                 });
 
-            var productService = new ProductService(null, mockRepository.Object, null, null);
+            var productService = new ProductService(null, mockProductRepository.Object, null, null);
 
             // Act
             productService.SaveProduct(testProductViewModel);
 
             // Assert
-            Assert.Collection(productsMockDb, p => p.Description?.Equals(null));
+            mockProductRepository.Verify(x => x.SaveProduct(It.IsAny<Product>()), Times.Once);
+            Assert.Null(productsMockDb.First().Description);
         }
 
         [Fact]
@@ -921,29 +939,30 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Details = null
             };
 
-            var mockRepository = new Mock<IProductRepository>();
-            mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.SaveProduct(It.IsAny<Product>()))
                 .Callback((Product product) =>
                 {
                     if (product != null) productsMockDb.Add(product);
                 });
 
-            var productService = new ProductService(null, mockRepository.Object, null, null);
+            var productService = new ProductService(null, mockProductRepository.Object, null, null);
 
             // Act
             productService.SaveProduct(testProductViewModel);
 
             // Assert
-            Assert.Collection(productsMockDb, p => p.Details?.Equals(null));
+            mockProductRepository.Verify(x => x.SaveProduct(It.IsAny<Product>()), Times.Once);
+            Assert.Null(productsMockDb.First().Details);
         }
 
         [Fact]
         public void UpdateProductStocksDecrementsProductQuantityGivenPositiveQtyToRemove()
         {
             // Arrange
-            var _mockCart = new Cart();
-            var _mockDb = new List<Product>
+            var mockCart = new Cart();
+            var mockDb = new List<Product>
             {
                 new Product
                 {
@@ -974,41 +993,42 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 },
             };
 
-            foreach (var p in _mockDb)
+            foreach (var p in mockDb)
             {
-                _mockCart.AddItem(p, 1);
+                mockCart.AddItem(p, 1);
             }
 
-            var _mockRepository = new Mock<IProductRepository>();
-            _mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()))
                 .Callback((int id, int quantityToRemove) =>
                 {
-                    Product product = _mockDb.FirstOrDefault(p => p.Id == id);
+                    Product product = mockDb.FirstOrDefault(p => p.Id == id);
                     product.Quantity -= quantityToRemove;
 
                     if (product.Quantity == 0)
-                        _mockDb.Remove(product);
+                        mockDb.Remove(product);
                 });
 
-            var _productService = new ProductService(_mockCart, _mockRepository.Object, null, null);
+            var _productService = new ProductService(mockCart, mockProductRepository.Object, null, null);
 
             // Act
             _productService.UpdateProductQuantities();
 
             // Assert
-            Assert.Equal(3, _mockDb.Count);
-            Assert.Equal(1, _mockDb.First(p => p.Id == 1).Quantity);
-            Assert.Equal(2, _mockDb.First(p => p.Id == 2).Quantity);
-            Assert.Equal(3, _mockDb.First(p => p.Id == 3).Quantity);
+            mockProductRepository.Verify(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(3));
+            Assert.Equal(3, mockDb.Count);
+            Assert.Equal(1, mockDb.First(p => p.Id == 1).Quantity);
+            Assert.Equal(2, mockDb.First(p => p.Id == 2).Quantity);
+            Assert.Equal(3, mockDb.First(p => p.Id == 3).Quantity);
         }
 
         [Fact]
         public void UpdateProductStocksRemovesProductFromDbGivenQuantityZero()
         {
             // Arrange
-            var _mockCart = new Cart();
-            var _mockDb = new List<Product>
+            var cart = new Cart();
+            var mockDb = new List<Product>
             {
                 new Product
                 {
@@ -1039,40 +1059,41 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 },
             };
 
-            foreach (var p in _mockDb)
+            foreach (var p in mockDb)
             {
-                _mockCart.AddItem(p, 2);
+                cart.AddItem(p, 2);
             }
 
-            var _mockRepository = new Mock<IProductRepository>();
-            _mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()))
                 .Callback((int id, int quantityToRemove) =>
                 {
-                    Product product = _mockDb.FirstOrDefault(p => p.Id == id);
+                    Product product = mockDb.FirstOrDefault(p => p.Id == id);
                     product.Quantity -= quantityToRemove;
 
                     if (product.Quantity == 0)
-                        _mockDb.Remove(product);
+                        mockDb.Remove(product);
                 });
 
-            var _productService = new ProductService(_mockCart, _mockRepository.Object, null, null);
+            var productService = new ProductService(cart, mockProductRepository.Object, null, null);
 
             // Act
-            _productService.UpdateProductQuantities();
+            productService.UpdateProductQuantities();
 
             // Assert
-            Assert.Equal(2, _mockDb.Count);
-            Assert.Equal(1, _mockDb.First(p => p.Id == 2).Quantity);
-            Assert.Equal(2, _mockDb.First(p => p.Id == 3).Quantity);
+            mockProductRepository.Verify(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(3));
+            Assert.Equal(2, mockDb.Count);
+            Assert.Equal(1, mockDb.First(p => p.Id == 2).Quantity);
+            Assert.Equal(2, mockDb.First(p => p.Id == 3).Quantity);
         }
 
         [Fact]
         public void UpdateProductStocksSetsNegativeProductQtyGivenTooLargeQtyToRemove()
         {
             // Arrange
-            var _mockCart = new Cart();
-            var _mockDb = new List<Product>
+            var cart = new Cart();
+            var mockDb = new List<Product>
             {
                 new Product
                 {
@@ -1103,41 +1124,42 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 },
             };
 
-            foreach (var p in _mockDb)
+            foreach (var p in mockDb)
             {
-                _mockCart.AddItem(p, 3);
+                cart.AddItem(p, 3);
             }
 
-            var _mockRepository = new Mock<IProductRepository>();
-            _mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()))
                 .Callback((int id, int quantityToRemove) =>
                 {
-                    Product product = _mockDb.FirstOrDefault(p => p.Id == id);
+                    Product product = mockDb.FirstOrDefault(p => p.Id == id);
                     product.Quantity -= quantityToRemove;
 
                     if (product.Quantity == 0)
-                        _mockDb.Remove(product);
+                        mockDb.Remove(product);
                 });
 
-            var _productService = new ProductService(_mockCart, _mockRepository.Object, null, null);
+            var productService = new ProductService(cart, mockProductRepository.Object, null, null);
 
             // Act
-            _productService.UpdateProductQuantities();
+            productService.UpdateProductQuantities();
 
             // Assert
-            Assert.Equal(2, _mockDb.Count);
-            Assert.Equal(-1, _mockDb.First(p => p.Id == 1).Quantity);
-            Assert.Equal(1, _mockDb.First(p => p.Id == 3).Quantity);
+            mockProductRepository.Verify(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(3));
+            Assert.Equal(2, mockDb.Count);
+            Assert.Equal(-1, mockDb.First(p => p.Id == 1).Quantity);
+            Assert.Equal(1, mockDb.First(p => p.Id == 3).Quantity);
         }
 
         [Fact]
         public void UpdateProductQuantityIncrementsQuantityGivenNegativeArg()
         {
             // Arrange
-            var _mockCart = new Cart();
+            var cart = new Cart();
 
-            var _mockDb = new List<Product>
+            var mockDb = new List<Product>
             {
                 new Product
                 {
@@ -1168,43 +1190,44 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 },
             };
 
-            foreach (var p in _mockDb)
+            foreach (var p in mockDb)
             {
-                _mockCart.AddItem(p, -1);
+                cart.AddItem(p, -1);
             }
 
-            var _mockRepository = new Mock<IProductRepository>();
+            var mockProductRepository = new Mock<IProductRepository>();
 
-            _mockRepository
+            mockProductRepository
                 .Setup(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()))
                 .Callback((int id, int quantityToRemove) =>
                 {
-                    Product product = _mockDb.FirstOrDefault(p => p.Id == id);
+                    Product product = mockDb.FirstOrDefault(p => p.Id == id);
                     product.Quantity -= quantityToRemove;
 
                     if (product.Quantity == 0)
-                        _mockDb.Remove(product);
+                        mockDb.Remove(product);
                 });
 
-            var _productService = new ProductService(_mockCart, _mockRepository.Object, null, null);
+            var productService = new ProductService(cart, mockProductRepository.Object, null, null);
 
             // Act
-            _productService.UpdateProductQuantities();
+            productService.UpdateProductQuantities();
 
             // Assert
-            Assert.Equal(3, _mockDb.Count);
-            Assert.Equal(3, _mockDb.First(p => p.Id == 1).Quantity);
-            Assert.Equal(4, _mockDb.First(p => p.Id == 2).Quantity);
-            Assert.Equal(5, _mockDb.First(p => p.Id == 3).Quantity);
+            mockProductRepository.Verify(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(3));
+            Assert.Equal(3, mockDb.Count);
+            Assert.Equal(3, mockDb.First(p => p.Id == 1).Quantity);
+            Assert.Equal(4, mockDb.First(p => p.Id == 2).Quantity);
+            Assert.Equal(5, mockDb.First(p => p.Id == 3).Quantity);
         }
 
         [Fact]
         public void UpdateProductQuantityDoesNothingGivenEmptyCart()
         {
             // Arrange
-            var _mockCart = new Cart();
+            var cart = new Cart();
 
-            var _mockDb = new List<Product>
+            var mockDb = new List<Product>
             {
                 new Product
                 {
@@ -1235,38 +1258,39 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 },
             };
 
-            var _mockRepository = new Mock<IProductRepository>();
+            var mockProductRepository = new Mock<IProductRepository>();
 
-            _mockRepository
+            mockProductRepository
                 .Setup(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()))
                 .Callback((int id, int quantityToRemove) =>
                 {
-                    Product product = _mockDb.FirstOrDefault(p => p.Id == id);
+                    Product product = mockDb.FirstOrDefault(p => p.Id == id);
                     product.Quantity -= quantityToRemove;
 
                     if (product.Quantity == 0)
-                        _mockDb.Remove(product);
+                        mockDb.Remove(product);
                 });
 
-            var _productService = new ProductService(_mockCart, _mockRepository.Object, null, null);
+            var productService = new ProductService(cart, mockProductRepository.Object, null, null);
 
             // Act
-            _productService.UpdateProductQuantities();
+            productService.UpdateProductQuantities();
 
             // Assert
-            Assert.Equal(3, _mockDb.Count);
-            Assert.Equal(2, _mockDb.First(p => p.Id == 1).Quantity);
-            Assert.Equal(3, _mockDb.First(p => p.Id == 2).Quantity);
-            Assert.Equal(4, _mockDb.First(p => p.Id == 3).Quantity);
+            mockProductRepository.Verify(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()), Times.Never  );
+            Assert.Equal(3, mockDb.Count);
+            Assert.Equal(2, mockDb.First(p => p.Id == 1).Quantity);
+            Assert.Equal(3, mockDb.First(p => p.Id == 2).Quantity);
+            Assert.Equal(4, mockDb.First(p => p.Id == 3).Quantity);
         }
 
         [Fact]
         public void UpdateProductQuantityThrowsGivenEmptyCart()
         {
             // Arrange
-            Cart _mockCart = null;
+            Cart mockCart = null;
 
-            var _mockDb = new List<Product>
+            var mockDb = new List<Product>
             {
                 new Product
                 {
@@ -1297,32 +1321,33 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 },
             };
 
-            var _mockRepository = new Mock<IProductRepository>();
-            _mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()))
                 .Callback((int id, int quantityToRemove) =>
                 {
-                    Product product = _mockDb.FirstOrDefault(p => p.Id == id);
+                    Product product = mockDb.FirstOrDefault(p => p.Id == id);
                     product.Quantity -= quantityToRemove;
 
                     if (product.Quantity == 0)
-                        _mockDb.Remove(product);
+                        mockDb.Remove(product);
                 });
 
-            var _productService = new ProductService(_mockCart, _mockRepository.Object, null, null);
+            var productService = new ProductService(mockCart, mockProductRepository.Object, null, null);
 
             // Act
-            Action testAction = () => _productService.UpdateProductQuantities();
+            Action testAction = () => productService.UpdateProductQuantities();
 
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
+            mockProductRepository.Verify(x => x.UpdateProductStocks(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
         }
 
         [Fact]
         public void DeleteProductRemovesCartLineAndDeletesProductFromDb()
         {
             // Arrange
-            var _mockDb = new List<Product>
+            var mockDb = new List<Product>
             {
                 new Product
                 {
@@ -1353,17 +1378,17 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 },
             };
 
-            var _mockCartLines = new List<CartLine>();
+            var cartLinesList = new List<CartLine>();
 
-            var _mockCart = new Mock<ICart>();
-            _mockCart
+            var mockCart = new Mock<ICart>();
+            mockCart
                 .Setup(x => x.AddItem(It.IsAny<Product>(), It.IsAny<int>()))
                 .Callback((Product product, int quantity) => {
-                    CartLine line = _mockCartLines.FirstOrDefault(p => p.Product.Id == product.Id);
+                    CartLine line = cartLinesList.FirstOrDefault(p => p.Product.Id == product.Id);
 
                     if (line == null)
                     {
-                        _mockCartLines.Add(new CartLine { Product = product, Quantity = quantity });
+                        cartLinesList.Add(new CartLine { Product = product, Quantity = quantity });
                     }
                     else
                     {
@@ -1371,47 +1396,50 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                     }
                 });
 
-            _mockCart
+            mockCart
                 .Setup(x => x.RemoveLine(It.IsAny<Product>()))
-                .Callback((Product product) => _mockCartLines.RemoveAll(l => l.Product.Id == product.Id));
+                .Callback((Product product) => cartLinesList.RemoveAll(l => l.Product.Id == product.Id));
 
-
-            var _mockRepository = new Mock<IProductRepository>();
-            _mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.DeleteProduct(It.IsAny<int>()))
                 .Callback((int id) =>
                 {
-                    Product product = _mockDb.FirstOrDefault(p => p.Id == id);
+                    Product product = mockDb.FirstOrDefault(p => p.Id == id);
                     if (product != null)
                     {
-                        _mockDb.Remove(product);
+                        mockDb.Remove(product);
                     }
                 });
 
-            _mockRepository
+            mockProductRepository
                 .Setup(x => x.GetAllProducts())
-                .Returns(_mockDb.Where(p => p.Id > 0).ToList());
+                .Returns(mockDb.Where(p => p.Id > 0).ToList());
 
-            var _productService = new ProductService(_mockCart.Object, _mockRepository.Object, null, null);
+            var productService = new ProductService(mockCart.Object, mockProductRepository.Object, null, null);
 
-            foreach (var p in _mockDb)
+            foreach (var p in mockDb)
             {
-                _mockCart.Object.AddItem(p, 1);
+                mockCart.Object.AddItem(p, 1);
             }
 
             // Act
-            _productService.DeleteProduct(1);
+            productService.DeleteProduct(1);
 
             // Assert
-            Assert.Equal(2, _mockDb.Count);
-            Assert.Equal(2, _mockCartLines.Count);
+            mockCart.Verify(x => x.AddItem(It.IsAny<Product>(), It.IsAny<int>()), Times.Exactly(3));
+            mockCart.Verify(x => x.RemoveLine(It.IsAny<Product>()), Times.Once);
+            Assert.Equal(2, mockDb.Count);
+            Assert.Equal(2, cartLinesList.Count);
         }
 
         [Fact]
         public void DeleteProductThrowsGivenInvalidId()
         {
             // Arrange
-            var _mockDb = new List<Product>
+            var cart = new Cart();
+
+            var mockDb = new List<Product>
             {
                 new Product
                 {
@@ -1442,57 +1470,36 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 },
             };
 
-            var _mockCartLines = new List<CartLine>();
+            foreach (var p in mockDb)
+            {
+                cart.AddItem(p, 1);
+            }
 
-            var _mockCart = new Mock<ICart>();
-            _mockCart
-                .Setup(x => x.AddItem(It.IsAny<Product>(), It.IsAny<int>()))
-                .Callback((Product product, int quantity) => {
-                    CartLine line = _mockCartLines.FirstOrDefault(p => p.Product.Id == product.Id);
-
-                    if (line == null)
-                    {
-                        _mockCartLines.Add(new CartLine { Product = product, Quantity = quantity });
-                    }
-                    else
-                    {
-                        line.Quantity += quantity;
-                    }
-                });
-
-            _mockCart
-                .Setup(x => x.RemoveLine(It.IsAny<Product>()))
-                .Callback((Product product) => _mockCartLines.RemoveAll(l => l.Product.Id == product.Id));
-
-
-            var _mockRepository = new Mock<IProductRepository>();
-            _mockRepository
+            var mockProductRepository = new Mock<IProductRepository>();
+            mockProductRepository
                 .Setup(x => x.DeleteProduct(It.IsAny<int>()))
                 .Callback((int id) =>
                 {
-                    Product product = _mockDb.FirstOrDefault(p => p.Id == id);
+                    Product product = mockDb.FirstOrDefault(p => p.Id == id);
                     if (product != null)
                     {
-                        _mockDb.Remove(product);
+                        mockDb.Remove(product);
                     }
                 });
 
-            _mockRepository
+            mockProductRepository
                 .Setup(x => x.GetAllProducts())
-                .Returns(_mockDb.Where(p => p.Id > 0).ToList());
+                .Returns(mockDb.Where(p => p.Id > 0).ToList());
 
-            var _productService = new ProductService(_mockCart.Object, _mockRepository.Object, null, null);
-
-            foreach (var p in _mockDb)
-            {
-                _mockCart.Object.AddItem(p, 1);
-            }
+            var productService = new ProductService(cart, mockProductRepository.Object, null, null);
 
             // Act
-            Action testAction = () => _productService.DeleteProduct(-1);
+            Action testAction = () => productService.DeleteProduct(-1);
 
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
+            mockProductRepository.Verify(x => x.DeleteProduct(It.IsAny<int>()), Times.Never);
+            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
         }
     }
 }
