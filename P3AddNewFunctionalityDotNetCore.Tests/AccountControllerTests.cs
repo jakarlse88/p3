@@ -262,5 +262,89 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var model = Assert.IsType<LoginModel>(viewResult.Model);
             Assert.False(accountController.ModelState.IsValid);
         }
+
+        [Fact]
+        public async void LogoutWorksAsExpectedRedirectsToReturnUrl()
+        {
+            // Arrange
+            var mockUserManager = new Mock<UserManager<IdentityUser>>(
+                new Mock<IUserStore<IdentityUser>>().Object,
+                new Mock<IOptions<IdentityOptions>>().Object,
+                new Mock<IPasswordHasher<IdentityUser>>().Object,
+                new IUserValidator<IdentityUser>[0],
+                new IPasswordValidator<IdentityUser>[0],
+                new Mock<ILookupNormalizer>().Object,
+                new Mock<IdentityErrorDescriber>().Object,
+                new Mock<IServiceProvider>().Object,
+                new Mock<ILogger<UserManager<IdentityUser>>>().Object
+                );
+
+            var mockSignInManager = new Mock<SignInManager<IdentityUser>>(
+                mockUserManager.Object,
+                new Mock<IHttpContextAccessor>().Object,
+                new Mock<IUserClaimsPrincipalFactory<IdentityUser>>().Object,
+                new Mock<IOptions<IdentityOptions>>().Object,
+                new Mock<ILogger<SignInManager<IdentityUser>>>().Object,
+                new Mock<IAuthenticationSchemeProvider>().Object
+                );
+
+            mockSignInManager
+                .Setup(x => x.SignOutAsync())
+                .Returns(Task.CompletedTask);
+
+            var accountController = new AccountController(null, mockSignInManager.Object);
+
+            // Act
+            var result = await accountController.Logout("/test");
+
+            // Assert
+            var redirectResult = Assert.IsType<RedirectResult>(result);
+            Assert.Equal("/test", redirectResult.Url);
+
+            mockSignInManager
+                .Verify(x => x.SignOutAsync(), Times.Once);
+        }
+
+        [Fact]
+        public async void LogoutWorkAsExpectedDefaultArg()
+        {
+            // Arrange
+            var mockUserManager = new Mock<UserManager<IdentityUser>>(
+                new Mock<IUserStore<IdentityUser>>().Object,
+                new Mock<IOptions<IdentityOptions>>().Object,
+                new Mock<IPasswordHasher<IdentityUser>>().Object,
+                new IUserValidator<IdentityUser>[0],
+                new IPasswordValidator<IdentityUser>[0],
+                new Mock<ILookupNormalizer>().Object,
+                new Mock<IdentityErrorDescriber>().Object,
+                new Mock<IServiceProvider>().Object,
+                new Mock<ILogger<UserManager<IdentityUser>>>().Object
+                );
+
+            var mockSignInManager = new Mock<SignInManager<IdentityUser>>(
+                mockUserManager.Object,
+                new Mock<IHttpContextAccessor>().Object,
+                new Mock<IUserClaimsPrincipalFactory<IdentityUser>>().Object,
+                new Mock<IOptions<IdentityOptions>>().Object,
+                new Mock<ILogger<SignInManager<IdentityUser>>>().Object,
+                new Mock<IAuthenticationSchemeProvider>().Object
+                );
+
+            mockSignInManager
+                .Setup(x => x.SignOutAsync())
+                .Returns(Task.CompletedTask);
+
+            var accountController = new AccountController(null, mockSignInManager.Object);
+
+            // Act
+            var result = await accountController.Logout();
+
+            // Assert
+            var redirectResult = Assert.IsType<RedirectResult>(result);
+            Assert.Equal("/", redirectResult.Url);
+
+            mockSignInManager
+                .Verify(x => x.SignOutAsync(), Times.Once);
+        }
     } 
 }
