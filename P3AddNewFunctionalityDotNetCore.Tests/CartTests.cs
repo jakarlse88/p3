@@ -1,6 +1,7 @@
 ﻿using P3AddNewFunctionalityDotNetCore.Models;
 using P3AddNewFunctionalityDotNetCore.Models.Entities;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -8,21 +9,35 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 {
     public class CartTests
     {
+        private readonly Product _testProduct;
+        private readonly Product[] _testProductsArr;
+
+        public CartTests()
+        {
+            _testProduct = new Product
+            {
+                Name = "test product",
+                Price = 10D,
+                Quantity = 4,
+                Description = "test description",
+                Details = "test details"
+            };
+
+            _testProductsArr = new Product[]
+            {
+                    new Product { Id = 1, Price = 10 },
+                    new Product { Id = 2, Price = 20 },
+                    new Product { Id = 3, Price = 30 }
+            };
+        }
+
         [Fact]
         public void ClearCorrectlyClearsCart()
         {
             // Arrange
             var _cart = new Cart();
-            
-            Product[] testProducts = new Product[]
-            {
-                    new Product { Id = 1 },
-                    new Product { Id = 2 },
-                    new Product { Id = 3 }
-            };
 
-
-            foreach (var p in testProducts)
+            foreach (var p in _testProductsArr)
             {
                 _cart.AddItem(p, 1);
             }
@@ -41,23 +56,14 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var _cart = new Cart();
 
-            var testProduct = new Product
-            {
-                Name = "TestObject",
-                Price = 10D,
-                Quantity = 4,
-                Description = "TestDescription",
-                Details = "TestDetails"
-            };
-
             const int testQuantity = 1;
 
             // Act
-            _cart.AddItem(testProduct, testQuantity);
+            _cart.AddItem(_testProduct, testQuantity);
 
             // Assert
             Assert.NotEmpty(_cart.Lines);
-            Assert.Contains(_cart.Lines, l => l.Product.Name == "TestObject");
+            Assert.Contains(_cart.Lines, l => l.Product.Name == "test product");
         }
 
         [Fact]
@@ -66,25 +72,16 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var _cart = new Cart();
 
-            var testProduct = new Product
-            {
-                Name = "TestObject",
-                Price = 10D,
-                Quantity = 4,
-                Description = "TestDescription",
-                Details = "TestDetails"
-            };
-
             const int initialQuantity = 1;
             const int incrementQuantity = 2;
             const int expectedTotalQuantity = initialQuantity + incrementQuantity;
 
             // Act
-            _cart.AddItem(testProduct, initialQuantity);
-            _cart.AddItem(testProduct, incrementQuantity);
+            _cart.AddItem(_testProduct, initialQuantity);
+            _cart.AddItem(_testProduct, incrementQuantity);
 
             // Assert
-            var actual = _cart.Lines.FirstOrDefault(l => l.Product.Name == "TestObject");
+            var actual = _cart.Lines.FirstOrDefault(l => l.Product.Name == "test product");
 
             Assert.Single(_cart.Lines);
             Assert.Equal(expectedTotalQuantity, actual.Quantity);
@@ -96,22 +93,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var _cart = new Cart();
 
-            var testProduct = new Product
-            {
-                Name = "TestObject",
-                Price = 10D,
-                Quantity = 4,
-                Description = "TestDescription",
-                Details = "TestDetails"
-            };
-
             const int testQuantity = -5;
 
             // Act
-            _cart.AddItem(testProduct, testQuantity);
+            _cart.AddItem(_testProduct, testQuantity);
 
             // Assert
-            CartLine actual = _cart.Lines.FirstOrDefault(l => l.Product.Name == "TestObject");
+            CartLine actual = _cart.Lines.FirstOrDefault(l => l.Product.Name == "test product");
 
             Assert.Single(_cart.Lines);
             Assert.Equal(testQuantity, actual.Quantity);
@@ -140,27 +128,21 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var _cart = new Cart();
 
-            var testProducts = new Product[]
-            {
-                    new Product { Id = 1 },
-                    new Product { Id = 2 },
-                    new Product { Id = 3 }
-            };
-
+            const int testQuantity = 1;
             const int testProductIndex = 2;
 
-            foreach (var p in testProducts)
+            foreach (var p in _testProductsArr)
             {
-                _cart.AddItem(p, 1);
+                _cart.AddItem(p, testQuantity);
             }
 
             // Act
-            _cart.RemoveLine(testProducts[testProductIndex]);
+            _cart.RemoveLine(_testProductsArr[testProductIndex]);
 
             // Assert
             Assert.NotNull(_cart.Lines);
             Assert.NotEmpty(_cart.Lines);
-            Assert.DoesNotContain(_cart.Lines, l => l.Product?.Id == testProducts[testProductIndex].Id);
+            Assert.DoesNotContain(_cart.Lines, l => l.Product?.Id == _testProductsArr[testProductIndex].Id);
         }
 
         [Fact]
@@ -184,15 +166,9 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var _cart = new Cart();
 
-            var testProduct = new Product
-            {
-                Id = 1,
-                Price = 10
-            };
-
             int testQuantity = 1;
             double expected = 10;
-            _cart.AddItem(testProduct, testQuantity);
+            _cart.AddItem(_testProduct, testQuantity);
 
             // Act
             double result = _cart.GetTotalValue();
@@ -207,14 +183,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var _cart = new Cart();
 
-            var testProducts = new Product[]
-            {
-                    new Product { Id = 1, Price = 10 },
-                    new Product { Id = 2, Price = 20 },
-                    new Product { Id = 3, Price = 30 }
-            };
-
-            foreach (var p in testProducts)
+            foreach (var p in _testProductsArr)
             {
                 _cart.AddItem(p, 1);
             }
@@ -234,16 +203,9 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var _cart = new Cart();
 
-            var testProducts = new Product[]
+            for (int i = 0; i < _testProductsArr.Length; i++)
             {
-                    new Product { Id = 1, Price = 10 },
-                    new Product { Id = 2, Price = 20 },
-                    new Product { Id = 3, Price = 30 }
-            };
-
-            for (int i = 0; i < testProducts.Length; i++)
-            {
-                _cart.AddItem(testProducts[i], i + 1);
+                _cart.AddItem(_testProductsArr[i], i + 1);
             }
 
             const double expected = 140;
@@ -299,14 +261,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var _cart = new Cart();
 
-            var testProducts = new Product[]
-            {
-                    new Product { Id = 1, Price = 10 },
-                    new Product { Id = 2, Price = 20 },
-                    new Product { Id = 3, Price = 30 }
-            };
-
-            foreach (var p in testProducts)
+            foreach (var p in _testProductsArr)
             {
                 _cart.AddItem(p, 1);
             }
@@ -326,16 +281,9 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var _cart = new Cart();
 
-            var testProducts = new Product[]
+            for (int i = 0; i < _testProductsArr.Length; i++)
             {
-                    new Product { Id = 1, Price = 10 },
-                    new Product { Id = 2, Price = 20 },
-                    new Product { Id = 3, Price = 30 }
-            };
-
-            for (int i = 0; i < testProducts.Length; i++)
-            {
-                _cart.AddItem(testProducts[i], i + 1);
+                _cart.AddItem(_testProductsArr[i], i + 1);
             }
 
             const double expected = 20;

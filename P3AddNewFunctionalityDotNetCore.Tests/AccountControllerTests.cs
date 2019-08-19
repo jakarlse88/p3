@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -10,14 +6,89 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using P3AddNewFunctionalityDotNetCore.Controllers;
-using P3AddNewFunctionalityDotNetCore.Models.Services;
 using P3AddNewFunctionalityDotNetCore.Models.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
     public class AccountControllerTests
     {
+        private readonly Mock<UserManager<IdentityUser>> _mockUserManager;
+        private readonly Mock<SignInManager<IdentityUser>> _mockSignInManager;
+        private readonly IdentityUser _testUser;
+        private readonly LoginModel _testLoginModel;
+        private readonly List<IdentityUser> _testUsersList;
+
+        public AccountControllerTests()
+        {
+            _testUser = new IdentityUser
+            {
+                Id = "1",
+                NormalizedUserName = "NormalizedName"
+            };
+
+            _testLoginModel = new LoginModel
+            {
+                Name = "name one",
+                Password = "password",
+                ReturnUrl = "/test"
+            };
+
+            _testUsersList = new List<IdentityUser>{
+                new IdentityUser {
+                    UserName = "name one"
+                },
+                new IdentityUser {
+                    UserName = "name two"
+                },
+                new IdentityUser {
+                    UserName = "name three"
+                }
+            };
+
+            _mockUserManager = new Mock<UserManager<IdentityUser>>(
+                new Mock<IUserStore<IdentityUser>>().Object,
+                new Mock<IOptions<IdentityOptions>>().Object,
+                new Mock<IPasswordHasher<IdentityUser>>().Object,
+                new IUserValidator<IdentityUser>[0],
+                new IPasswordValidator<IdentityUser>[0],
+                new Mock<ILookupNormalizer>().Object,
+                new Mock<IdentityErrorDescriber>().Object,
+                new Mock<IServiceProvider>().Object,
+                new Mock<ILogger<UserManager<IdentityUser>>>().Object
+                );
+
+            _mockSignInManager = new Mock<SignInManager<IdentityUser>>(
+                _mockUserManager.Object,
+                new Mock<IHttpContextAccessor>().Object,
+                new Mock<IUserClaimsPrincipalFactory<IdentityUser>>().Object,
+                new Mock<IOptions<IdentityOptions>>().Object,
+                new Mock<ILogger<SignInManager<IdentityUser>>>().Object,
+                new Mock<IAuthenticationSchemeProvider>().Object);
+
+            _mockUserManager
+                .Setup(x => x.FindByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync((string name) => _testUsersList
+                    .FirstOrDefault(u => u.UserName == name));
+
+            _mockSignInManager
+                .Setup(x => x.SignOutAsync())
+                .Returns(Task.CompletedTask);
+
+            _mockSignInManager
+                .Setup(x => x.PasswordSignInAsync(
+                    It.IsAny<IdentityUser>(),
+                    It.IsAny<string>(),
+                    It.IsAny<bool>(),
+                    It.IsAny<bool>()
+                ))
+                .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
+        }
+
         [Fact]
         public void LoginReturnsViewWithCorrectReturnUrl()
         {
@@ -37,70 +108,20 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public async void LoginWorksAsExpectedGivenValidArgs()
         {
             // Arrange
-            var testUser = new IdentityUser
-            {
-                Id = "1",
-                NormalizedUserName = "NormalizedName"
-            };
-
-            var loginModel = new LoginModel 
-            { 
-                Name = "Name", 
-                Password = "Password", 
-                ReturnUrl = "/test" 
-            };
-
-            var mockUserManager = new Mock<UserManager<IdentityUser>>(
-                new Mock<IUserStore<IdentityUser>>().Object,
-                new Mock<IOptions<IdentityOptions>>().Object,
-                new Mock<IPasswordHasher<IdentityUser>>().Object,
-                new IUserValidator<IdentityUser>[0],
-                new IPasswordValidator<IdentityUser>[0],
-                new Mock<ILookupNormalizer>().Object,
-                new Mock<IdentityErrorDescriber>().Object,
-                new Mock<IServiceProvider>().Object,
-                new Mock<ILogger<UserManager<IdentityUser>>>().Object
-                );
-
-            mockUserManager
-                .Setup(x => x.FindByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(testUser);
-
-            var mockSignInManager = new Mock<SignInManager<IdentityUser>>(
-                mockUserManager.Object,
-                new Mock<IHttpContextAccessor>().Object,
-                new Mock<IUserClaimsPrincipalFactory<IdentityUser>>().Object,
-                new Mock<IOptions<IdentityOptions>>().Object,
-                new Mock<ILogger<SignInManager<IdentityUser>>>().Object,
-                new Mock<IAuthenticationSchemeProvider>().Object);
-
-            mockSignInManager
-                .Setup(x => x.SignOutAsync())
-                .Returns(Task.CompletedTask);
-
-            mockSignInManager
-                .Setup(x => x.PasswordSignInAsync(
-                    It.IsAny<IdentityUser>(),
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<bool>()
-                ))
-                .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
-
-            var accountController = 
-                new AccountController(mockUserManager.Object, mockSignInManager.Object);
+            var accountController =
+                new AccountController(_mockUserManager.Object, _mockSignInManager.Object);
 
             // Act
-            var result = await accountController.Login(loginModel);
+            var result = await accountController.Login(_testLoginModel);
 
             // Assert
             var actionResult = Assert.IsType<RedirectResult>(result);
             Assert.Equal("/test", actionResult.Url);
 
-            mockSignInManager
+            _mockSignInManager
                 .Verify(x => x.SignOutAsync(), Times.Once);
 
-            mockSignInManager
+            _mockSignInManager
                 .Verify(x => x.PasswordSignInAsync(
                     It.IsAny<IdentityUser>(),
                     It.IsAny<string>(),
@@ -113,70 +134,27 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public async void LoginWorksAsExpectedRedirectsDefaultGivenValidArgsNullReturnUrl()
         {
             // Arrange
-            var testUser = new IdentityUser
+            var testLoginModelLocal = new LoginModel
             {
-                Id = "1",
-                NormalizedUserName = "NormalizedName"
-            };
-
-            var loginModel = new LoginModel 
-            { 
-                Name = "Name", 
-                Password = "Password", 
+                Name = _testLoginModel.Name,
+                Password = _testLoginModel.Password,
                 ReturnUrl = null
             };
 
-            var mockUserManager = new Mock<UserManager<IdentityUser>>(
-                new Mock<IUserStore<IdentityUser>>().Object,
-                new Mock<IOptions<IdentityOptions>>().Object,
-                new Mock<IPasswordHasher<IdentityUser>>().Object,
-                new IUserValidator<IdentityUser>[0],
-                new IPasswordValidator<IdentityUser>[0],
-                new Mock<ILookupNormalizer>().Object,
-                new Mock<IdentityErrorDescriber>().Object,
-                new Mock<IServiceProvider>().Object,
-                new Mock<ILogger<UserManager<IdentityUser>>>().Object
-                );
-
-            mockUserManager
-                .Setup(x => x.FindByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(testUser);
-
-            var mockSignInManager = new Mock<SignInManager<IdentityUser>>(
-                mockUserManager.Object,
-                new Mock<IHttpContextAccessor>().Object,
-                new Mock<IUserClaimsPrincipalFactory<IdentityUser>>().Object,
-                new Mock<IOptions<IdentityOptions>>().Object,
-                new Mock<ILogger<SignInManager<IdentityUser>>>().Object,
-                new Mock<IAuthenticationSchemeProvider>().Object);
-
-            mockSignInManager
-                .Setup(x => x.SignOutAsync())
-                .Returns(Task.CompletedTask);
-
-            mockSignInManager
-                .Setup(x => x.PasswordSignInAsync(
-                    It.IsAny<IdentityUser>(),
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<bool>()
-                ))
-                .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
-
-            var accountController = 
-                new AccountController(mockUserManager.Object, mockSignInManager.Object);
+            var accountController =
+                new AccountController(_mockUserManager.Object, _mockSignInManager.Object);
 
             // Act
-            var result = await accountController.Login(loginModel);
+            var result = await accountController.Login(testLoginModelLocal);
 
             // Assert
             var actionResult = Assert.IsType<RedirectResult>(result);
             Assert.Equal("/Admin/Index", actionResult.Url);
 
-            mockSignInManager
+            _mockSignInManager
                 .Verify(x => x.SignOutAsync(), Times.Once);
 
-            mockSignInManager
+            _mockSignInManager
                 .Verify(x => x.PasswordSignInAsync(
                     It.IsAny<IdentityUser>(),
                     It.IsAny<string>(),
@@ -189,73 +167,17 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public async void LoginFailsGivenUserNull()
         {
             // Arrange
-            var testUser = new IdentityUser
+            var testLoginModelLocal = new LoginModel
             {
-                Id = "1",
-                NormalizedUserName = "NormalizedName"
+                Name = null,
+                Password = _testLoginModel.Password,
             };
 
-            var testUserList = new List<IdentityUser>{
-                new IdentityUser {
-                    UserName = "one"
-                },
-                new IdentityUser {
-                    UserName = "two"
-                },
-                new IdentityUser {
-                    UserName = "three"
-                }
-            };
-
-            var loginModel = new LoginModel 
-            { 
-                Name = "name", 
-                Password = "password", 
-                ReturnUrl = null
-            };
-
-            var mockUserManager = new Mock<UserManager<IdentityUser>>(
-                new Mock<IUserStore<IdentityUser>>().Object,
-                new Mock<IOptions<IdentityOptions>>().Object,
-                new Mock<IPasswordHasher<IdentityUser>>().Object,
-                new IUserValidator<IdentityUser>[0],
-                new IPasswordValidator<IdentityUser>[0],
-                new Mock<ILookupNormalizer>().Object,
-                new Mock<IdentityErrorDescriber>().Object,
-                new Mock<IServiceProvider>().Object,
-                new Mock<ILogger<UserManager<IdentityUser>>>().Object
-                );
-
-            mockUserManager
-                .Setup(x => x.FindByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync((string name) => testUserList.FirstOrDefault(u => u.UserName == loginModel.Name));
-
-            var mockSignInManager = new Mock<SignInManager<IdentityUser>>(
-                mockUserManager.Object,
-                new Mock<IHttpContextAccessor>().Object,
-                new Mock<IUserClaimsPrincipalFactory<IdentityUser>>().Object,
-                new Mock<IOptions<IdentityOptions>>().Object,
-                new Mock<ILogger<SignInManager<IdentityUser>>>().Object,
-                new Mock<IAuthenticationSchemeProvider>().Object);
-
-            mockSignInManager
-                .Setup(x => x.SignOutAsync())
-                .Returns(Task.CompletedTask);
-
-            mockSignInManager
-                .Setup(x => x.PasswordSignInAsync(
-                    It.IsAny<IdentityUser>(),
-                    It.IsAny<string>(),
-                    It.IsAny<bool>(),
-                    It.IsAny<bool>()
-                ))
-                .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
-
-            var accountController = 
-                new AccountController(mockUserManager.Object, mockSignInManager.Object);
+            var accountController =
+                new AccountController(_mockUserManager.Object, _mockSignInManager.Object);
 
             // Act
-            var result = await accountController.Login(loginModel);
+            var result = await accountController.Login(testLoginModelLocal);
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
@@ -267,32 +189,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public async void LogoutWorksAsExpectedRedirectsToReturnUrl()
         {
             // Arrange
-            var mockUserManager = new Mock<UserManager<IdentityUser>>(
-                new Mock<IUserStore<IdentityUser>>().Object,
-                new Mock<IOptions<IdentityOptions>>().Object,
-                new Mock<IPasswordHasher<IdentityUser>>().Object,
-                new IUserValidator<IdentityUser>[0],
-                new IPasswordValidator<IdentityUser>[0],
-                new Mock<ILookupNormalizer>().Object,
-                new Mock<IdentityErrorDescriber>().Object,
-                new Mock<IServiceProvider>().Object,
-                new Mock<ILogger<UserManager<IdentityUser>>>().Object
-                );
-
-            var mockSignInManager = new Mock<SignInManager<IdentityUser>>(
-                mockUserManager.Object,
-                new Mock<IHttpContextAccessor>().Object,
-                new Mock<IUserClaimsPrincipalFactory<IdentityUser>>().Object,
-                new Mock<IOptions<IdentityOptions>>().Object,
-                new Mock<ILogger<SignInManager<IdentityUser>>>().Object,
-                new Mock<IAuthenticationSchemeProvider>().Object
-                );
-
-            mockSignInManager
-                .Setup(x => x.SignOutAsync())
-                .Returns(Task.CompletedTask);
-
-            var accountController = new AccountController(null, mockSignInManager.Object);
+            var accountController = new AccountController(null, _mockSignInManager.Object);
 
             // Act
             var result = await accountController.Logout("/test");
@@ -301,7 +198,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var redirectResult = Assert.IsType<RedirectResult>(result);
             Assert.Equal("/test", redirectResult.Url);
 
-            mockSignInManager
+            _mockSignInManager
                 .Verify(x => x.SignOutAsync(), Times.Once);
         }
 
@@ -309,32 +206,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public async void LogoutWorkAsExpectedDefaultArg()
         {
             // Arrange
-            var mockUserManager = new Mock<UserManager<IdentityUser>>(
-                new Mock<IUserStore<IdentityUser>>().Object,
-                new Mock<IOptions<IdentityOptions>>().Object,
-                new Mock<IPasswordHasher<IdentityUser>>().Object,
-                new IUserValidator<IdentityUser>[0],
-                new IPasswordValidator<IdentityUser>[0],
-                new Mock<ILookupNormalizer>().Object,
-                new Mock<IdentityErrorDescriber>().Object,
-                new Mock<IServiceProvider>().Object,
-                new Mock<ILogger<UserManager<IdentityUser>>>().Object
-                );
-
-            var mockSignInManager = new Mock<SignInManager<IdentityUser>>(
-                mockUserManager.Object,
-                new Mock<IHttpContextAccessor>().Object,
-                new Mock<IUserClaimsPrincipalFactory<IdentityUser>>().Object,
-                new Mock<IOptions<IdentityOptions>>().Object,
-                new Mock<ILogger<SignInManager<IdentityUser>>>().Object,
-                new Mock<IAuthenticationSchemeProvider>().Object
-                );
-
-            mockSignInManager
-                .Setup(x => x.SignOutAsync())
-                .Returns(Task.CompletedTask);
-
-            var accountController = new AccountController(null, mockSignInManager.Object);
+            var accountController = new AccountController(null, _mockSignInManager.Object);
 
             // Act
             var result = await accountController.Logout();
@@ -343,8 +215,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var redirectResult = Assert.IsType<RedirectResult>(result);
             Assert.Equal("/", redirectResult.Url);
 
-            mockSignInManager
+            _mockSignInManager
                 .Verify(x => x.SignOutAsync(), Times.Once);
         }
-    } 
+    }
 }

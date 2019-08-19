@@ -12,13 +12,17 @@ using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
+    // @TODO
+    // Methods that ONLY read data should be tested against the actual server
+
     public class ProductServiceTests
     {
-        [Fact]
-        public void GetAllProductsReturnsListOfAllProducts()
+        private readonly IEnumerable<Product> _testListAllProducts;
+        private readonly Mock<IProductRepository> _mockProductRepository;
+
+        public ProductServiceTests()
         {
-            // Arrange
-            var mockAllProducts = new List<Product>()
+            _testListAllProducts = new List<Product>()
             {
                 new Product
                 {
@@ -40,725 +44,107 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 },
             };
 
-            var mockProductRepository = new Mock<IProductRepository>();
-            mockProductRepository
+            _mockProductRepository = new Mock<IProductRepository>();
+            
+            _mockProductRepository
                 .Setup(x => x.GetAllProducts())
-                .Returns(mockAllProducts);
-
-            var productService = new ProductService(null, mockProductRepository.Object, null, null);
-
-            // Act
-            var result = productService.GetAllProducts();
-
-            // Assert
-            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
-            Assert.NotNull(result);
-            Assert.Equal(3, result.Count);
-            Assert.Equal("two", result.FirstOrDefault(x => x.Id == 2)?.Description);
+                .Returns(_testListAllProducts);
         }
 
         [Fact]
-        public void GetAllProductsReturnsNullWhenRepositoryMockSetToNull()
+        public void GetAllProductsReturnsListOfAllProducts()
         {
-            // Arrange
-            var mockProductRepository = new Mock<IProductRepository>();
-            mockProductRepository
-                .Setup(x => x.GetAllProducts())
-                .Returns((List<Product>)null);
-
-            var productService = new ProductService(null, mockProductRepository.Object, null, null);
-
-            // Act
-            var result = productService.GetAllProducts();
-
-            // Assert
-            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
-            Assert.Null(result);
+            throw new NotImplementedException();
         }
 
         [Fact]
         public void GetProductByIdReturnsCorrectProductWithGoodId()
         {
-            // Arrange
-            var mockAllProducts = new List<Product>()
-            {
-                new Product
-                {
-                    Id = 1,
-                    Description = "one",
-                    Details = "one_details"
-                },
-                new Product
-                {
-                    Id = 2,
-                    Description = "two",
-                    Details = "two_details"
-                },
-                new Product
-                {
-                    Id = 3,
-                    Description = "three",
-                    Details = "three_details"
-                },
-            };
-
-            const int testId = 3;
-
-            var mockProductRepository = new Mock<IProductRepository>();
-            mockProductRepository
-                .Setup(x => x.GetAllProducts())
-                .Returns(mockAllProducts);
-
-            var productService = new ProductService(null, mockProductRepository.Object, null, null);
-
-            // Act
-            var result = productService.GetProductById(testId);
-
-            // Assert
-            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
-            Assert.NotNull(result);
-            Assert.Equal("three", result.Description);
+            throw new NotImplementedException();
         }
 
         [Fact]
         public void GetProductByIdReturnsNUllWhenPassedBadIdNegative()
         {
-            // Arrange
-            var mockAllProducts = new List<Product>()
-            {
-                new Product
-                {
-                    Id = 1,
-                    Description = "one",
-                    Details = "one_details"
-                },
-                new Product
-                {
-                    Id = 2,
-                    Description = "two",
-                    Details = "two_details"
-                },
-                new Product
-                {
-                    Id = 3,
-                    Description = "three",
-                    Details = "three_details"
-                },
-            };
-
-            const int testId = -1;
-
-            var mockProductRepository = new Mock<IProductRepository>();
-            mockProductRepository
-                .Setup(x => x.GetAllProducts())
-                .Returns(mockAllProducts);
-
-            var productService = new ProductService(null, mockProductRepository.Object, null, null);
-
-            // Act
-            var result = productService.GetProductById(testId);
-
-            // Assert
-            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
-            Assert.Null(result);
+           throw new NotImplementedException();
         }
 
         [Fact]
         public void GetProductByIdReturnsNUllWhenPassedBadIdZero()
         {
-            // Arrange
-            var mockAllProducts = new List<Product>()
-            {
-                new Product
-                {
-                    Id = 1,
-                    Description = "one",
-                    Details = "one_details"
-                },
-                new Product
-                {
-                    Id = 2,
-                    Description = "two",
-                    Details = "two_details"
-                },
-                new Product
-                {
-                    Id = 3,
-                    Description = "three",
-                    Details = "three_details"
-                },
-            };
-
-            const int testId = 0;
-
-            var mockProductRepository = new Mock<IProductRepository>();
-            mockProductRepository
-                .Setup(x => x.GetAllProducts())
-                .Returns(mockAllProducts);
-
-            var productService = new ProductService(null, mockProductRepository.Object, null, null);
-
-            // Act
-            var result = productService.GetProductById(testId);
-
-            // Assert
-            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
-            Assert.Null(result);
+            throw new NotImplementedException();
         }
 
         [Fact]
         public void ReturnsNUllWhenPassedBadIdPositive()
         {
-            // Arrange
-            var mockAllProducts = new List<Product>()
-            {
-                new Product
-                {
-                    Id = 1,
-                    Description = "one",
-                    Details = "one_details"
-                },
-                new Product
-                {
-                    Id = 2,
-                    Description = "two",
-                    Details = "two_details"
-                },
-                new Product
-                {
-                    Id = 3,
-                    Description = "three",
-                    Details = "three_details"
-                },
-            };
-
-            const int testId = 10;
-
-            var mockProductRepository = new Mock<IProductRepository>();
-            mockProductRepository
-                .Setup(x => x.GetAllProducts())
-                .Returns(mockAllProducts);
-
-            var productService = new ProductService(null, mockProductRepository.Object, null, null);
-
-            // Act
-            var result = productService.GetProductById(testId);
-
-            // Assert
-            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
-            Assert.Null(result);
+            throw new NotImplementedException();
         }
 
         [Fact]
-        public async Task GetProductMethodReturnsCorrectProductGivenValidId()
+        public Task GetProductMethodReturnsCorrectProductGivenValidId()
         {
-            // Arrange 
-            var mockAllProducts = new List<Product>()
-            {
-                new Product
-                {
-                    Id = 1,
-                    Description = "one",
-                    Details = "one_details"
-                },
-                new Product
-                {
-                    Id = 2,
-                    Description = "two",
-                    Details = "two_details"
-                },
-                new Product
-                {
-                    Id = 3,
-                    Description = "three",
-                    Details = "three_details"
-                },
-            };
-
-            const int testId = 1;
-
-            var mockProductRepository = new Mock<IProductRepository>();
-            mockProductRepository
-                .Setup(x => x.GetProduct(testId))
-                .Returns(Task.FromResult(mockAllProducts.First(y => y.Id == testId)));
-
-            var productService = new ProductService(null, mockProductRepository.Object, null, null);
-
-            // Act
-            var result = await productService.GetProduct(testId);
-
-            // Assert
-            mockProductRepository.Verify(x => x.GetProduct(It.IsAny<int>()), Times.Once);
-            Assert.NotNull(result);
-            Assert.Equal("one", result.Description);
+            throw new NotImplementedException();
         }
 
         [Fact]
-        public async Task GetProductMethodReturnsNullWhenPassedNegativeId()
+        public Task GetProductMethodReturnsNullWhenPassedNegativeId()
         {
-            // Arrange 
-            var mockAllProducts = new List<Product>()
-            {
-                new Product
-                {
-                    Id = 1,
-                    Description = "one",
-                    Details = "one_details"
-                },
-                new Product
-                {
-                    Id = 2,
-                    Description = "two",
-                    Details = "two_details"
-                },
-                new Product
-                {
-                    Id = 3,
-                    Description = "three",
-                    Details = "three_details"
-                },
-            };
-
-            const int testId = -1;
-
-            var mockProductRepository = new Mock<IProductRepository>();
-            mockProductRepository
-                .Setup(x => x.GetProduct(testId))
-                .Returns(Task.FromResult(mockAllProducts.SingleOrDefault(y => y.Id == testId)));
-
-            var productService = new ProductService(null, mockProductRepository.Object, null, null);
-
-            // Act
-            var result = await productService.GetProduct(testId);
-
-            // Assert
-            mockProductRepository.Verify(x => x.GetProduct(It.IsAny<int>()), Times.Once);
-            Assert.Null(result);
+            throw new NotImplementedException();
         }
 
         [Fact]
-        public async Task GetProductMethodReturnsNullWhenPassedBadId()
+        public Task GetProductMethodReturnsNullWhenPassedBadId()
         {
-            // Arrange 
-            var mockAllProducts = new List<Product>()
-            {
-                new Product
-                {
-                    Id = 1,
-                    Description = "one",
-                    Details = "one_details"
-                },
-                new Product
-                {
-                    Id = 2,
-                    Description = "two",
-                    Details = "two_details"
-                },
-                new Product
-                {
-                    Id = 3,
-                    Description = "three",
-                    Details = "three_details"
-                },
-            };
-
-            const int testId = 666;
-
-            var mockProductRepository = new Mock<IProductRepository>();
-            mockProductRepository
-                .Setup(x => x.GetProduct(testId))
-                .Returns(Task.FromResult(mockAllProducts.SingleOrDefault(y => y.Id == testId)));
-
-            var productService = new ProductService(null, mockProductRepository.Object, null, null);
-
-            // Act
-            var result = await productService.GetProduct(testId);
-
-            // Assert
-            mockProductRepository.Verify(x => x.GetProduct(It.IsAny<int>()), Times.Once);
-            Assert.Null(result);
+            throw new NotImplementedException();
         }
 
         [Fact]
-        public async Task GetProductMethodReturnsNullWhenPassedZeroId()
+        public Task GetProductMethodReturnsNullWhenPassedZeroId()
         {
-            // Arrange 
-            var mockAllProducts = new List<Product>()
-            {
-                new Product
-                {
-                    Id = 1,
-                    Description = "one",
-                    Details = "one_details"
-                },
-                new Product
-                {
-                    Id = 2,
-                    Description = "two",
-                    Details = "two_details"
-                },
-                new Product
-                {
-                    Id = 3,
-                    Description = "three",
-                    Details = "three_details"
-                },
-            };
-
-            const int testId = 0;
-
-            var mockProductRepository = new Mock<IProductRepository>();
-            mockProductRepository
-                .Setup(x => x.GetProduct(testId))
-                .Returns(Task.FromResult(mockAllProducts.SingleOrDefault(y => y.Id == testId)));
-
-            var productService = new ProductService(null, mockProductRepository.Object, null, null);
-
-            // Act
-            var result = await productService.GetProduct(testId);
-
-            // Assert
-            mockProductRepository.Verify(x => x.GetProduct(It.IsAny<int>()), Times.Once);
-            Assert.Null(result);
+           throw new NotImplementedException();
         }
 
         [Fact]
-        public async Task GetProductSynchronousReturnsCorrectListOfAllProductsPopulated()
+        public Task GetProductSynchronousReturnsCorrectListOfAllProductsPopulated()
         {
-            // Arrange 
-            IList<Product> mockAllProducts = new List<Product>()
-            {
-                new Product
-                {
-                    Id = 1,
-                    Description = "one",
-                    Details = "one_details"
-                },
-                new Product
-                {
-                    Id = 2,
-                    Description = "two",
-                    Details = "two_details"
-                },
-                new Product
-                {
-                    Id = 3,
-                    Description = "three",
-                    Details = "three_details"
-                },
-            };
-
-            var mockProductRepository = new Mock<IProductRepository>();
-            mockProductRepository
-                .Setup(x => x.GetProduct())
-                .Returns(Task.FromResult(mockAllProducts));
-
-            var productService = new ProductService(null, mockProductRepository.Object, null, null);
-
-            // Act
-            var result = await productService.GetProduct();
-
-            // Assert
-            mockProductRepository.Verify(x => x.GetProduct(), Times.Once);
-            Assert.NotNull(result);
-            Assert.Equal(3, result.Count);
+            throw new NotImplementedException();
         }
 
         [Fact]
-        public async Task GetProductSynchronousReturnsEmptyListWithProductsNotPopulated()
+        public Task GetProductSynchronousReturnsEmptyListWithProductsNotPopulated()
         {
-            // Arrange 
-            IList<Product> mockAllProducts = new List<Product>();
-
-            var mockProductRepository = new Mock<IProductRepository>();
-            mockProductRepository
-                .Setup(x => x.GetProduct())
-                .Returns(Task.FromResult(mockAllProducts));
-
-            var productService = new ProductService(null, mockProductRepository.Object, null, null);
-
-            // Act
-            var result = await productService.GetProduct();
-
-            // Assert
-            mockProductRepository.Verify(x => x.GetProduct(), Times.Once);
-            Assert.NotNull(result);
-            Assert.Equal(0, result.Count);
+            throw new NotImplementedException();
         }
 
         [Fact]
         public void GetAllProductsViewModelReturnsAListOfCorrectlyMappedViewModelsGivenGoodInput()
         {
-            // Arrange
-            var mockAllProducts = new List<Product>()
-            {
-                new Product
-                {
-                    Id = 1,
-                    Quantity = 1,
-                    Price = 10D,
-                    Name = "One",
-                    Description = "one_description",
-                    Details = "one_details"
-                },
-                new Product
-                {
-                    Id = 2,
-                    Quantity = 2,
-                    Price = 20D,
-                    Name = "Two",
-                    Description = "two_description",
-                    Details = "two_details"
-                },
-                new Product
-                {
-                    Id = 3,
-                    Quantity = 3,
-                    Price = 30D,
-                    Name = "Three",
-                    Description = "three_description",
-                    Details = "three_details"
-                },
-            };
-
-            const int testId = 2;
-
-            var mockProductRepository = new Mock<IProductRepository>();
-            mockProductRepository
-                .Setup(x => x.GetAllProducts())
-                .Returns(mockAllProducts);
-
-            var productService = new ProductService(null, mockProductRepository.Object, null, null);
-
-            // Act
-            List<ProductViewModel> result = productService.GetAllProductsViewModel();
-            ProductViewModel resultSpecific = result.FirstOrDefault(x => x.Id == testId);
-
-            // Assert
-            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
-            Assert.NotNull(result);
-            Assert.Equal(3, result.Count);
-            Assert.NotNull(resultSpecific);
-            Assert.Equal(testId, resultSpecific.Id);
-            Assert.Equal("2", resultSpecific.Stock);
-            Assert.Equal("20", resultSpecific.Price);
-            Assert.Equal("Two", resultSpecific.Name);
-            Assert.Equal("two_description", resultSpecific.Description);
-            Assert.Equal("two_details", resultSpecific.Details);
+            throw new NotImplementedException();
         }
 
         [Fact]
         public void GetAllProductsViewModelReturnsListOfPartialProductViewModelsGivenPartialProducts()
         {
-            // Arrange
-            var mockAllProducts = new List<Product>()
-                {
-                    new Product
-                    {
-                        Id = 1,
-                        Quantity = 1,
-                        Price = 10D,
-                        Name = null,
-                        Description = "one_description",
-                        Details = "one_details"
-                    },
-                    new Product
-                    {
-                        Id = 2,
-                        Quantity = 2,
-                        Price = 20D,
-                        Name = "Two",
-                        Description = null,
-                        Details = "two_details"
-                    },
-                    new Product
-                    {
-                        Id = 3,
-                        Quantity = 3,
-                        Price = 30D,
-                        Name = "Three",
-                        Description = "three_description",
-                        Details = null
-                    },
-                };
-
-            const int testId = 2;
-
-            var mockProductRepository = new Mock<IProductRepository>();
-            mockProductRepository
-                .Setup(x => x.GetAllProducts())
-                .Returns(mockAllProducts);
-
-            var productService = new ProductService(null, mockProductRepository.Object, null, null);
-
-            // Act
-            List<ProductViewModel> result = productService.GetAllProductsViewModel();
-            ProductViewModel resultSpecific = result.FirstOrDefault(x => x.Id == testId);
-
-            // Assert
-            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
-            Assert.NotNull(result);
-            Assert.Equal(3, result.Count);
-            Assert.NotNull(resultSpecific);
-            Assert.Equal("2", resultSpecific.Stock);
-            Assert.Null(resultSpecific.Description);
+            throw new NotImplementedException();
         }
 
         [Fact]
         public void GetProductViewModelByIdReturnsCorrectViewModelGivenGoodId()
         {
-            // Arrange
-            var mockAllProducts = new List<Product>()
-            {
-                new Product
-                {
-                    Id = 1,
-                    Quantity = 1,
-                    Price = 10D,
-                    Name = "One",
-                    Description = "one_description",
-                    Details = "one_details"
-                },
-                new Product
-                {
-                    Id = 2,
-                    Quantity = 2,
-                    Price = 20D,
-                    Name = "Two",
-                    Description = "two_description",
-                    Details = "two_details"
-                },
-                new Product
-                {
-                    Id = 3,
-                    Quantity = 3,
-                    Price = 30D,
-                    Name = "Three",
-                    Description = "three_description",
-                    Details = "three_details"
-                },
-            };
-
-            const int testId = 2;
-
-            var mockProductRepository = new Mock<IProductRepository>();
-            mockProductRepository
-                .Setup(x => x.GetAllProducts())
-                .Returns(mockAllProducts);
-
-            var productService = new ProductService(null, mockProductRepository.Object, null, null);
-
-            // Act
-            var result = productService.GetProductByIdViewModel(testId);
-
-            // Assert
-            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
-            Assert.NotNull(result);
-            Assert.Equal(testId, result.Id);
+            throw new NotImplementedException();
         }
 
         [Fact]
         public void GetProductViewModelByIdReturnsNullGivenInvalidId()
         {
-            // Arrange
-            var mockAllProducts = new List<Product>()
-            {
-                new Product
-                {
-                    Id = 1,
-                    Quantity = 1,
-                    Price = 10D,
-                    Name = "One",
-                    Description = "one_description",
-                    Details = "one_details"
-                },
-                new Product
-                {
-                    Id = 2,
-                    Quantity = 2,
-                    Price = 20D,
-                    Name = "Two",
-                    Description = "two_description",
-                    Details = "two_details"
-                },
-                new Product
-                {
-                    Id = 3,
-                    Quantity = 3,
-                    Price = 30D,
-                    Name = "Three",
-                    Description = "three_description",
-                    Details = "three_details"
-                },
-            };
-
-            const int testId = 10;
-
-            var mockProductRepository = new Mock<IProductRepository>();
-            mockProductRepository
-                .Setup(x => x.GetAllProducts())
-                .Returns(mockAllProducts);
-
-            var productService = new ProductService(null, mockProductRepository.Object, null, null);
-
-            // Act
-            var result = productService.GetProductByIdViewModel(testId);
-
-            // Assert
-            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
-            Assert.Null(result);
+            throw new NotImplementedException();
         }
 
         [Fact]
         public void GetProductViewModelByIdReturnsNullGivenInvalidIdNegative()
         {
-            // Arrange
-            var mockAllProducts = new List<Product>()
-            {
-                new Product
-                {
-                    Id = 1,
-                    Quantity = 1,
-                    Price = 10D,
-                    Name = "One",
-                    Description = "one_description",
-                    Details = "one_details"
-                },
-                new Product
-                {
-                    Id = 2,
-                    Quantity = 2,
-                    Price = 20D,
-                    Name = "Two",
-                    Description = "two_description",
-                    Details = "two_details"
-                },
-                new Product
-                {
-                    Id = 3,
-                    Quantity = 3,
-                    Price = 30D,
-                    Name = "Three",
-                    Description = "three_description",
-                    Details = "three_details"
-                },
-            };
-
-            const int testId = -10;
-
-            var mockProductRepository = new Mock<IProductRepository>();
-            mockProductRepository
-                .Setup(x => x.GetAllProducts())
-                .Returns(mockAllProducts);
-
-            var productService = new ProductService(null, mockProductRepository.Object, null, null);
-
-            // Act
-            var result = productService.GetProductByIdViewModel(testId);
-
-            // Assert
-            mockProductRepository.Verify(x => x.GetAllProducts(), Times.Once);
-            Assert.Null(result);
+            throw new NotImplementedException();
         }
 
         [Fact]

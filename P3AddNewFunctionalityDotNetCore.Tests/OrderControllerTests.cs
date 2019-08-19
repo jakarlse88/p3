@@ -13,6 +13,36 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 {
     public class OrderControllerTests 
     {
+        private readonly Mock<IOrderService> _mockOrderService;
+        private readonly Mock<IStringLocalizer<OrderController>> _mockLocalizer;
+        private readonly List<OrderViewModel> _testOrderViewModelList;
+        private readonly Product[] _testProductsArr;
+
+        public OrderControllerTests()
+        {
+            _testOrderViewModelList = new List<OrderViewModel>();
+
+            _testProductsArr = new Product[]
+            {
+                new Product { Name = "product one" },
+                new Product { Name = "product two" },
+                new Product { Name = "product three" }
+            };
+            
+            _mockOrderService = new Mock<IOrderService>();
+            
+            _mockOrderService
+                .Setup(x => x.SaveOrder(It.IsAny<OrderViewModel>()))
+                .Callback((OrderViewModel order) => _testOrderViewModelList.Add(order));
+
+            var cartEmptyKey = "Sorry, your cart is empty!";
+            var localizedCartEmptyString = new LocalizedString(cartEmptyKey, cartEmptyKey);
+            _mockLocalizer = new Mock<IStringLocalizer<OrderController>>();
+            _mockLocalizer
+                .Setup(x => x["CartEmpty"])
+                .Returns(localizedCartEmptyString);
+        }
+
         [Fact]
         public void IndexReturnsViewWithNewOrderViewModel()
         {
@@ -24,7 +54,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            var model = Assert.IsType<OrderViewModel>(result.ViewData.Model);
+            var model = Assert.IsType<OrderViewModel>(viewResult.Model);
             Assert.NotNull(model);
         }
 
@@ -34,37 +64,27 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var cart = new Cart();
 
-            var testList = new List<OrderViewModel>();
-            
             var testOrder = new OrderViewModel
             {
                 OrderId = 1,
                 Name = "Order one"
             };
 
-            var testProduct = new Product{
-                Id = 1,
-                Name = "Product One"
-            };
+            var testProduct = _testProductsArr[0];
 
             cart.AddItem(testProduct, 1);
 
-            var mockOrderService = new Mock<IOrderService>();
-            mockOrderService
-                .Setup(x => x.SaveOrder(It.IsAny<OrderViewModel>()))
-                .Callback((OrderViewModel order) => testList.Add(order));
-
-            var orderController = new OrderController(cart, mockOrderService.Object, null);
+            var orderController = new OrderController(cart, _mockOrderService.Object, null);
 
             // Act
             var result = orderController.Index(testOrder);
 
             // Assert
-            mockOrderService
+            _mockOrderService
                 .Verify(x => x.SaveOrder(It.IsAny<OrderViewModel>()), Times.Once);
 
             var actionResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Single(testList);
+            Assert.Single(_testOrderViewModelList);
         }
 
         [Fact]
@@ -75,14 +95,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             var testOrder = new OrderViewModel();
 
-            var mockLocalizer = new Mock<IStringLocalizer<OrderController>>();
-            var cartEmptyKey = "Sorry, your cart is empty!";
-            var localizedCartEmptyString = new LocalizedString(cartEmptyKey, cartEmptyKey);
-            mockLocalizer
-                .Setup(x => x["CartEmpty"])
-                .Returns(localizedCartEmptyString);
-
-            var orderController = new OrderController(cart, null, mockLocalizer.Object);
+            var orderController = new OrderController(cart, null, _mockLocalizer.Object);
 
             // Act
             var result = orderController.Index(testOrder);
@@ -97,9 +110,11 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         {
             // Arrange
             var cart = new Cart();
-            cart.AddItem(new Product {Name = "Produt One" }, 1);
-            cart.AddItem(new Product {Name = "Produt Two" }, 2);
-            cart.AddItem(new Product {Name = "Produt Three" }, 3);
+
+            for (int i = 0; i < _testProductsArr.Length; i++)
+            {
+                cart.AddItem(_testProductsArr[i], i+1);
+            }
 
             var orderController = new OrderController(cart, null, null);
 

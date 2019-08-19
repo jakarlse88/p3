@@ -1,23 +1,59 @@
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using P3AddNewFunctionalityDotNetCore.Controllers;
 using P3AddNewFunctionalityDotNetCore.Models;
 using P3AddNewFunctionalityDotNetCore.Models.Entities;
 using P3AddNewFunctionalityDotNetCore.Models.Services;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
     public class CartControllerTests
     {
+        private readonly Mock<IProductService> _mockProductService;
+        private readonly IEnumerable<Product> _testProductList;
+
+        public CartControllerTests()
+        {
+            _testProductList = new List<Product>
+            {
+                new Product
+                {
+                    Id = 1,
+                    Name = "one name"
+                },
+                new Product
+                {
+                    Id = 2,
+                    Name = "two name"
+                },
+                new Product
+                {
+                    Id = 3,
+                    Name = "three name"
+                },
+            };
+
+            _mockProductService = new Mock<IProductService>();
+
+            _mockProductService
+                .Setup(x => x.GetAllProducts())
+                .Returns(_testProductList.ToList());
+
+            _mockProductService
+                .Setup(x => x.GetProductById(It.IsAny<int>()))
+                .Returns((int id) => _testProductList.FirstOrDefault(p => p.Id == id));
+
+        }
+
         [Fact]
         public void IndexReturnsViewWithCartModel()
         {
             // Arrange
             var cart = new Cart();
-            
+
             var cartController = new CartController(cart, null);
 
             // Act
@@ -35,31 +71,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var cart = new Cart();
 
-            var testAllProductsList = new List<Product>
-            {
-                new Product 
-                {
-                    Id = 1,
-                    Name = "one name"
-                },
-                new Product 
-                {
-                    Id = 2,
-                    Name = "two name"
-                },
-                new Product 
-                {
-                    Id = 3,
-                    Name = "three name"
-                },
-            };
-
-            var mockProductService = new Mock<IProductService>();
-            mockProductService
-                .Setup(x => x.GetProductById(It.IsAny<int>()))
-                .Returns((int id) => testAllProductsList.FirstOrDefault(p => p.Id == id));
-
-            var cartController = new CartController(cart, mockProductService.Object);
+            var cartController = new CartController(cart, _mockProductService.Object);
 
             // Act
             var result = cartController.AddToCart(2);
@@ -77,31 +89,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var cart = new Cart();
 
-            var testAllProductsList = new List<Product>
-            {
-                new Product 
-                {
-                    Id = 1,
-                    Name = "one name"
-                },
-                new Product 
-                {
-                    Id = 2,
-                    Name = "two name"
-                },
-                new Product 
-                {
-                    Id = 3,
-                    Name = "three name"
-                },
-            };
-
-            var mockProductService = new Mock<IProductService>();
-            mockProductService
-                .Setup(x => x.GetProductById(It.IsAny<int>()))
-                .Returns((int id) => testAllProductsList.FirstOrDefault(p => p.Id == id));
-
-            var cartController = new CartController(cart, mockProductService.Object);
+            var cartController = new CartController(cart, _mockProductService.Object);
 
             // Act
             var result = cartController.AddToCart(4);
@@ -119,31 +107,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var cart = new Cart();
 
-            var testAllProductsList = new List<Product>
-            {
-                new Product 
-                {
-                    Id = 1,
-                    Name = "one name"
-                },
-                new Product 
-                {
-                    Id = 2,
-                    Name = "two name"
-                },
-                new Product 
-                {
-                    Id = 3,
-                    Name = "three name"
-                },
-            };
-
-            var mockProductService = new Mock<IProductService>();
-            mockProductService
-                .Setup(x => x.GetProductById(It.IsAny<int>()))
-                .Returns((int id) => testAllProductsList.FirstOrDefault(p => p.Id == id));
-
-            var cartController = new CartController(cart, mockProductService.Object);
+            var cartController = new CartController(cart, _mockProductService.Object);
 
             // Act
             var result = cartController.AddToCart(-4);
@@ -161,36 +125,12 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var cart = new Cart();
 
-            var testAllProductsList = new List<Product>
-            {
-                new Product 
-                {
-                    Id = 1,
-                    Name = "one name"
-                },
-                new Product 
-                {
-                    Id = 2,
-                    Name = "two name"
-                },
-                new Product 
-                {
-                    Id = 3,
-                    Name = "three name"
-                },
-            };
-
-            foreach (var p in testAllProductsList)
+            foreach (var p in _testProductList)
             {
                 cart.AddItem(p, 1);
             }
 
-            var mockProductService = new Mock<IProductService>();
-            mockProductService
-                .Setup(x => x.GetAllProducts())
-                .Returns(testAllProductsList);
-
-            var cartController = new CartController(cart, mockProductService.Object);
+            var cartController = new CartController(cart, _mockProductService.Object);
 
             // Act
             var result = cartController.RemoveFromCart(2);
@@ -208,36 +148,12 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var cart = new Cart();
 
-            var testAllProductsList = new List<Product>
-            {
-                new Product 
-                {
-                    Id = 1,
-                    Name = "one name"
-                },
-                new Product 
-                {
-                    Id = 2,
-                    Name = "two name"
-                },
-                new Product 
-                {
-                    Id = 3,
-                    Name = "three name"
-                },
-            };
-
-            foreach (var p in testAllProductsList)
+            foreach (var p in _testProductList)
             {
                 cart.AddItem(p, 1);
             }
 
-            var mockProductService = new Mock<IProductService>();
-            mockProductService
-                .Setup(x => x.GetAllProducts())
-                .Returns(testAllProductsList);
-
-            var cartController = new CartController(cart, mockProductService.Object);
+            var cartController = new CartController(cart, _mockProductService.Object);
 
             // Act
             var result = cartController.RemoveFromCart(4);
@@ -254,36 +170,12 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var cart = new Cart();
 
-            var testAllProductsList = new List<Product>
-            {
-                new Product 
-                {
-                    Id = 1,
-                    Name = "one name"
-                },
-                new Product 
-                {
-                    Id = 2,
-                    Name = "two name"
-                },
-                new Product 
-                {
-                    Id = 3,
-                    Name = "three name"
-                },
-            };
-
-            foreach (var p in testAllProductsList)
+            foreach (var p in _testProductList)
             {
                 cart.AddItem(p, 1);
             }
 
-            var mockProductService = new Mock<IProductService>();
-            mockProductService
-                .Setup(x => x.GetAllProducts())
-                .Returns(testAllProductsList);
-
-            var cartController = new CartController(cart, mockProductService.Object);
+            var cartController = new CartController(cart, _mockProductService.Object);
 
             // Act
             var result = cartController.RemoveFromCart(-4);

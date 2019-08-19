@@ -1,27 +1,33 @@
-using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using P3AddNewFunctionalityDotNetCore.Controllers;
 using P3AddNewFunctionalityDotNetCore.Models.Services;
 using P3AddNewFunctionalityDotNetCore.Models.ViewModels;
+using System;
 using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
-    public class LanguageControllerTests 
+    public class LanguageControllerTests
     {
+        private readonly Mock<ILanguageService> _mockLanguageService;
+
+        public LanguageControllerTests()
+        {
+            _mockLanguageService = new Mock<ILanguageService>();
+
+            _mockLanguageService
+                .Setup(x => x.ChangeUiLanguage(It.IsAny<HttpContext>(), It.IsAny<string>()));
+        }
+
         [Fact]
         public void ChangeUiLanguageChangesLanguageRedirectsGivenValidArgs()
         {
             // Arrange
-            var mockLanguageService = new Mock<ILanguageService>();
-            mockLanguageService
-                .Setup(x => x.ChangeUiLanguage(It.IsAny<HttpContext>(), It.IsAny<string>()));
+            var languageController = new LanguageController(_mockLanguageService.Object);
 
-            var languageController = new LanguageController(mockLanguageService.Object);
-       
-            var testModel = new LanguageViewModel 
+            var testModel = new LanguageViewModel
             {
                 Language = "English"
             };
@@ -32,7 +38,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var result = languageController.ChangeUiLanguage(testModel, testReturnUrl);
 
             // Assert
-            mockLanguageService
+            _mockLanguageService
                 .Verify(x => x.ChangeUiLanguage(It.IsAny<HttpContext>(), It.IsAny<string>()), Times.Once);
 
             var actionResult = Assert.IsType<RedirectResult>(result);
@@ -43,13 +49,9 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void ChangeUiLanguageOnlyRedirectsGivenInvalidArg()
         {
             // Arrange
-            var mockLanguageService = new Mock<ILanguageService>();
-            mockLanguageService
-                .Setup(x => x.ChangeUiLanguage(It.IsAny<HttpContext>(), It.IsAny<string>()));
+            var languageController = new LanguageController(_mockLanguageService.Object);
 
-            var languageController = new LanguageController(mockLanguageService.Object);
-       
-            var testModel = new LanguageViewModel 
+            var testModel = new LanguageViewModel
             {
                 Language = null
             };
@@ -60,7 +62,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var result = languageController.ChangeUiLanguage(testModel, testReturnUrl);
 
             // Assert
-            mockLanguageService
+            _mockLanguageService
                 .Verify(x => x.ChangeUiLanguage(It.IsAny<HttpContext>(), It.IsAny<string>()), Times.Never);
 
             var actionResult = Assert.IsType<RedirectResult>(result);
@@ -71,12 +73,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void ChangeUiLanguageThrowsGivenNullModelArg()
         {
             // Arrange
-            var mockLanguageService = new Mock<ILanguageService>();
-            mockLanguageService
-                .Setup(x => x.ChangeUiLanguage(It.IsAny<HttpContext>(), It.IsAny<string>()));
+            var languageController = new LanguageController(_mockLanguageService.Object);
 
-            var languageController = new LanguageController(mockLanguageService.Object);
-       
             LanguageViewModel testModel = null;
 
             string testReturnUrl = "/test";
@@ -85,7 +83,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             Action testAction = () => languageController.ChangeUiLanguage(testModel, testReturnUrl);
 
             // Assert
-            mockLanguageService
+            _mockLanguageService
                 .Verify(x => x.ChangeUiLanguage(It.IsAny<HttpContext>(), It.IsAny<string>()), Times.Never);
 
             Assert.Throws<NullReferenceException>(testAction);

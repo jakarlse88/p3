@@ -14,7 +14,16 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 {
     public class ProductRepositoryTests
     {
-        private static readonly InMemoryDatabaseRoot _inMemoryDatabaseRoot = new InMemoryDatabaseRoot();
+        private readonly P3Referential _context;
+
+        public ProductRepositoryTests()
+        {
+            var options = new DbContextOptionsBuilder<P3Referential>().UseSqlServer(
+                    "Server=.;Database=P3Referential-2f561d3b-493f-46fd-83c9-6e2643e7bd0a;Trusted_Connection=True;MultipleActiveResultSets=true")
+                .Options;
+
+            _context = new P3Referential(options);
+        }
 
         [Theory]
         [InlineData(1, "Echo Dot")]
@@ -28,14 +37,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         )
         {
             // Arrange
-            P3Referential context;
-            var options = new DbContextOptionsBuilder<P3Referential>().UseSqlServer(
-                    "Server=.;Database=P3Referential-2f561d3b-493f-46fd-83c9-6e2643e7bd0a;Trusted_Connection=True;MultipleActiveResultSets=true")
-                .Options;
-
-            context = new P3Referential(options);
-
-            var productRepository = new ProductRepository(context);
+            var productRepository = new ProductRepository(_context);
 
             // Act
             var result = await productRepository.GetProduct(id);
@@ -49,14 +51,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public async void GetProductByIdReturnsNullGivenNegativeId()
         {
             // Arrange
-            P3Referential context;
-            var options = new DbContextOptionsBuilder<P3Referential>().UseSqlServer(
-                    "Server=.;Database=P3Referential-2f561d3b-493f-46fd-83c9-6e2643e7bd0a;Trusted_Connection=True;MultipleActiveResultSets=true")
-                .Options;
-
-            context = new P3Referential(options);
-
-            var productRepository = new ProductRepository(context);
+            var productRepository = new ProductRepository(_context);
 
             // Act
             var result = await productRepository.GetProduct(-1);
@@ -69,14 +64,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public async Task GetProductByIdReturnsNullGivenInvalidPositiveId()
         {
             // Arrange
-            P3Referential context;
-            var options = new DbContextOptionsBuilder<P3Referential>().UseSqlServer(
-                    "Server=.;Database=P3Referential-2f561d3b-493f-46fd-83c9-6e2643e7bd0a;Trusted_Connection=True;MultipleActiveResultSets=true")
-                .Options;
-
-            context = new P3Referential(options);
-
-            var productRepository = new ProductRepository(context);
+            var productRepository = new ProductRepository(_context);
 
             // Act
             var result = await productRepository.GetProduct(10);
@@ -89,14 +77,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public async Task GetProductByIdReturnsNullGivenZeroId()
         {
             // Arrange
-            P3Referential context;
-            var options = new DbContextOptionsBuilder<P3Referential>().UseSqlServer(
-                    "Server=.;Database=P3Referential-2f561d3b-493f-46fd-83c9-6e2643e7bd0a;Trusted_Connection=True;MultipleActiveResultSets=true")
-                .Options;
-
-            context = new P3Referential(options);
-
-            var productRepository = new ProductRepository(context);
+            var productRepository = new ProductRepository(_context);
 
             // Act
             var result = await productRepository.GetProduct(0);
@@ -109,14 +90,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public async Task GetProductReturnsCorrectNumberOfProducts()
         {
             // Arrange
-            P3Referential context;
-            var options = new DbContextOptionsBuilder<P3Referential>().UseSqlServer(
-                    "Server=.;Database=P3Referential-2f561d3b-493f-46fd-83c9-6e2643e7bd0a;Trusted_Connection=True;MultipleActiveResultSets=true")
-                .Options;
-
-            context = new P3Referential(options);
-
-            ProductRepository productRepository = new ProductRepository(context);
+            ProductRepository productRepository = new ProductRepository(_context);
 
             // Act
             var result = await productRepository.GetProduct();
@@ -130,14 +104,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void GetAllProductsReturnsCorrectNumberOfProducts()
         {
             // Arrange
-            P3Referential context;
-            var options = new DbContextOptionsBuilder<P3Referential>().UseSqlServer(
-                    "Server=.;Database=P3Referential-2f561d3b-493f-46fd-83c9-6e2643e7bd0a;Trusted_Connection=True;MultipleActiveResultSets=true")
-                .Options;
-
-            context = new P3Referential(options);
-
-            ProductRepository productRepository = new ProductRepository(context);
+            ProductRepository productRepository = new ProductRepository(_context);
 
             // Act
             var result = productRepository.GetAllProducts().ToList();

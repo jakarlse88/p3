@@ -5,6 +5,12 @@ using P3AddNewFunctionalityDotNetCore.Models.ViewModels;
 using System.Collections.Generic;
 using Xunit;
 
+// @TODO
+// Numeric:
+//      Double.MaxValue(), Double.MaxValue()+1, whitespace end/beginning, string with garbage + legal values
+// String:
+//      Quotes, illegal chars, blank, enforce arbitrary char limit in validation method
+
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
     public class CheckProductModelErrorsTests

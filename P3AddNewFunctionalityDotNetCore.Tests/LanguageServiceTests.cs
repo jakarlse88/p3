@@ -29,6 +29,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         [InlineData(null, "en")]
         [InlineData("3ngl1sh", "en")]
         [InlineData("\nenglish\t", "en")]
+        [InlineData("     english      ", "en")]
         public void SetCultureReturnsDefaultCultureGivenBadArgs(string language, string expected)
         {
             // Arrange

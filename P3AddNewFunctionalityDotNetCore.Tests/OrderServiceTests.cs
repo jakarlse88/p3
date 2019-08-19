@@ -1,26 +1,27 @@
-using System;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using P3AddNewFunctionalityDotNetCore.Models;
 using P3AddNewFunctionalityDotNetCore.Models.Entities;
 using P3AddNewFunctionalityDotNetCore.Models.Repositories;
 using P3AddNewFunctionalityDotNetCore.Models.Services;
+using P3AddNewFunctionalityDotNetCore.Models.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using P3AddNewFunctionalityDotNetCore.Models.ViewModels;
 using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
     public class OrderServiceTests
     {
-        [Fact]
-        public async void GetOrderReturnsCorrectOrderGivenValidId()
+        private readonly IEnumerable<Order> _testOrderList;
+        private readonly OrderViewModel _testObjectViewModel1, _testObjectViewModel2;
+
+        public OrderServiceTests()
         {
-            // Arrange
-            var mockOrderList = new List<Order>
-            {
+            _testOrderList = new List<Order>
+                {
                 new Order {
                     Id = 1,
                     Name = "One"
@@ -35,14 +36,39 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 },
             };
 
+            _testObjectViewModel1 = new OrderViewModel
+            {
+                OrderId = 1,
+                Name = "name one",
+                Address = "address one",
+                City = "city",
+                Zip = "zip",
+                Country = "country",
+            };
+
+            _testObjectViewModel2 = new OrderViewModel
+            {
+                OrderId = 2,
+                Name = "name two",
+                Address = "address two",
+                City = "city",
+                Zip = "zip",
+                Country = "country",
+            };
+        }
+
+        [Fact]
+        public async void GetOrderReturnsCorrectOrderGivenValidId()
+        {
+            // Arrange
             IQueryable<Order> mockQueryableList =
-                mockOrderList.AsQueryable();
+                _testOrderList.AsQueryable();
 
             var mockOrderRepository = new Mock<IOrderRepository>();
 
             mockOrderRepository
                 .Setup(x => x.GetOrder(It.IsAny<int?>()))
-                .ReturnsAsync((int? id) => 
+                .ReturnsAsync((int? id) =>
                     mockQueryableList
                         .Include(x => x.OrderLine)
                         .ThenInclude(product => product.Product)
@@ -65,30 +91,14 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public async void GetOrderReturnsNothingGivenInvalidId()
         {
             // Arrange
-            var mockOrderList = new List<Order>
-            {
-                new Order {
-                    Id = 1,
-                    Name = "One"
-                },
-                new Order {
-                    Id = 2,
-                    Name = "Two"
-                },
-                new Order {
-                    Id = 3,
-                    Name = "Three"
-                },
-            };
-
             IQueryable<Order> mockQueryableList =
-                mockOrderList.AsQueryable();
+                _testOrderList.AsQueryable();
 
             var mockOrderRepository = new Mock<IOrderRepository>();
 
             mockOrderRepository
                 .Setup(x => x.GetOrder(It.IsAny<int?>()))
-                .ReturnsAsync((int? id) => 
+                .ReturnsAsync((int? id) =>
                     mockQueryableList
                         .Include(x => x.OrderLine)
                         .ThenInclude(product => product.Product)
@@ -111,30 +121,14 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public async Task GetOrderReturnsNothingGivenNegativeInvalidId()
         {
             // Arrange
-            var mockOrderList = new List<Order>
-            {
-                new Order {
-                    Id = 1,
-                    Name = "One"
-                },
-                new Order {
-                    Id = 2,
-                    Name = "Two"
-                },
-                new Order {
-                    Id = 3,
-                    Name = "Three"
-                },
-            };
-
             IQueryable<Order> mockQueryableList =
-                mockOrderList.AsQueryable();
+                _testOrderList.AsQueryable();
 
             var mockOrderRepository = new Mock<IOrderRepository>();
 
             mockOrderRepository
                 .Setup(x => x.GetOrder(It.IsAny<int?>()))
-                .ReturnsAsync((int? id) => 
+                .ReturnsAsync((int? id) =>
                     mockQueryableList
                         .Include(x => x.OrderLine)
                         .ThenInclude(product => product.Product)
@@ -157,30 +151,14 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public async void GetOrdersReturnsAllOrders()
         {
             // Arrange
-            var mockOrderList = new List<Order>
-            {
-                new Order {
-                    Id = 1,
-                    Name = "One"
-                },
-                new Order {
-                    Id = 2,
-                    Name = "Two"
-                },
-                new Order {
-                    Id = 3,
-                    Name = "Three"
-                },
-            };
-
-            IQueryable<Order> mockQueryableList = 
-                mockOrderList.AsQueryable();
+            IQueryable<Order> mockQueryableList =
+                _testOrderList.AsQueryable();
 
             var mockOrderRepository = new Mock<IOrderRepository>();
 
             mockOrderRepository
                 .Setup(x => x.GetOrders())
-                .ReturnsAsync(() => 
+                .ReturnsAsync(() =>
                     mockQueryableList
                         .Include(x => x.OrderLine)
                         .ThenInclude(product => product.Product)
@@ -204,11 +182,12 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void SaveOrderSavesProductToDbGivenGoodArg()
         {
             // Arrange
-            var mockOrderList = new List<Order>();
+            var testOrderList = new List<Order>();
 
             var testCartLine = new CartLine();
             testCartLine.OrderLineId = 1;
-            testCartLine.Product = new Product{
+            testCartLine.Product = new Product
+            {
                 Id = 1
             };
             testCartLine.Quantity = 10;
@@ -216,11 +195,11 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var testObject = new OrderViewModel
             {
                 OrderId = 1,
-                Name = "Name",
-                Address = "Address",
-                City = "City",
-                Zip = "Zip",
-                Country = "Country",
+                Name = "name one",
+                Address = "address one",
+                City = "city",
+                Zip = "zip",
+                Country = "country",
                 Lines = new List<CartLine>()
             };
 
@@ -229,47 +208,47 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var mockOrderRepository = new Mock<IOrderRepository>();
             mockOrderRepository
                 .Setup(x => x.Save(It.IsAny<Order>()))
-                .Callback((Order order) => mockOrderList.Add(order));
+                .Callback((Order order) => testOrderList.Add(order));
 
             var mockProductService = new Mock<IProductService>();
             mockProductService
                 .Setup(x => x.UpdateProductQuantities());
-                // .Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
 
             var mockCart = new Cart();
 
-            var mockOrderService = new OrderService(mockCart, mockOrderRepository.Object, mockProductService.Object);
+            var orderService = new OrderService(mockCart, mockOrderRepository.Object, mockProductService.Object);
 
             // Act
-            mockOrderService.SaveOrder(testObject);
+            orderService.SaveOrder(testObject);
 
             // Assert
             mockOrderRepository.Verify(x => x.Save(It.IsAny<Order>()), Times.Once);
             mockProductService.Verify(x => x.UpdateProductQuantities(), Times.Once);
-            Assert.Single(mockOrderList);
+            Assert.Single(testOrderList);
         }
 
         [Fact]
         public void SaveOrdersSavesSeveralProductsToDbGivenGoodArgs()
         {
             // Arrange
-            var mockOrderList = new List<Order>();
+            var testOrderList = new List<Order>();
 
             var testCartLine1 = new CartLine();
             testCartLine1.OrderLineId = 1;
-            testCartLine1.Product = new Product{
+            testCartLine1.Product = new Product
+            {
                 Id = 1
             };
             testCartLine1.Quantity = 10;
 
             var testObject1 = new OrderViewModel
             {
-                OrderId = 1,
-                Name = "Name One",
-                Address = "Address One",
-                City = "City",
-                Zip = "Zip",
-                Country = "Country",
+                OrderId = _testObjectViewModel1.OrderId,
+                Name = _testObjectViewModel1.Name,
+                Address = _testObjectViewModel1.Address,
+                City = _testObjectViewModel1.City,
+                Zip = _testObjectViewModel1.Zip,
+                Country = _testObjectViewModel1.Country,
                 Lines = new List<CartLine>()
             };
 
@@ -277,18 +256,19 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             var testObject2 = new OrderViewModel
             {
-                OrderId = 2,
-                Name = "Name Two",
-                Address = "Address Two",
-                City = "City",
-                Zip = "Zip",
-                Country = "Country",
+                OrderId = _testObjectViewModel2.OrderId,
+                Name = _testObjectViewModel2.Name,
+                Address = _testObjectViewModel2.Address,
+                City = _testObjectViewModel2.City,
+                Zip = _testObjectViewModel2.Zip,
+                Country = _testObjectViewModel2.Country,
                 Lines = new List<CartLine>()
             };
 
             var testCartLine2 = new CartLine();
             testCartLine2.OrderLineId = 2;
-            testCartLine2.Product = new Product{
+            testCartLine2.Product = new Product
+            {
                 Id = 2
             };
             testCartLine2.Quantity = 20;
@@ -298,71 +278,68 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var mockOrderRepository = new Mock<IOrderRepository>();
             mockOrderRepository
                 .Setup(x => x.Save(It.IsAny<Order>()))
-                .Callback((Order order) => mockOrderList.Add(order));
+                .Callback((Order order) => testOrderList.Add(order));
 
             var mockProductService = new Mock<IProductService>();
             mockProductService
                 .Setup(x => x.UpdateProductQuantities());
-                // .Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
 
             var mockCart = new Cart();
 
-            var mockOrderService = new OrderService(mockCart, mockOrderRepository.Object, mockProductService.Object);
+            var orderService = new OrderService(mockCart, mockOrderRepository.Object, mockProductService.Object);
 
             // Act
-            mockOrderService.SaveOrder(testObject1);
-            mockOrderService.SaveOrder(testObject2);
+            orderService.SaveOrder(testObject1);
+            orderService.SaveOrder(testObject2);
 
             // Assert
             mockOrderRepository.Verify(x => x.Save(It.IsAny<Order>()), Times.AtLeastOnce);
             mockProductService.Verify(x => x.UpdateProductQuantities(), Times.AtLeastOnce);
-            Assert.Equal(2, mockOrderList.Count);
-            Assert.Equal("Address One", mockOrderList.First(o => o.Name == "Name One").Address);
-            Assert.Equal("Address Two", mockOrderList.First(o => o.Name == "Name Two").Address);
+            Assert.Equal(2, testOrderList.Count);
+            Assert.Equal("address one", testOrderList.First(o => o.Name == "name one").Address);
+            Assert.Equal("address two", testOrderList.First(o => o.Name == "name two").Address);
         }
 
         [Fact]
         public void SaveOrderThrowsGivenNullArgument()
         {
             // Arrange
-            var mockOrderList = new List<Order>();
+            var testOrderList = new List<Order>();
 
             var testCartLine = new CartLine();
             testCartLine.OrderLineId = 1;
-            testCartLine.Product = new Product{
+            testCartLine.Product = new Product
+            {
                 Id = 1
             };
             testCartLine.Quantity = 10;
 
-            var testObject = new OrderViewModel
+            var testOrderViewModel = new OrderViewModel
             {
-                OrderId = 1,
-                Name = "Name",
-                Address = "Address",
-                City = "City",
-                Zip = "Zip",
-                Country = "Country",
-                Lines = new List<CartLine>()
+                OrderId = _testObjectViewModel1.OrderId,
+                Name = _testObjectViewModel1.Name,
+                Address = _testObjectViewModel1.Address,
+                City = _testObjectViewModel1.City,
+                Zip = _testObjectViewModel1.Zip,
+                Country = _testObjectViewModel1.Country,
+                Lines = new List<CartLine> { testCartLine }
             };
-
-            testObject.Lines.Add(testCartLine);
 
             var mockOrderRepository = new Mock<IOrderRepository>();
             mockOrderRepository
                 .Setup(x => x.Save(It.IsAny<Order>()))
-                .Callback((Order order) => mockOrderList.Add(order));
+                .Callback((Order order) => testOrderList.Add(order));
 
             var mockProductService = new Mock<IProductService>();
             mockProductService
                 .Setup(x => x.UpdateProductQuantities());
-                // .Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
 
             var mockCart = new Cart();
 
-            var mockOrderService = new OrderService(mockCart, mockOrderRepository.Object, mockProductService.Object);
+            var orderService = new OrderService(mockCart, mockOrderRepository.Object, mockProductService.Object);
 
             // Act
-            Action testAction = () => mockOrderService.SaveOrder(null);
+            void testAction() => orderService.SaveOrder(null);
 
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
@@ -374,34 +351,33 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void SaveOrderThrowsGivenArgWithNullLinesField()
         {
             // Arrange
-            var mockOrderList = new List<Order>();
+            var testOrderList = new List<Order>();
 
-            var testObject = new OrderViewModel
+            var testOrderViewModel = new OrderViewModel
             {
-                OrderId = 1,
-                Name = "Name",
-                Address = "Address",
-                City = "City",
-                Zip = "Zip",
-                Country = "Country",
+                OrderId = _testObjectViewModel1.OrderId,
+                Name = _testObjectViewModel1.Name,
+                Address = _testObjectViewModel1.Address,
+                City = _testObjectViewModel1.City,
+                Zip = _testObjectViewModel1.Zip,
+                Country = _testObjectViewModel1.Country,
             };
 
             var mockOrderRepository = new Mock<IOrderRepository>();
             mockOrderRepository
                 .Setup(x => x.Save(It.IsAny<Order>()))
-                .Callback((Order order) => mockOrderList.Add(order));
+                .Callback((Order order) => testOrderList.Add(order));
 
             var mockProductService = new Mock<IProductService>();
             mockProductService
                 .Setup(x => x.UpdateProductQuantities());
-                // .Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
 
-            var mockCart = new Cart();
+            var cart = new Cart();
 
-            var mockOrderService = new OrderService(mockCart, mockOrderRepository.Object, mockProductService.Object);
+            var orderService = new OrderService(cart, mockOrderRepository.Object, mockProductService.Object);
 
             // Act
-            Action testAction = () => mockOrderService.SaveOrder(testObject);
+            Action testAction = () => orderService.SaveOrder(testOrderViewModel);
 
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
@@ -413,11 +389,12 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void SaveOrderToleratesMissingAndNullFieldsNotLines()
         {
             // Arrange
-            var mockOrderList = new List<Order>();
+            var testOrderList = new List<Order>();
 
             var testCartLine = new CartLine();
             testCartLine.OrderLineId = 1;
-            testCartLine.Product = new Product{
+            testCartLine.Product = new Product
+            {
                 Id = 1
             };
             testCartLine.Quantity = 10;
@@ -435,22 +412,21 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var mockOrderRepository = new Mock<IOrderRepository>();
             mockOrderRepository
                 .Setup(x => x.Save(It.IsAny<Order>()))
-                .Callback((Order order) => mockOrderList.Add(order));
+                .Callback((Order order) => testOrderList.Add(order));
 
             var mockProductService = new Mock<IProductService>();
             mockProductService
                 .Setup(x => x.UpdateProductQuantities());
-                //.Callback(() => Console.WriteLine("This does nothing, but seems to be the easiest way to mock a method which only needs to be called, not to do anything."));
 
-            var mockCart = new Cart();
+            var cart = new Cart();
 
-            var mockOrderService = new OrderService(mockCart, mockOrderRepository.Object, mockProductService.Object);
+            var orderService = new OrderService(cart, mockOrderRepository.Object, mockProductService.Object);
 
             // Act
-            mockOrderService.SaveOrder(testObject);
+            orderService.SaveOrder(testObject);
 
             // Assert
-            Assert.Single(mockOrderList);
+            Assert.Single(testOrderList);
             mockOrderRepository.Verify(x => x.Save(It.IsAny<Order>()), Times.Once);
             mockProductService.Verify(x => x.UpdateProductQuantities(), Times.Once);
         }
