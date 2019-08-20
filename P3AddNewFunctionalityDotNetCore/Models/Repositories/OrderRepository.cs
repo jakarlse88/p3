@@ -25,7 +25,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Repositories
         {
             var orderEntity = 
                 await _context.Order
-                .Include(x => x.OrderLine)
+                .Include(x => x.OrderLines)
                 .ThenInclude(product => product.Product)
                 .SingleOrDefaultAsync(m => m.Id == id);
                 
@@ -36,7 +36,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Repositories
         {
             var orders = 
                 await _context.Order
-                .Include(x => x.OrderLine)
+                .Include(x => x.OrderLines)
                 .ThenInclude(product => product.Product)
                 .ToListAsync();
 

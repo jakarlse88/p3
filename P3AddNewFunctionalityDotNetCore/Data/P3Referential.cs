@@ -34,7 +34,7 @@ namespace P3AddNewFunctionalityDotNetCore.Data
                     .HasName("IX_OrderLineEntity_OrderEntityId");
 
                 entity.HasOne(d => d.Order)
-                    .WithMany(p => p.OrderLine)
+                    .WithMany(p => p.OrderLines)
                     .HasForeignKey(d => d.OrderId)
                     .HasConstraintName("FK_OrderLineEntity_OrderEntity_OrderEntityId").OnDelete(DeleteBehavior.Cascade);
 

@@ -50,7 +50,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
                 Zip = order.Zip,
                 Country = order.Country,
                 Date = DateTime.UtcNow,
-                OrderLine = new List<OrderLine>()
+                OrderLines = new List<OrderLine>()
             };
             
             foreach (var orderLine in order.Lines)
@@ -61,7 +61,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
                     Quantity = orderLine.Quantity 
                 };
 
-                orderToAdd.OrderLine.Add(lineOrder);
+                orderToAdd.OrderLines.Add(lineOrder);
             }
 
             return orderToAdd;
