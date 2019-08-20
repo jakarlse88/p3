@@ -117,6 +117,24 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DescriptionTooLong" xml:space="preserve">
+    <value>The description cannot be longer than 100 letters</value>
+  </data>
+  <data name="DescriptionTooShort" xml:space="preserve">
+    <value>The description must be longer than ten letters</value>
+  </data>
+  <data name="DetailsTooLong" xml:space="preserve">
+    <value>The details cannot be longer than 200 letters</value>
+  </data>
+  <data name="DetailsTooShort" xml:space="preserve">
+    <value>The details must be longer than ten letters</value>
+  </data>
+  <data name="MissingDescription" xml:space="preserve">
+    <value>Please enter a description</value>
+  </data>
+  <data name="MissingDetails" xml:space="preserve">
+    <value>Please enter details</value>
+  </data>
   <data name="MissingName" xml:space="preserve">
     <value>Please enter a name</value>
   </data>
@@ -125,6 +143,12 @@
   </data>
   <data name="MissingStock" xml:space="preserve">
     <value>Please enter a stock value</value>
+  </data>
+  <data name="NameTooLong" xml:space="preserve">
+    <value>The name cannot be longer than 100 letters</value>
+  </data>
+  <data name="NameTooShort" xml:space="preserve">
+    <value>The name must be longer than four letters</value>
   </data>
   <data name="PriceNotANumber" xml:space="preserve">
     <value>The value entered for the price must be a number</value>

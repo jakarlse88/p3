@@ -87,7 +87,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
 
-        private void ArrangeTestDb_TestUpdateProductQuantities()
+        private void SeedTestDb()
         {
             foreach (Product p in _testProductsList)
             {
@@ -361,7 +361,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestUpdateProductQuantitiesEmptyCart()
         {
             // Arrange
-            ArrangeTestDb_TestUpdateProductQuantities();
+            SeedTestDb();
 
             // Act
             _productService.UpdateProductQuantities();
@@ -380,7 +380,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestUpdateProductQuantitiesSingleItemCart(int testProdId, int testQty, int expectedQty)
         {
             // Arrange
-            ArrangeTestDb_TestUpdateProductQuantities();
+            SeedTestDb();
 
             _cart.AddItem(_testProductsList.FirstOrDefault(p => p.Id == testProdId), testQty);
 
@@ -396,7 +396,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestUpdateProductQuantitiesMultipleItemsCart()
         {
             // Arrange
-            ArrangeTestDb_TestUpdateProductQuantities();
+            SeedTestDb();
 
             for (int i = 0; i < _testProductsList.ToList().Count; i++)
             {
@@ -420,7 +420,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestUpdateProductQuantitiesInvalidProductId(int prodId)
         {
             // Arrange
-            ArrangeTestDb_TestUpdateProductQuantities();
+            SeedTestDb();
 
             _cart.AddItem(new Product { Id = prodId }, 1);
 
@@ -435,7 +435,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestUpdateProductQuantitiesCartQuantityExceedingProductStock()
         {
             // Arrange
-            ArrangeTestDb_TestUpdateProductQuantities();
+            SeedTestDb();
 
             _cart.AddItem(_testProductsList.First(), 3);
 
@@ -450,7 +450,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestUpdateProductQuantitiesCartQuantityEqualProductStock()
         {
             // Arrange
-            ArrangeTestDb_TestUpdateProductQuantities();
+            SeedTestDb();
 
             _cart.AddItem(_testProductsList.First(), 2);
 
@@ -465,7 +465,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestUpdateProductQuantitiesCartQuantityLessProductStock()
         {
             // Arrange
-            ArrangeTestDb_TestUpdateProductQuantities();
+            SeedTestDb();
 
             _cart.AddItem(_testProductsList.ToList().FirstOrDefault(p => p.Id == 3), 3);
 
@@ -475,10 +475,73 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Assert
             Assert.Equal(3, _context.Product.ToList().FirstOrDefault(p => p.Id ==3).Quantity);
         }
+
+        [Theory]
+        [InlineData(4)]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void TestDeleteProductIdInvalidId(int testId)
+        {
+            // Arrange
+            SeedTestDb();
+
+            // Act
+            Action testAction = () => _productService.DeleteProduct(testId);
+
+            // Assert
+            Assert.Throws<InvalidOperationException>(testAction);
+        }
+
+        [Fact]
+        public void TestDeleteProductValidIdEmptyCart()
+        {
+            // Arrange
+            SeedTestDb();
+
+            // Act
+            _productService.DeleteProduct(2);
+
+            // Assert
+            Assert.Equal(2, _context.Product.ToList().Count);
+            Assert.DoesNotContain(_context.Product.ToList(), p => p.Id == 2);
+        }
+
+        [Fact]
+        public void TestDeleteProductValidIdCartSingleItem()
+        {
+            // Arrange
+            SeedTestDb();
+            var cart = _cart as Cart;
+            cart.AddItem(_context.Product.ToList().First(p => p.Id == 2), 2);
+
+            // Act
+            _productService.DeleteProduct(2);
+
+            // Assert
+            Assert.Equal(2, _context.Product.ToList().Count);
+            Assert.DoesNotContain(_context.Product.ToList(), p => p.Id == 2);
+            Assert.Empty(cart.Lines.ToList());
+        }
+
+        [Fact]
+        public void TestDeleteProductValidIdCartMultipleItems()
+        {
+            // Arrange
+            SeedTestDb();
+
+            var cart = _cart as Cart;
+            cart.AddItem(_context.Product.ToList().First(p => p.Id == 1), 1);
+            cart.AddItem(_context.Product.ToList().First(p => p.Id == 2), 2);
+
+            // Act
+            _productService.DeleteProduct(2);
+
+            // Assert
+            Assert.Equal(2, _context.Product.ToList().Count);
+            Assert.DoesNotContain(_context.Product.ToList(), p => p.Id == 2);
+            Assert.Single(cart.Lines.ToList());
+            Assert.Equal("one name", 
+                cart.Lines.FirstOrDefault(p => p.OrderLineId == 0).Product.Name);
+        }
     }
 }
-
-// @TODO
-// implement additional validation logic
-// refactor test names + add to test log
-// implement missing tests (here)

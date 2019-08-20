@@ -90,7 +90,9 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
             }
         }
 
-        // TODO this is an example method, remove it for 
+        /// <summary>
+        /// Validates a ProductViewModel.
+        /// </summary>
         public List<string> CheckProductModelErrors(ProductViewModel product)
         {
             List<string> modelErrors = new List<string>();
@@ -98,6 +100,18 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
             if (product.Name == null || string.IsNullOrWhiteSpace(product.Name))
             {
                 modelErrors.Add(_localizer["MissingName"]);
+            }
+            else
+            {
+                if (product.Name.Length < 3)
+                {
+                    modelErrors.Add(_localizer["NameTooShort"]);
+                }
+
+                if (product.Name.Length > 100)
+                {
+                    modelErrors.Add(_localizer["NameTooLong"]);
+                }
             }
 
             if (product.Price == null || string.IsNullOrWhiteSpace(product.Price))
@@ -128,6 +142,40 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
             {
                 if (qt <= 0)
                     modelErrors.Add(_localizer["StockNotGreaterThanZero"]);
+            }
+
+            if (product.Details == null || string.IsNullOrWhiteSpace(product.Details))
+            {
+                modelErrors.Add(_localizer["MissingDetails"]);
+            }
+            else
+            {
+                if (product.Details.Length < 10)
+                {
+                    modelErrors.Add(_localizer["DetailsTooShort"]);
+                }
+
+                if (product.Details.Length > 200)
+                {
+                    modelErrors.Add(_localizer["DetailsTooLong"]);
+                }
+            }
+
+            if (product.Description == null || string.IsNullOrWhiteSpace(product.Description))
+            {
+                modelErrors.Add(_localizer["MissingDescription"]);
+            }
+            else
+            {
+                if (product.Description.Length < 10)
+                {
+                    modelErrors.Add(_localizer["DescriptionTooShort"]);
+                }
+
+                if (product.Description.Length > 100)
+                {
+                    modelErrors.Add(_localizer["DescriptionTooLong"]);
+                }
             }
 
             return modelErrors;
