@@ -44,7 +44,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void IndexReturnsViewWithNewOrderViewModel()
+        public void TestIndex()
         {
             // Arrange
             var orderController = new OrderController(null, null, null);
@@ -59,7 +59,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void IndexWithArgSavesOrderRedirectsToActionCompleted()
+        public void TestIndexWithPopulatedCart()
         {
             // Arrange
             var cart = new Cart();
@@ -88,7 +88,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void IndexWithArgDoesNothingEmptyCart()
+        public void TestIndexWithEmptyCart()
         {
             // Arrange
             var cart = new Cart();
@@ -106,7 +106,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void CompletedClearsCartAndReturnsView()
+        public void TestCompleted()
         {
             // Arrange
             var cart = new Cart();

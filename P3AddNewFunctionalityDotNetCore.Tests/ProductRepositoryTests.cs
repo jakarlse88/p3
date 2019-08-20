@@ -31,7 +31,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         [InlineData(3, "JVC HAFX8R Headphone")]
         [InlineData(4, "VTech CS6114 DECT 6.0")]
         [InlineData(5, "NOKIA OEM BL-5J")]
-        public async Task GetProductByIdReturnsCorrectProductGivenGoodId(
+        public async Task TestGetProductByIdValidId(
             int id,
             string name
         )
@@ -48,7 +48,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public async void GetProductByIdReturnsNullGivenNegativeId()
+        public async void TestGetProductByIdInvalidIdNegative()
         {
             // Arrange
             var productRepository = new ProductRepository(_context);
@@ -61,7 +61,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public async Task GetProductByIdReturnsNullGivenInvalidPositiveId()
+        public async Task TestGetProductByIdInvalidIdPositive()
         {
             // Arrange
             var productRepository = new ProductRepository(_context);
@@ -74,7 +74,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public async Task GetProductByIdReturnsNullGivenZeroId()
+        public async Task TestGetProductByIdInvalidIdZero()
         {
             // Arrange
             var productRepository = new ProductRepository(_context);
@@ -87,7 +87,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public async Task GetProductReturnsCorrectNumberOfProducts()
+        public async Task TestGetProduct()
         {
             // Arrange
             ProductRepository productRepository = new ProductRepository(_context);
@@ -101,7 +101,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void GetAllProductsReturnsCorrectNumberOfProducts()
+        public void TestGetAllProducts()
         {
             // Arrange
             ProductRepository productRepository = new ProductRepository(_context);

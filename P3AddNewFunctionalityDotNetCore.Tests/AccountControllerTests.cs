@@ -90,7 +90,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void LoginReturnsViewWithCorrectReturnUrl()
+        public void TestLoginReturnUrl()
         {
             // Arrange
             var accountController = new AccountController(null, null);
@@ -105,7 +105,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public async void LoginWorksAsExpectedGivenValidArgs()
+        public async void TestLoginLoginModel()
         {
             // Arrange
             var accountController =
@@ -131,7 +131,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public async void LoginWorksAsExpectedRedirectsDefaultGivenValidArgsNullReturnUrl()
+        public async void TestLoginLoginModelNullReturnUrl()
         {
             // Arrange
             var testLoginModelLocal = new LoginModel
@@ -164,7 +164,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public async void LoginFailsGivenUserNull()
+        public async void TestLoginLoginModelNullName()
         {
             // Arrange
             var testLoginModelLocal = new LoginModel
@@ -186,7 +186,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public async void LogoutWorksAsExpectedRedirectsToReturnUrl()
+        public async void TestLogoutReturnUrl()
         {
             // Arrange
             var accountController = new AccountController(null, _mockSignInManager.Object);
@@ -203,7 +203,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public async void LogoutWorkAsExpectedDefaultArg()
+        public async void TestLogoutDefaultArg()
         {
             // Arrange
             var accountController = new AccountController(null, _mockSignInManager.Object);

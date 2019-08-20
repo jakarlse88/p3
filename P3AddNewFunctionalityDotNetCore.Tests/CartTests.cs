@@ -32,7 +32,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void ClearCorrectlyClearsCart()
+        public void TestClear()
         {
             // Arrange
             var _cart = new Cart();
@@ -51,7 +51,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void AddItemCorrectlyAddsSingleProductToCart()
+        public void TestAddItemSingleProduct()
         {
             // Arrange
             var _cart = new Cart();
@@ -67,7 +67,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void AddItemIncrementsAlreadyPresentProductInCart()
+        public void TestAddItemProductAlreadyInCart()
         {
             // Arrange
             var _cart = new Cart();
@@ -88,7 +88,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void AddItemDecrementsQuantityGivenNegativeQuantityExceedingStock()
+        public void TestAddItemProductAlreadyInCartNegativeQuantity()
         {
             // Arrange
             var _cart = new Cart();
@@ -106,7 +106,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void AddItemToleratesNullProductArgument()
+        public void TestAddItemNullProduct()
         {
             // Arrange
             var _cart = new Cart();
@@ -123,7 +123,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void RemoveLineCorrectlyRemovesCartLine()
+        public void TestRemoveLine()
         {
             // Arrange
             var _cart = new Cart();
@@ -146,7 +146,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void GetTotalValueReturnsCorrectTotalForEmptyCart()
+        public void TestReturnTotalValueEmptyCart()
         {
             // Arrange
             var _cart = new Cart();
@@ -161,7 +161,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void GetTotalValueReturnsCorrectTotalGivenSingleItemInCart()
+        public void TestGetTotalValueCartSingleItem()
         {
             // Arrange
             var _cart = new Cart();
@@ -178,7 +178,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void GetTotalValueReturnsCorrectTotalGivenMultipleItemsInCart()
+        public void TestGetTotalValueCartMultipleItems()
         {
             // Arrange
             var _cart = new Cart();
@@ -198,7 +198,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void GetTotalValueReturnsCorrectTotalGivenMultipleItemsInCartWithVaryingQuantities()
+        public void TestGetTotalValueCartMultipleItemsVaryingQuantities()
         {
             // Arrange
             var _cart = new Cart();
@@ -218,7 +218,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void GetAverageValueReturnsCorrectAverageForEmptyCart()
+        public void TestGetAverageValueEmptyCart()
         {
             // Arrange
             var _cart = new Cart();
@@ -233,7 +233,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void GetAverageValueReturnsCorrectTotalGivenSingleItemInCart()
+        public void TestGetAverageValueCartSingleItem()
         {
             // Arrange
             var _cart = new Cart();
@@ -256,7 +256,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void GetAverageValueReturnsCorrectTotalGivenMultipleItemsInCart()
+        public void TestGetAverageValueCartMultipleItems()
         {
             // Arrange
             var _cart = new Cart();
@@ -276,7 +276,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
     }
 
         [Fact]
-        public void GetAverageValueReturnsCorrectTotalGivenMultipleItemsInCartWithVaryingQuantities()
+        public void TestGetAverageValueCartMultipleItemsVaryingQuantities()
         {
             // Arrange
             var _cart = new Cart();

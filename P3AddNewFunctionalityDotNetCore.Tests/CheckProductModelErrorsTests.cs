@@ -55,7 +55,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void ReturnsCorrectlErrorsGivenEmptyViewModel()
+        public void TestCheckProductModelErrorsEmptyModel()
         {
             // Arrange
             ProductViewModel testObject = new ProductViewModel();
@@ -74,7 +74,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void ReturnsMissingNameErrorGivenEmptyNameString()
+        public void TestCheckProductModelErrorsModelEmptyName()
         {
             // Arrange
             ProductViewModel testObject = new ProductViewModel
@@ -90,7 +90,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void ReturnsMissingPriceWhenGivenEmptyPriceString()
+        public void TestCheckProductModelErrorsModelEmptyPrice()
         {
             // Arrange
             ProductViewModel testObject = new ProductViewModel
@@ -106,7 +106,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void ReturnsPriceNotANumberErrorGivenAlphaPriceString()
+        public void TestCheckProductModelErrorsModelPriceCharacters()
         {
             // Arrange
             ProductViewModel testObject = new ProductViewModel
@@ -122,7 +122,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void ReturnsPriceNotGreaterThanZeroErrorGivenNegativeNumber()
+        public void TestCheckProductModelErrorsModelPriceNegative()
         {
             // Arrange
             ProductViewModel testObject = new ProductViewModel
@@ -138,7 +138,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void ReturnsMissingStockErrorGivenEmptyStockString()
+        public void TestCheckProductModelErrorsModelStockEmpty()
         {
             // Arrange
             ProductViewModel testObject = new ProductViewModel
@@ -154,7 +154,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void ReturnsStockNotAnIntegerErrorWhenGivenADecimalString()
+        public void TestCheckProductModelErrorsModelStockDecimalString()
         {
             // Arrange
             ProductViewModel testObject = new ProductViewModel
@@ -170,7 +170,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void ReturnsStockNotGreaterThanZeroErrorGivenNegativeStockString()
+        public void TestCheckProductModelErrorsModelStockNegative()
         {
             // Arrange
             ProductViewModel testObject = new ProductViewModel
@@ -186,7 +186,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void ReturnsNoErrorsGivenValidObject()
+        public void TestCheckProductModelErrorsValidModel()
         {
             // Arrange
             ProductViewModel testObject = new ProductViewModel

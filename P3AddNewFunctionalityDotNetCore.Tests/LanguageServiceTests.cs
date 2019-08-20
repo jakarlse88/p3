@@ -12,7 +12,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         [InlineData("English", "en")]
         [InlineData("French", "fr")]
         [InlineData("Spanish", "es")]
-        public void SetCultureReturnsExpectedCultureString(string language, string expected)
+        public void TestSetCultureValidArgs(string language, string expected)
         {
             // Arrange
             var languageService = new LanguageService();
@@ -30,7 +30,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         [InlineData("3ngl1sh", "en")]
         [InlineData("\nenglish\t", "en")]
         [InlineData("     english      ", "en")]
-        public void SetCultureReturnsDefaultCultureGivenBadArgs(string language, string expected)
+        public void TestSetcultureInvalidArgs(string language, string expected)
         {
             // Arrange
             var languageService = new LanguageService();

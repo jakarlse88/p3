@@ -68,7 +68,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void IndexReturnsAViewOfProducts()
+        public void TestIndex()
         {
             // Arrange
             var productController = new ProductController(_mockProductService.Object, null);
@@ -84,7 +84,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void AdminWorksAsExpected() 
+        public void TestAdmin() 
         {
             // Arrange
             var productController = new ProductController(_mockProductService.Object, null);
@@ -100,7 +100,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void CreateRedirectsToAdminActionGivenValidModelState()
+        public void TestCreateValidModelState()
         {
             // Arrange
             var productController = new ProductController(_mockProductService.Object, null);
@@ -117,7 +117,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void CreateReturnsViewProductGivenInvalidModelState()
+        public void TestCreateInvalidModelState()
         {
             // Arrange
             _mockProductService
@@ -137,7 +137,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void DeleteProductRedirectsToAdminActionGivenValidArg()
+        public void TestDeleteProductValidArg()
         {
             // Arrange
             var productController = new ProductController(_mockProductService.Object, null);

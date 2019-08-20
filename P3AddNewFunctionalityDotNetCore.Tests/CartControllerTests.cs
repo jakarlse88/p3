@@ -49,7 +49,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void IndexReturnsViewWithCartModel()
+        public void TestIndex()
         {
             // Arrange
             var cart = new Cart();
@@ -66,7 +66,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void AddToCartWorksAsExpectedWithValidId()
+        public void TestAddToCartValidProductId()
         {
             // Arrange
             var cart = new Cart();
@@ -84,7 +84,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void AddToCartRedirectsToProductControllerIndexGivenInvalidId()
+        public void TestAddToCartInvalidProductId()
         {
             // Arrange
             var cart = new Cart();
@@ -102,7 +102,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void AddToCartRedirectsToProductControllerIndexGivenInvalidIdNegative()
+        public void TestAddToCartNegativeProductId()
         {
             // Arrange
             var cart = new Cart();
@@ -120,7 +120,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void RemoveFromCartWorksAsExpectedGivenValidId()
+        public void TestRemoveFromCartValidProductId()
         {
             // Arrange
             var cart = new Cart();
@@ -143,7 +143,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void RedirectToActionResultRedirectsOnlyGivenInvalidId()
+        public void TestRemoveFromCartInvalidProductId()
         {
             // Arrange
             var cart = new Cart();
@@ -165,7 +165,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void RedirectToActionResultRedirectsOnlyGivenInvalidIdNegative()
+        public void TestRemoveFromCartNegativeProductId()
         {
             // Arrange
             var cart = new Cart();

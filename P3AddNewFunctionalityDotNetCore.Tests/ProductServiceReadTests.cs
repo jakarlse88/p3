@@ -32,7 +32,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void GetAllProductsReturnsListOfAllProducts()
+        public void TestGetAllProducts()
         {
             // Arrange
 

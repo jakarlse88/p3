@@ -22,7 +22,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void ChangeUiLanguageChangesLanguageRedirectsGivenValidArgs()
+        public void TestChangeUiLanguageValidArgs()
         {
             // Arrange
             var languageController = new LanguageController(_mockLanguageService.Object);
@@ -46,7 +46,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void ChangeUiLanguageOnlyRedirectsGivenInvalidArg()
+        public void TestChangeUiLanguageInvalidModelArg()
         {
             // Arrange
             var languageController = new LanguageController(_mockLanguageService.Object);
@@ -70,7 +70,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
 
         [Fact]
-        public void ChangeUiLanguageThrowsGivenNullModelArg()
+        public void TestChangeUiLanguageNullModelArg()
         {
             // Arrange
             var languageController = new LanguageController(_mockLanguageService.Object);
