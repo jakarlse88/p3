@@ -117,11 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DescriptionIllegalCharacter" xml:space="preserve">
+    <value>Caractère illégal dans la description</value>
+  </data>
   <data name="DescriptionTooLong" xml:space="preserve">
     <value>La description ne peut pas dépasser 100 lettres</value>
   </data>
   <data name="DescriptionTooShort" xml:space="preserve">
     <value>La description doit être plus longue que dix lettres</value>
+  </data>
+  <data name="DetailsIllegalCharacter" xml:space="preserve">
+    <value>Caractère illégal dans les détails</value>
   </data>
   <data name="DetailsTooLong" xml:space="preserve">
     <value>Les détails ne peuvent pas dépasser 200 lettres</value>
@@ -144,11 +150,14 @@
   <data name="MissingStock" xml:space="preserve">
     <value>Veuillez saisir un stock</value>
   </data>
+  <data name="NameIllegalCharacter" xml:space="preserve">
+    <value>Caractère illégal dans le nom</value>
+  </data>
   <data name="NameTooLong" xml:space="preserve">
     <value>Le nom ne peut pas dépasser 100 lettres</value>
   </data>
   <data name="NameTooShort" xml:space="preserve">
-    <value>Le nom doit être plus long que quatre lettres</value>
+    <value>Le nom doit comporter au moins quatre lettres</value>
   </data>
   <data name="PriceNotANumber" xml:space="preserve">
     <value>La valeur saisie pour le prix doit être un nombre</value>

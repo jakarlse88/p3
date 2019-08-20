@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using P3AddNewFunctionalityDotNetCore.Models.Entities;
@@ -103,7 +104,12 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
             }
             else
             {
-                if (product.Name.Length < 3)
+                if (Regex.IsMatch(product.Name, @"\p{C}+")) // https://stackoverflow.com/a/40568888
+                {
+                    modelErrors.Add(_localizer["NameIllegalCharacter"]);
+                }
+
+                if (product.Name.Length <= 3)
                 {
                     modelErrors.Add(_localizer["NameTooShort"]);
                 }
@@ -150,6 +156,11 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
             }
             else
             {
+                if (Regex.IsMatch(product.Details, @"\p{C}+")) // https://stackoverflow.com/a/40568888
+                {
+                    modelErrors.Add(_localizer["DetailsIllegalCharacter"]);
+                }
+
                 if (product.Details.Length < 10)
                 {
                     modelErrors.Add(_localizer["DetailsTooShort"]);
@@ -167,6 +178,10 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
             }
             else
             {
+                if (Regex.IsMatch(product.Description, @"\p{C}+")) // https://stackoverflow.com/a/40568888
+                {
+                    modelErrors.Add(_localizer["DescriptionIllegalCharacter"]);
+                }
                 if (product.Description.Length < 10)
                 {
                     modelErrors.Add(_localizer["DescriptionTooShort"]);

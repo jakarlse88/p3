@@ -117,11 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DescriptionIllegalCharacter" xml:space="preserve">
+    <value>Illegal character in description</value>
+  </data>
   <data name="DescriptionTooLong" xml:space="preserve">
     <value>The description cannot be longer than 100 letters</value>
   </data>
   <data name="DescriptionTooShort" xml:space="preserve">
     <value>The description must be longer than ten letters</value>
+  </data>
+  <data name="DetailsIllegalCharacter" xml:space="preserve">
+    <value>Illegal character in details</value>
   </data>
   <data name="DetailsTooLong" xml:space="preserve">
     <value>The details cannot be longer than 200 letters</value>
@@ -144,11 +150,14 @@
   <data name="MissingStock" xml:space="preserve">
     <value>Please enter a stock value</value>
   </data>
+  <data name="NameIllegalCharacter" xml:space="preserve">
+    <value>Illegal character in name</value>
+  </data>
   <data name="NameTooLong" xml:space="preserve">
     <value>The name cannot be longer than 100 letters</value>
   </data>
   <data name="NameTooShort" xml:space="preserve">
-    <value>The name must be longer than four letters</value>
+    <value>The name must be at least four letters long</value>
   </data>
   <data name="PriceNotANumber" xml:space="preserve">
     <value>The value entered for the price must be a number</value>
@@ -157,9 +166,9 @@
     <value>The price must be greater than zero</value>
   </data>
   <data name="StockNotAnInteger" xml:space="preserve">
-    <value>The value entered for the stock must be a integer</value>
+    <value>The value entered for the stock must be an integer</value>
   </data>
   <data name="StockNotGreaterThanZero" xml:space="preserve">
-    <value>The stock must greater than zero</value>
+    <value>The stock must be greater than zero</value>
   </data>
 </root>
