@@ -16,6 +16,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
     public class ProductServiceUpdateMethodsTests : IDisposable
     {
         private readonly ProductViewModel _testProductViewModel;
+        private readonly IEnumerable<Product> _testProductsList;
         private readonly P3Referential _context;
         private readonly IProductRepository _productRepository;
         private readonly ICart _cart;
@@ -31,6 +32,37 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Name = "Test Product",
                 Description = "test description",
                 Details = "test details"
+            };
+
+            _testProductsList = new List<Product>
+            {
+                new Product
+                {
+                    Id = 1,
+                    Name = "one name",
+                    Description = "one description",
+                    Details = "one details",
+                    Quantity = 2,
+                    Price = 10
+                },
+                new Product
+                {
+                    Id = 2,
+                    Name = "two name",
+                    Description = "two description",
+                    Details = "two details",
+                    Quantity = 4,
+                    Price = 20
+                },
+                new Product
+                {
+                    Id = 3,
+                    Name = "three name",
+                    Description = "three description",
+                    Details = "three details",
+                    Quantity = 6,
+                    Price = 30
+                }
             };
 
             var options = new DbContextOptionsBuilder<P3Referential>()
@@ -52,6 +84,17 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             _cart.Clear();
             _context.Database.EnsureDeleted();
             _context.Dispose();
+        }
+
+
+        private void ArrangeTestDb_TestUpdateProductQuantities()
+        {
+            foreach (Product p in _testProductsList)
+            {
+                _context.Product.Add(p);
+            }
+
+            _context.SaveChanges();
         }
 
         [Fact]
@@ -318,7 +361,119 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestUpdateProductQuantitiesEmptyCart()
         {
             // Arrange
+            ArrangeTestDb_TestUpdateProductQuantities();
 
+            // Act
+            _productService.UpdateProductQuantities();
+            var result = _context.Product.ToList();
+
+            // Assert
+            Assert.Equal(2, result.FirstOrDefault(p => p.Name == "one name").Quantity);
+            Assert.Equal(4, result.FirstOrDefault(p => p.Name == "two name").Quantity);
+            Assert.Equal(6, result.FirstOrDefault(p => p.Name == "three name").Quantity);
+        }
+
+        [Theory]
+        [InlineData(1, 1, 1)]
+        [InlineData(2, 2, 2)]
+        [InlineData(3, 3, 3)]
+        public void TestUpdateProductQuantitiesSingleItemCart(int testProdId, int testQty, int expectedQty)
+        {
+            // Arrange
+            ArrangeTestDb_TestUpdateProductQuantities();
+
+            _cart.AddItem(_testProductsList.FirstOrDefault(p => p.Id == testProdId), testQty);
+
+            // Act
+            _productService.UpdateProductQuantities();
+
+            // Assert
+            Assert.Equal(expectedQty,
+                _context.Product.ToList().FirstOrDefault(p => p.Id == testProdId).Quantity);
+        }
+
+        [Fact]
+        public void TestUpdateProductQuantitiesMultipleItemsCart()
+        {
+            // Arrange
+            ArrangeTestDb_TestUpdateProductQuantities();
+
+            for (int i = 0; i < _testProductsList.ToList().Count; i++)
+            {
+                _cart.AddItem(_testProductsList.ToArray()[i], i + 1);
+            }
+
+            // Act
+            _productService.UpdateProductQuantities();
+            var result = _context.Product.ToList();
+
+            // Assert
+            Assert.Equal(1, result.FirstOrDefault(p => p.Id == 1).Quantity);
+            Assert.Equal(2, result.FirstOrDefault(p => p.Id == 2).Quantity);
+            Assert.Equal(3, result.FirstOrDefault(p => p.Id == 3).Quantity);
+        }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        [InlineData(4)]
+        public void TestUpdateProductQuantitiesInvalidProductId(int prodId)
+        {
+            // Arrange
+            ArrangeTestDb_TestUpdateProductQuantities();
+
+            _cart.AddItem(new Product { Id = prodId }, 1);
+
+            // Act
+            Action testAction = () => _productService.UpdateProductQuantities();
+
+            // Assert
+            Assert.Throws<InvalidOperationException>(testAction);
+        }
+
+        [Fact]
+        public void TestUpdateProductQuantitiesCartQuantityExceedingProductStock()
+        {
+            // Arrange
+            ArrangeTestDb_TestUpdateProductQuantities();
+
+            _cart.AddItem(_testProductsList.First(), 3);
+
+            // Act
+            _productService.UpdateProductQuantities();
+
+            // Assert
+            Assert.Equal(-1, _context.Product.ToList().First().Quantity);
+        }
+
+        [Fact]
+        public void TestUpdateProductQuantitiesCartQuantityEqualProductStock()
+        {
+            // Arrange
+            ArrangeTestDb_TestUpdateProductQuantities();
+
+            _cart.AddItem(_testProductsList.First(), 2);
+
+            // Act
+            _productService.UpdateProductQuantities();
+
+            // Assert
+            Assert.Null(_context.Product.ToList().FirstOrDefault(p => p.Id == 1));
+        }
+
+        [Fact]
+        public void TestUpdateProductQuantitiesCartQuantityLessProductStock()
+        {
+            // Arrange
+            ArrangeTestDb_TestUpdateProductQuantities();
+
+            _cart.AddItem(_testProductsList.ToList().FirstOrDefault(p => p.Id == 3), 3);
+
+            // Act
+            _productService.UpdateProductQuantities();
+
+            // Assert
+            Assert.Equal(3, _context.Product.ToList().FirstOrDefault(p => p.Id ==3).Quantity);
         }
     }
 }
