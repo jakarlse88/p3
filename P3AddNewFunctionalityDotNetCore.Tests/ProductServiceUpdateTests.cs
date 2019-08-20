@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using P3AddNewFunctionalityDotNetCore.Data;
+using P3AddNewFunctionalityDotNetCore.Models;
 using P3AddNewFunctionalityDotNetCore.Models.Entities;
 using P3AddNewFunctionalityDotNetCore.Models.Repositories;
 using P3AddNewFunctionalityDotNetCore.Models.Services;
@@ -11,39 +13,16 @@ using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
-    // @TODO
-    // Fix this stuff
-
-    public class ProductServiceUpdateMethodsTests
+    public class ProductServiceUpdateMethodsTests : IDisposable
     {
         private readonly ProductViewModel _testProductViewModel;
-        //private readonly IEnumerable<Product> _testListAllProducts;
-        //private readonly Mock<IProductRepository> _mockProductRepository;
+        private readonly P3Referential _context;
+        private readonly IProductRepository _productRepository;
+        private readonly ICart _cart;
+        private readonly IProductService _productService;
 
         public ProductServiceUpdateMethodsTests()
         {
-            //_testListAllProducts = new List<Product>()
-            //{
-            //    new Product
-            //    {
-            //        Id = 1,
-            //        Description = "one",
-            //        Details = "one_details"
-            //    },
-            //    new Product
-            //    {
-            //        Id = 2,
-            //        Description = "two",
-            //        Details = "two_details"
-            //    },
-            //    new Product
-            //    {
-            //        Id = 3,
-            //        Description = "three",
-            //        Details = "three_details"
-            //    },
-            //};
-
             _testProductViewModel = new ProductViewModel
             {
                 Id = 1,
@@ -54,309 +33,181 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Details = "test details"
             };
 
-            //_mockProductRepository = new Mock<IProductRepository>();
+            var options = new DbContextOptionsBuilder<P3Referential>()
+                .UseInMemoryDatabase("product_service_test_db", new InMemoryDatabaseRoot())
+                .Options;
 
-            //_mockProductRepository
-            //    .Setup(x => x.GetAllProducts())
-            //    .Returns(_testListAllProducts);
+            _context = new P3Referential(options);
+
+            _productRepository = new ProductRepository(_context);
+
+            _cart = new Cart();
+
+            _productService = new ProductService(_cart, _productRepository, null, null);
+        }
+
+        // Ensure fresh context for each test
+        public void Dispose()
+        {
+            _cart.Clear();
+            _context.Database.EnsureDeleted();
+            _context.Dispose();
         }
 
         [Fact]
         public void TestSaveProductPopulatedProduct()
         {
-            // Arrange
-            var options = new DbContextOptionsBuilder<P3Referential>()
-                .UseInMemoryDatabase("save_product_test_db_populated")
-                .Options;
+            // Act
+            _productService.SaveProduct(_testProductViewModel);
+            var result = _context.Product.ToList();
 
-            using (var context = new P3Referential(options))
-            {
-                var productRepository = new ProductRepository(context);
-                var productService = new ProductService(null, productRepository, null, null);
-
-                // Act
-                productService.SaveProduct(_testProductViewModel);
-                var result = context.Product.ToList();
-
-                // Assert
-                Assert.Single(result);
-                Assert.IsAssignableFrom<List<Product>>(result);
-                Assert.Equal("Test Product", result.First().Name);
-            }
-
-            // Use a separate instance of the context to verify 
-            // correct data was saved to database
-            using (var context = new P3Referential(options))
-            {
-                Assert.Single(context.Product.ToList());
-                Assert.Equal(_testProductViewModel.Name, context.Product.ToList().First().Name);
-
-                context.Database.EnsureDeleted();
-            }
+            // Assert
+            Assert.Single(result);
+            Assert.IsAssignableFrom<List<Product>>(result);
+            Assert.Equal("Test Product", result.First().Name);
         }
 
         [Fact]
         public void TestSaveProductIdFieldMissing()
         {
             // Arrange
-            var options = new DbContextOptionsBuilder<P3Referential>()
-                .UseInMemoryDatabase("save_product_test_db_missing_id")
-                .Options;
-
-            using (var context = new P3Referential(options))
+            var testObject = new ProductViewModel
             {
-                var productRepository = new ProductRepository(context);
-                var productService = new ProductService(null, productRepository, null, null);
+                Name = _testProductViewModel.Name,
+                Description = _testProductViewModel.Description,
+                Details = _testProductViewModel.Details,
+                Stock = _testProductViewModel.Stock,
+                Price = _testProductViewModel.Price
+            };
 
-                // Act
-                productService.SaveProduct(new ProductViewModel
-                {
-                    Name = _testProductViewModel.Name,
-                    Description = _testProductViewModel.Description,
-                    Details = _testProductViewModel.Details,
-                    Stock = _testProductViewModel.Stock,
-                    Price = _testProductViewModel.Price
-                });
+            // Act
+            _productService.SaveProduct(testObject);
 
-                var result = context.Product.ToList();
+            var result = _context.Product.ToList();
 
-                // Assert
-                Assert.Single(result);
-                Assert.IsAssignableFrom<List<Product>>(result);
-                Assert.Equal(1, result.First().Id);
-            }
-
-            // Use a separate instance of the context to verify 
-            // correct data was saved to database
-            using (var context = new P3Referential(options))
-            {
-                var result = context.Product.ToList();
-
-                Assert.Single(result);
-                Assert.Equal(1, result.First().Id);
-
-                context.Database.EnsureDeleted();
-            }
+            // Assert
+            Assert.Single(result);
+            Assert.IsAssignableFrom<List<Product>>(result);
+            Assert.Equal(1, result.First().Id);
         }
 
         [Fact]
         public void TestSaveProductNameFieldNull()
         {
             // Arrange
-            var options = new DbContextOptionsBuilder<P3Referential>()
-                .UseInMemoryDatabase("save_product_test_db_name_null")
-                .Options;
-
-            using (var context = new P3Referential(options))
+            var testObject = new ProductViewModel
             {
-                var productRepository = new ProductRepository(context);
-                var productService = new ProductService(null, productRepository, null, null);
+                Id = _testProductViewModel.Id,
+                Name = null,
+                Description = _testProductViewModel.Description,
+                Details = _testProductViewModel.Details,
+                Stock = _testProductViewModel.Stock,
+                Price = _testProductViewModel.Price
+            };
 
-                // Act
-                productService.SaveProduct(new ProductViewModel
-                {
-                    Id = _testProductViewModel.Id,
-                    Name = null,
-                    Description = _testProductViewModel.Description,
-                    Details = _testProductViewModel.Details,
-                    Stock = _testProductViewModel.Stock,
-                    Price = _testProductViewModel.Price
-                });
+            // Act
+            _productService.SaveProduct(testObject);
 
-                var result = context.Product.ToList();
+            var result = _context.Product.ToList();
 
-                // Assert
-                Assert.NotNull(result.First());
-                Assert.Single(result);
-                Assert.IsAssignableFrom<List<Product>>(result);
-                Assert.Null(result.First().Name);
-            }
-
-            // Use a separate instance of the context to verify 
-            // correct data was saved to database
-            using (var context = new P3Referential(options))
-            {
-                var result = context.Product.ToList();
-
-                Assert.NotNull(result.First());
-                Assert.Single(result);
-                Assert.IsAssignableFrom<List<Product>>(result);
-                Assert.Null(result.First().Name);
-
-                context.Database.EnsureDeleted();
-            }
+            // Assert
+            Assert.NotNull(result.First());
+            Assert.Single(result);
+            Assert.IsAssignableFrom<List<Product>>(result);
+            Assert.Null(result.First().Name);
         }
 
         [Fact]
         public void TestSaveProductDescriptionFieldNull()
         {
             // Arrange
-            var options = new DbContextOptionsBuilder<P3Referential>()
-                .UseInMemoryDatabase("save_product_test_db_desc_null")
-                .Options;
-
-            using (var context = new P3Referential(options))
+            var testObject = new ProductViewModel
             {
-                var productRepository = new ProductRepository(context);
-                var productService = new ProductService(null, productRepository, null, null);
+                Id = _testProductViewModel.Id,
+                Name = _testProductViewModel.Name,
+                Description = null,
+                Details = _testProductViewModel.Details,
+                Stock = _testProductViewModel.Stock,
+                Price = _testProductViewModel.Price
+            };
 
-                // Act
-                productService.SaveProduct(new ProductViewModel
-                {
-                    Id = _testProductViewModel.Id,
-                    Name = _testProductViewModel.Name,
-                    Description = null,
-                    Details = _testProductViewModel.Details,
-                    Stock = _testProductViewModel.Stock,
-                    Price = _testProductViewModel.Price
-                });
+            // Act
+            _productService.SaveProduct(testObject);
 
-                var result = context.Product.ToList();
+            var result = _context.Product.ToList();
 
-                // Assert
-                Assert.NotNull(result.First());
-                Assert.Single(result);
-                Assert.IsAssignableFrom<List<Product>>(result);
-                Assert.Null(result.First().Description);
-            }
-
-            // Use a separate instance of the context to verify 
-            // correct data was saved to database
-            using (var context = new P3Referential(options))
-            {
-                var result = context.Product.ToList();
-
-                Assert.NotNull(result.First());
-                Assert.Single(result);
-                Assert.IsAssignableFrom<List<Product>>(result);
-                Assert.Null(result.First().Description);
-
-                context.Database.EnsureDeleted();
-            }
+            // Assert
+            Assert.NotNull(result.First());
+            Assert.Single(result);
+            Assert.IsAssignableFrom<List<Product>>(result);
+            Assert.Null(result.First().Description);
         }
 
         [Fact]
         public void TestSaveProductDetailsFieldNull()
         {
             // Arrange
-            var options = new DbContextOptionsBuilder<P3Referential>()
-                .UseInMemoryDatabase("save_product_test_db_details_null")
-                .Options;
-
-            using (var context = new P3Referential(options))
+            var testObject = new ProductViewModel
             {
-                var productRepository = new ProductRepository(context);
-                var productService = new ProductService(null, productRepository, null, null);
+                Id = _testProductViewModel.Id,
+                Name = _testProductViewModel.Name,
+                Description = _testProductViewModel.Description,
+                Details = null,
+                Stock = _testProductViewModel.Stock,
+                Price = _testProductViewModel.Price
+            };
 
-                // Act
-                productService.SaveProduct(new ProductViewModel
-                {
-                    Id = _testProductViewModel.Id,
-                    Name = _testProductViewModel.Name,
-                    Description = _testProductViewModel.Description,
-                    Details = null,
-                    Stock = _testProductViewModel.Stock,
-                    Price = _testProductViewModel.Price
-                });
+            // Act
+            _productService.SaveProduct(testObject);
 
-                var result = context.Product.ToList();
+            var result = _context.Product.ToList();
 
-                // Assert
-                Assert.NotNull(result.First());
-                Assert.Single(result);
-                Assert.IsAssignableFrom<List<Product>>(result);
-                Assert.Null(result.First().Details);
-            }
-
-            // Use a separate instance of the context to verify 
-            // correct data was saved to database
-            using (var context = new P3Referential(options))
-            {
-                var result = context.Product.ToList();
-
-                Assert.NotNull(result.First());
-                Assert.Single(result);
-                Assert.IsAssignableFrom<List<Product>>(result);
-                Assert.Null(result.First().Details);
-
-                context.Database.EnsureDeleted();
-            }
+            // Assert
+            Assert.NotNull(result.First());
+            Assert.Single(result);
+            Assert.IsAssignableFrom<List<Product>>(result);
+            Assert.Null(result.First().Details);
         }
 
         [Fact]
         public void TestSaveProductStockFieldNull()
         {
             // Arrange
-            var options = new DbContextOptionsBuilder<P3Referential>()
-                .UseInMemoryDatabase("save_product_test_db_stock_null")
-                .Options;
-
-            using (var context = new P3Referential(options))
+            var testObject = new ProductViewModel
             {
-                var productRepository = new ProductRepository(context);
-                var productService = new ProductService(null, productRepository, null, null);
+                Id = _testProductViewModel.Id,
+                Name = _testProductViewModel.Name,
+                Description = _testProductViewModel.Description,
+                Details = _testProductViewModel.Details,
+                Stock = null,
+                Price = _testProductViewModel.Price
+            };
+            // Act
+            Action testAction = () => _productService.SaveProduct(testObject);
 
-                // Act
-                Action testAction = () => productService.SaveProduct(new ProductViewModel
-                {
-                    Id = _testProductViewModel.Id,
-                    Name = _testProductViewModel.Name,
-                    Description = _testProductViewModel.Description,
-                    Details = _testProductViewModel.Details,
-                    Stock = null,
-                    Price = _testProductViewModel.Price
-                });
-
-                // Assert
-                Assert.Throws<ArgumentNullException>(testAction);
-            }
-
-            // Use a separate instance of the context to verify 
-            // correct data was saved to database
-            using (var context = new P3Referential(options))
-            {
-                Assert.Empty(context.Product);
-
-                context.Database.EnsureDeleted();
-            }
+            // Assert
+            Assert.Throws<ArgumentNullException>(testAction);
         }
 
         [Fact]
         public void TestSaveProductPriceFieldNull()
         {
             // Arrange
-            var options = new DbContextOptionsBuilder<P3Referential>()
-                .UseInMemoryDatabase("save_product_test_db_price_null")
-                .Options;
-
-            using (var context = new P3Referential(options))
+            var testObject = new ProductViewModel
             {
-                var productRepository = new ProductRepository(context);
-                var productService = new ProductService(null, productRepository, null, null);
+                Id = _testProductViewModel.Id,
+                Name = _testProductViewModel.Name,
+                Description = _testProductViewModel.Description,
+                Details = _testProductViewModel.Details,
+                Stock = _testProductViewModel.Stock,
+                Price = null
+            };
 
-                // Act
-                Action testAction = () => productService.SaveProduct(new ProductViewModel
-                {
-                    Id = _testProductViewModel.Id,
-                    Name = _testProductViewModel.Name,
-                    Description = _testProductViewModel.Description,
-                    Details = _testProductViewModel.Details,
-                    Stock = _testProductViewModel.Stock,
-                    Price = null
-                });
+            // Act
+            Action testAction = () => _productService.SaveProduct(testObject);
 
-                // Assert
-                Assert.Throws<ArgumentNullException>(testAction);
-            }
-
-            // Use a separate instance of the context to verify 
-            // correct data was saved to database
-            using (var context = new P3Referential(options))
-            {
-                Assert.Empty(context.Product);
-
-                context.Database.EnsureDeleted();
-            }
+            // Assert
+            Assert.Throws<ArgumentNullException>(testAction);
         }
 
         [Theory]
@@ -367,38 +218,21 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestSaveProductInvalidStockField(string testString)
         {
             // Arrange
-            var options = new DbContextOptionsBuilder<P3Referential>()
-                .UseInMemoryDatabase("save_product_test_db_stock_bad")
-                .Options;
-
-            using (var context = new P3Referential(options))
+            var testObject = new ProductViewModel
             {
-                var productRepository = new ProductRepository(context);
-                var productService = new ProductService(null, productRepository, null, null);
+                Id = _testProductViewModel.Id,
+                Name = _testProductViewModel.Name,
+                Description = _testProductViewModel.Description,
+                Details = _testProductViewModel.Details,
+                Stock = testString,
+                Price = _testProductViewModel.Price
+            };
 
-                // Act
-                Action testAction = () => productService.SaveProduct(new ProductViewModel
-                {
-                    Id = _testProductViewModel.Id,
-                    Name = _testProductViewModel.Name,
-                    Description = _testProductViewModel.Description,
-                    Details = _testProductViewModel.Details,
-                    Stock = testString,
-                    Price = _testProductViewModel.Price
-                });
+            // Act
+            Action testAction = () => _productService.SaveProduct(testObject);
 
-                // Assert
-                Assert.Throws<FormatException>(testAction);
-            }
-
-            // Use a separate instance of the context to verify 
-            // correct data was saved to database
-            using (var context = new P3Referential(options))
-            {
-                Assert.Empty(context.Product);
-
-                context.Database.EnsureDeleted();
-            }
+            // Assert
+            Assert.Throws<FormatException>(testAction);
         }
 
         [Theory]
@@ -409,38 +243,21 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestSaveProductInvalidPriceField(string testString)
         {
             // Arrange
-            var options = new DbContextOptionsBuilder<P3Referential>()
-                .UseInMemoryDatabase("save_product_test_db_stock_bad")
-                .Options;
-
-            using (var context = new P3Referential(options))
+            var testObject = new ProductViewModel
             {
-                var productRepository = new ProductRepository(context);
-                var productService = new ProductService(null, productRepository, null, null);
+                Id = _testProductViewModel.Id,
+                Name = _testProductViewModel.Name,
+                Description = _testProductViewModel.Description,
+                Details = _testProductViewModel.Details,
+                Stock = _testProductViewModel.Price,
+                Price = testString
+            };
 
-                // Act
-                Action testAction = () => productService.SaveProduct(new ProductViewModel
-                {
-                    Id = _testProductViewModel.Id,
-                    Name = _testProductViewModel.Name,
-                    Description = _testProductViewModel.Description,
-                    Details = _testProductViewModel.Details,
-                    Stock = _testProductViewModel.Price,
-                    Price = testString
-                });
+            // Act
+            Action testAction = () => _productService.SaveProduct(testObject);
 
-                // Assert
-                Assert.Throws<FormatException>(testAction);
-            }
-
-            // Use a separate instance of the context to verify 
-            // correct data was saved to database
-            using (var context = new P3Referential(options))
-            {
-                Assert.Empty(context.Product);
-
-                context.Database.EnsureDeleted();
-            }
+            // Assert
+            Assert.Throws<FormatException>(testAction);
         }
 
         [Theory]
@@ -452,44 +269,22 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestSaveProductValidPriceField(string testString)
         {
             // Arrange
-            var options = new DbContextOptionsBuilder<P3Referential>()
-                .UseInMemoryDatabase("save_product_test_db_price_valid")
-                .Options;
-
-            using (var context = new P3Referential(options))
+            var testObject = new ProductViewModel
             {
-                var productRepository = new ProductRepository(context);
-                var productService = new ProductService(null, productRepository, null, null);
+                Stock = _testProductViewModel.Stock,
+                Price = testString
+            };
 
-                // Act
-                productService.SaveProduct(new ProductViewModel
-                {
-                    Stock = _testProductViewModel.Stock,
-                    Price = testString
-                });
+            // Act
+            _productService.SaveProduct(testObject);
 
-                var result = context.Product.ToList();
+            var result = _context.Product.ToList();
 
-                // Assert
-                Assert.NotNull(result.First());
-                Assert.Single(result);
-                Assert.IsAssignableFrom<List<Product>>(result);
-                Assert.IsAssignableFrom<double>(result.First().Price);
-            }
-
-            // Use a separate instance of the context to verify 
-            // correct data was saved to database
-            using (var context = new P3Referential(options))
-            {
-                var result = context.Product.ToList();
-
-                Assert.NotNull(result.First());
-                Assert.Single(result);
-                Assert.IsAssignableFrom<List<Product>>(result);
-                Assert.IsAssignableFrom<double>(result.First().Price);
-
-                context.Database.EnsureDeleted();
-            }
+            // Assert
+            Assert.NotNull(result.First());
+            Assert.Single(result);
+            Assert.IsAssignableFrom<List<Product>>(result);
+            Assert.IsAssignableFrom<double>(result.First().Price);
         }
 
         [Theory]
@@ -501,44 +296,34 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestSaveProductValidStockField(string testString)
         {
             // Arrange
-            var options = new DbContextOptionsBuilder<P3Referential>()
-                .UseInMemoryDatabase("save_product_test_db_stock_valid")
-                .Options;
-
-            using (var context = new P3Referential(options))
+            var testObject = new ProductViewModel
             {
-                var productRepository = new ProductRepository(context);
-                var productService = new ProductService(null, productRepository, null, null);
+                Stock = _testProductViewModel.Stock,
+                Price = testString
+            };
 
-                // Act
-                productService.SaveProduct(new ProductViewModel
-                {
-                    Stock = _testProductViewModel.Stock,
-                    Price = testString
-                });
+            // Act
+            _productService.SaveProduct(testObject);
 
-                var result = context.Product.ToList();
+            var result = _context.Product.ToList();
 
-                // Assert
-                Assert.NotNull(result.First());
-                Assert.Single(result);
-                Assert.IsAssignableFrom<List<Product>>(result);
-                Assert.IsAssignableFrom<double>(result.First().Price);
-            }
+            // Assert
+            Assert.NotNull(result.First());
+            Assert.Single(result);
+            Assert.IsAssignableFrom<List<Product>>(result);
+            Assert.IsAssignableFrom<double>(result.First().Price);
+        }
 
-            // Use a separate instance of the context to verify 
-            // correct data was saved to database
-            using (var context = new P3Referential(options))
-            {
-                var result = context.Product.ToList();
+        [Fact]
+        public void TestUpdateProductQuantitiesEmptyCart()
+        {
+            // Arrange
 
-                Assert.NotNull(result.First());
-                Assert.Single(result);
-                Assert.IsAssignableFrom<List<Product>>(result);
-                Assert.IsAssignableFrom<double>(result.First().Price);
-
-                context.Database.EnsureDeleted();
-            }
         }
     }
 }
+
+// @TODO
+// implement additional validation logic
+// refactor test names + add to test log
+// implement missing tests (here)
