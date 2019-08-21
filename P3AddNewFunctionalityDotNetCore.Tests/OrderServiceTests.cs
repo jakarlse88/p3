@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Moq;
 using P3AddNewFunctionalityDotNetCore.Data;
 using P3AddNewFunctionalityDotNetCore.Models;
 using P3AddNewFunctionalityDotNetCore.Models.Entities;
@@ -14,36 +15,11 @@ using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
-    public class DbFixture : IDisposable
-    {
-        public P3Referential Context { get; private set; }
-
-        public DbFixture()
-        {
-            var options = new DbContextOptionsBuilder<P3Referential>()
-                .UseInMemoryDatabase("order_service_read_tests_db", new InMemoryDatabaseRoot())
-                .Options;
-
-            Context = new P3Referential(options);
-        }
-
-        public void Dispose()
-        {
-            Context.Database.EnsureDeleted();
-            Context.Dispose();
-        }
-    }
-
-    public class OrderServiceReadTests : IClassFixture<DbFixture>
+    public class OrderServiceReadTests
     {
         private readonly IEnumerable<Order> _testOrderList;
-        private readonly DbFixture _fixture;
-        private readonly ICart _cart;
-        private readonly IProductService _productService;
-        private readonly IOrderRepository _orderRepository;
-        private readonly IOrderService _orderService;
 
-        public OrderServiceReadTests(DbFixture fixture)
+        public OrderServiceReadTests()
         {
             _testOrderList = new List<Order>
                 {
@@ -60,75 +36,125 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                     Name = "three"
                 },
             };
+        }
 
-            _fixture = fixture;
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        [InlineData(4)]
+        public async Task TestGetOrderIdInvalid(int testId)
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<P3Referential>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString(), new InMemoryDatabaseRoot())
+                .Options;
 
-            _orderRepository = new OrderRepository(_fixture.Context);
-
-            foreach (var o in _testOrderList)
+            // Run test against one instance of context
+            using (var context = new P3Referential(options))
             {
-                _fixture.Context.Add(o);
-                _fixture.Context.SaveChanges();
+                foreach (var o in _testOrderList)
+                {
+                    context.Order.Add(o);
+                }
+
+                context.SaveChanges();
             }
 
-            _cart = new Cart();
+            // Verify data using separate context instance
+            using (var context = new P3Referential(options))
+            {
+                var orderRepository = new OrderRepository(context);
+                var orderService = new OrderService(null, orderRepository, null);
 
-            _productService = new ProductService(_cart, null, _orderRepository, null);
-            _orderService = new OrderService(_cart, _orderRepository, _productService);
-        }
+                // Act
+                var result = await orderService.GetOrder(testId);
 
-        [Fact]
-        public async Task TestGetOrderIdNegative()
-        {
-            // Act
-            var result = await _orderService.GetOrder(-1);
+                // Assert
+                Assert.Null(result);
+                Assert.Equal(3, context.Order.Count());
 
-            // Assert
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public async Task TestGetOrderIdZero()
-        {
-            // Act
-            var result = await _orderService.GetOrder(0);
-
-            // Assert
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public async Task TestGetOrderIdPositiveInvalid()
-        {
-            // Act
-            var result = await _orderService.GetOrder(4);
-
-            // Assert
-            Assert.Null(result);
+                // Clean up
+                context.Database.EnsureDeleted();
+                context.Dispose();
+            }
         }
 
         [Fact]
         public async Task TestGetOrderIdValid()
         {
-            // Act
-            var result = await _orderService.GetOrder(1);
+            // Arrange
+            var options = new DbContextOptionsBuilder<P3Referential>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString(), new InMemoryDatabaseRoot())
+                .Options;
 
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsAssignableFrom<Order>(result);
-            Assert.Equal("one", result.Name);
+            // Run test against one instance of context
+            using (var context = new P3Referential(options))
+            {
+                foreach (var o in _testOrderList)
+                {
+                    context.Order.Add(o);
+                }
+
+                context.SaveChanges();
+            }
+
+            // Verify data using separate context instance
+            using (var context = new P3Referential(options))
+            {
+                var orderRepository = new OrderRepository(context);
+                var orderService = new OrderService(null, orderRepository, null);
+
+                // Act
+                var result = await orderService.GetOrder(1);
+
+                // Assert
+                Assert.NotNull(result);
+                Assert.IsAssignableFrom<Order>(result);
+                Assert.Equal("one", result.Name);
+
+                // Clean up
+                context.Database.EnsureDeleted();
+                context.Dispose();
+            }
         }
 
         [Fact]
         public async Task TestGetOrders()
         {
-            // Act
-            var result = await _orderService.GetOrders();
+            // Arrange
+            var options = new DbContextOptionsBuilder<P3Referential>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString(), new InMemoryDatabaseRoot())
+                .Options;
 
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsAssignableFrom<IList<Order>>(result);
-            Assert.Equal(3, result.Count);
+            // Run test against one instance of context
+            using (var context = new P3Referential(options))
+            {
+                foreach (var o in _testOrderList)
+                {
+                    context.Order.Add(o);
+                }
+
+                context.SaveChanges();
+            }
+
+            // Verify data using separate context instance
+            using (var context = new P3Referential(options))
+            {
+                var orderRepository = new OrderRepository(context);
+                var orderService = new OrderService(null, orderRepository, null);
+
+                // Act
+                var result = await orderService.GetOrders();
+
+                // Assert
+                Assert.NotNull(result);
+                Assert.IsAssignableFrom<IList<Order>>(result);
+                Assert.Equal(3, result.Count);
+
+                // Clean up
+                context.Database.EnsureDeleted();
+                context.Dispose();
+            }
         }
     }
 
@@ -183,7 +209,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             OrderViewModel testOrder = null;
 
             // Act
-            Action testAction = () => _orderService.SaveOrder(testOrder);
+            void testAction() => _orderService.SaveOrder(testOrder);
 
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
@@ -196,7 +222,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var testOrder = new OrderViewModel();
 
             // Act
-            Action testAction = () => _orderService.SaveOrder(testOrder);
+            void testAction() => _orderService.SaveOrder(testOrder);
 
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
@@ -212,7 +238,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             };
 
             // Act
-            Action testAction = () => _orderService.SaveOrder(testObject);
+            void testAction() => _orderService.SaveOrder(testObject);
 
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
@@ -229,7 +255,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             };
 
             // Act
-            Action testAction = () => _orderService.SaveOrder(testObject);
+            void testAction() => _orderService.SaveOrder(testObject);
 
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
@@ -247,7 +273,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             };
 
             // Act
-            Action testAction = () => _orderService.SaveOrder(testObject);
+            void testAction() => _orderService.SaveOrder(testObject);
 
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
@@ -266,7 +292,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             };
 
             // Act
-            Action testAction = () => _orderService.SaveOrder(testObject);
+            void testAction() => _orderService.SaveOrder(testObject);
 
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
@@ -286,7 +312,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             };
 
             // Act
-            Action testAction = () => _orderService.SaveOrder(testObject);
+            void testAction() => _orderService.SaveOrder(testObject);
 
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
@@ -307,7 +333,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             };
 
             // Act
-            Action testAction = () => _orderService.SaveOrder(testObject);
+            void testAction() => _orderService.SaveOrder(testObject);
 
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
@@ -316,22 +342,58 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         [Fact]
         public void TestSaveOrderLinesFieldEmpty()
         {
-            // Act
-            _orderService.SaveOrder(_testOrderViewModel);
+            // Arrange
+            var options = new DbContextOptionsBuilder<P3Referential>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString(), new InMemoryDatabaseRoot())
+                .Options;
 
-            var result = _context.Order.ToList().First();
+            var cart = new Cart();
 
-            // Assert
-            Assert.Single(_context.Order.ToList());
-            Assert.NotNull(result);
-            Assert.IsAssignableFrom<Order>(result);
-            Assert.Equal("name one", result.Name);
+            var mockProductService = new Mock<IProductService>();
+                mockProductService
+                    .Setup(x => x.UpdateProductQuantities());
+
+            // Run test against one instance of context
+            using (var context = new P3Referential(options))
+            {
+                var orderRepository = new OrderRepository(context);
+                var orderService = new OrderService(cart, orderRepository, mockProductService.Object);
+
+                // Act
+                orderService.SaveOrder(_testOrderViewModel);
+            }
+
+            // Verify data using separate context instance
+            using (var context = new P3Referential(options))
+            {
+                var result = context
+                    .Order
+                    .Include(x => x.OrderLines)
+                    .First();
+
+                // Assert
+                Assert.Single(context.Order.ToList());
+                Assert.NotNull(result);
+                Assert.IsAssignableFrom<Order>(result);
+                Assert.Equal("name one", result.Name);
+
+                mockProductService
+                    .Verify(x => x.UpdateProductQuantities(), Times.Once);
+
+                // Clean up
+                context.Database.EnsureDeleted();
+                context.Dispose();
+            }
         }
 
         [Fact]
         public void TestSaveOrderAllFieldsValidLinesSeveral()
         {
             // Arrange
+            var options = new DbContextOptionsBuilder<P3Referential>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString(), new InMemoryDatabaseRoot())
+                .Options;
+
             var testObject = new OrderViewModel
             {
                 Name = _testOrderViewModel.Name,
@@ -341,23 +403,51 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Country = _testOrderViewModel.Country,
                 Lines = new List<CartLine>
                 {
-                    new CartLine { OrderLineId = 1, Product = new Product { Name = "product one" }, Quantity = 1 },
-                    new CartLine { OrderLineId = 2, Product = new Product { Name = "product two" }, Quantity = 2 },
-                    new CartLine { OrderLineId = 3, Product = new Product { Name = "product three" }, Quantity = 3 }
+                    new CartLine { OrderLineId = 1, Product = new Product { Id = 1, Quantity = 1 }, Quantity = 1 },
+                    new CartLine { OrderLineId = 2, Product = new Product { Id = 2, Quantity = 2 }, Quantity = 2 },
+                    new CartLine { OrderLineId = 3, Product = new Product { Id = 3, Quantity = 3 }, Quantity = 3 }
                 }
             };
 
-            // Act
-            _orderService.SaveOrder(testObject);
+            var cart = new Cart();
 
-            var result = _context.Order.ToList().First();
+            var mockProductService = new Mock<IProductService>();
+                mockProductService
+                    .Setup(x => x.UpdateProductQuantities());
 
-            // Assert
-            Assert.Single(_context.Order.ToList());
-            Assert.NotNull(result);
-            Assert.IsAssignableFrom<Order>(result);
-            Assert.Equal("name one", result.Name);
-            Assert.Equal(3, result.OrderLines.Count);
+            // Run test against one instance of context
+            using (var context = new P3Referential(options))
+            {
+                var orderRepository = new OrderRepository(context);
+
+                var orderService = new OrderService(cart, orderRepository, mockProductService.Object);
+
+                // Act
+                orderService.SaveOrder(testObject);
+            }
+
+            // Verify data using separate context instance
+            using (var context = new P3Referential(options))
+            {
+                var result = context
+                    .Order
+                    .Include(x => x.OrderLines)
+                    .First();
+
+                // Assert
+                Assert.Single(context.Order.ToList());
+                Assert.NotNull(result);
+                Assert.IsAssignableFrom<Order>(result);
+                Assert.Equal("name one", result.Name);
+                Assert.Equal(3, result.OrderLines.Count);
+
+                mockProductService
+                    .Verify(x => x.UpdateProductQuantities(), Times.Once);
+
+                // Clean up
+                context.Database.EnsureDeleted();
+                context.Dispose();
+            }
         }
 
         [Fact]
@@ -378,7 +468,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             };
 
             // Act
-            Action testAction = () => _orderService.SaveOrder(testObject);
+            void testAction() => _orderService.SaveOrder(testObject);
 
             // Assert
             Assert.Throws<NullReferenceException>(testAction);
@@ -388,6 +478,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestSaveOrderLinesEmptyProduct()
         {
             // Arrange
+            var options = new DbContextOptionsBuilder<P3Referential>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString(), new InMemoryDatabaseRoot())
+                .Options;
+
             var testObject = new OrderViewModel
             {
                 Name = _testOrderViewModel.Name,
@@ -401,17 +495,44 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 }
             };
 
-            // Act
-            _orderService.SaveOrder(testObject);
+            var cart = new Cart();
 
-            var result = _context.Order.ToList().First();
+            var mockProductService = new Mock<IProductService>();
+                mockProductService
+                    .Setup(x => x.UpdateProductQuantities());
 
-            // Assert
-            Assert.Single(_context.Order.ToList());
-            Assert.NotNull(result);
-            Assert.IsAssignableFrom<Order>(result);
-            Assert.Equal("name one", result.Name);
-            Assert.Single(result.OrderLines.ToList());
+            // Run test against one instance of context
+            using (var context = new P3Referential(options))
+            {
+                var orderRepository = new OrderRepository(context);
+                var orderService = new OrderService(cart, orderRepository, mockProductService.Object);
+
+                // Act
+                orderService.SaveOrder(testObject);
+            }
+
+            // Verify data using separate context instance
+            using (var context = new P3Referential(options))
+            {
+                var result = context
+                    .Order
+                    .Include(x => x.OrderLines)
+                    .First();
+
+                // Assert
+                Assert.Single(context.Order.ToList());
+                Assert.NotNull(result);
+                Assert.IsAssignableFrom<Order>(result);
+                Assert.Equal("name one", result.Name);
+                Assert.Single(result.OrderLines.ToList());
+
+                mockProductService
+                    .Verify(x => x.UpdateProductQuantities(), Times.Once);
+
+                // Clean up
+                context.Database.EnsureDeleted();
+                context.Dispose();
+            }
         }
     }
 }
