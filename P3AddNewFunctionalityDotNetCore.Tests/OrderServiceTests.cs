@@ -15,7 +15,7 @@ using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
-    [Collection("InMemDbCollection")]
+    [Collection("InteractsWithDb")]
     public class OrderServiceReadTests
     {
         private readonly IEnumerable<Order> _testOrderList;
@@ -159,7 +159,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         }
     }
 
-    [Collection("InMemDbCollection")]
+    [Collection("InteractsWithDb")]
     public class OrderServiceUpdateTests : IDisposable
     {
         private readonly OrderViewModel _testOrderViewModel;

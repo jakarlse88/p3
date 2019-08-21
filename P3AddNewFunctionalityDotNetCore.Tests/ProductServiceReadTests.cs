@@ -11,7 +11,7 @@ using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
-    [Collection("DbReadCollection")]
+    [Collection("InteractsWithDb")]
     public class ProductServiceReadTests
     {
         private readonly IProductService _productService;

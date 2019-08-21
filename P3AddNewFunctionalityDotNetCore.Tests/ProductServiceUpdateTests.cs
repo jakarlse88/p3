@@ -13,7 +13,7 @@ using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
-    [Collection("InMemDbCollection")]
+    [Collection("InteractsWithDb")]
     public class ProductServiceUpdateMethodsTests
     {
         private readonly ProductViewModel _testProductViewModel;
