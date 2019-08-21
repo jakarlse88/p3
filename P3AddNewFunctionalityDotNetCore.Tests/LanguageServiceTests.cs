@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using P3AddNewFunctionalityDotNetCore.Models.Services;
+﻿using P3AddNewFunctionalityDotNetCore.Models.Services;
 using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
@@ -30,7 +27,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         [InlineData("3ngl1sh", "en")]
         [InlineData("\nenglish\t", "en")]
         [InlineData("     english      ", "en")]
-        public void TestSetcultureInvalidArgs(string language, string expected)
+        public void TestSetCultureInvalidArgs(string language, string expected)
         {
             // Arrange
             var languageService = new LanguageService();

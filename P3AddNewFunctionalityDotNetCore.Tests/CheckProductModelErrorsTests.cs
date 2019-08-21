@@ -9,12 +9,11 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 {
     public class CheckProductModelErrorsTests
     {
-        private IProductService _productService;
-        private Mock<IStringLocalizer<ProductService>> _mockLocalizer;
+        private readonly IProductService _productService;
 
         public CheckProductModelErrorsTests()
         {
-            _mockLocalizer = new Mock<IStringLocalizer<ProductService>>();
+            var mockLocalizer = new Mock<IStringLocalizer<ProductService>>();
 
             var resourcesDictionary = new Dictionary<string, string>
             {
@@ -40,24 +39,24 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             // Localizer mock:
             // https://stackoverflow.com/a/43461506
-            foreach (KeyValuePair<string, string> entry in resourcesDictionary)
+            foreach (var (key, value) in resourcesDictionary)
             {
-                _mockLocalizer
-                    .Setup(x => x[entry.Key])
-                    .Returns(new LocalizedString(entry.Value, entry.Value));
+                mockLocalizer
+                    .Setup(x => x[key])
+                    .Returns(new LocalizedString(value, value));
             }
 
-            _productService = new ProductService(null, null, null, _mockLocalizer.Object);
+            _productService = new ProductService(null, null, null, mockLocalizer.Object);
         }
 
         [Fact]
         public void TestCheckProductModelErrorsEmptyModel()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel();
+            var testObject = new ProductViewModel();
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.NotNull(result);
@@ -75,13 +74,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsNameNull()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Name = null
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("Please enter a name", result);
@@ -91,13 +90,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsModelNameEmpty()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Name = " "
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("Please enter a name", result);
@@ -107,13 +106,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsNameQuotes()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Name = "\"asd\""
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.DoesNotContain("Illegal character in name", result);
@@ -123,13 +122,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsNameControlChars()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Name = "\nasd\t"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("Illegal character in name", result);
@@ -142,13 +141,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsNameShort(string testString)
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Name = testString
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("The name must be at least four letters long", result);
@@ -158,13 +157,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsNameLong()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Name = "lknaskdaksdmaslkmdkalsmdklasmdklamsdklamsdklmaskldmaklsmdlk1moi3j12oi3n12kenkdkaslndlikasjndklasndkajlhneiouansdjklanheuioaskndklasndasjkdnaskjldnaksjdnalksndjkasndaksdiu12he1kn2e12iueh12ien12jkebn1kj2e 12e"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("The name cannot be longer than 100 letters", result);
@@ -174,13 +173,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsNameValid()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Name = "test product"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
             
             // Assert
             Assert.DoesNotContain("The name cannot be longer than 100 letters", result);
@@ -193,13 +192,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsDetailsNull()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Details = null
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("Please enter details", result);
@@ -209,13 +208,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsDetailsEmpty()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Details = " "
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("Please enter details", result);
@@ -225,13 +224,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsDetailsQuotes()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Details = "\"asd\""
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.DoesNotContain("Illegal character in details", result);
@@ -241,13 +240,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsDetailsControlChars()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Details = "\nasd\t"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("Illegal character in details", result);
@@ -260,13 +259,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsDetailsShort(string testString)
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Details = testString
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("The details must be longer than ten letters", result);
@@ -276,13 +275,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsDetailsLong()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Details = "lknaskdaksdmaslkmdkalsmdklasmdklamsdklamsdklmaskldmaklsmdlk1moi3j12oi3n12kenkdkaslndlikasjndklasndkajlhneiouansdjklanheuioaskndklasndasjkdnaskjldnaksjdnalksndjkasndaksdiu12he1kn2e12iueh12ien12jkebn1kj2e 12e"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("The details cannot be longer than 200 letters", result);
@@ -292,13 +291,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsDetailsValid()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Details = "test product"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
             
             // Assert
             Assert.DoesNotContain("The details cannot be longer than 200 letters", result);
@@ -311,13 +310,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsDescriptionNull()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Description = null
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("Please enter a description", result);
@@ -327,13 +326,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsDescriptionEmpty()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Description = " "
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("Please enter a description", result);
@@ -343,13 +342,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsDescriptionQuotes()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Description = "\"asd\""
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.DoesNotContain("Illegal character in description", result);
@@ -359,13 +358,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsDescriptionControlChars()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Description = "\nasd\t"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("Illegal character in description", result);
@@ -378,13 +377,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsDescriptionShort(string testString)
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Description = testString
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("The description must be longer than ten letters", result);
@@ -394,13 +393,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsDescriptionLong()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Description = "lknaskdaksdmaslkmdkalsmdklasmdklamsdklamsdklmaskldmaklsmdlk1moi3j12oi3n12kenkdkaslndlikasjndklasndkajlhneiouansdjklanheuioaskndklasndasjkdnaskjldnaksjdnalksndjkasndaksdiu12he1kn2e12iueh12ien12jkebn1kj2e 12e"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("The description cannot be longer than 100 letters", result);
@@ -410,13 +409,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsDescriptionValid()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Description = "test product"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
             
             // Assert
             Assert.DoesNotContain("The description cannot be longer than 100 letters", result);
@@ -429,13 +428,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsModelEmptyPrice()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Price = " "
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("Please enter a price", result);
@@ -445,13 +444,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsModelPriceCharacters()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Price = "ABC"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("The value entered for the price must be a number", result);
@@ -461,13 +460,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsModelPriceCharactersMixed()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Price = "ABC123"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("The value entered for the price must be a number", result);
@@ -477,13 +476,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsModelPriceCtrlChars()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Price = "\t-35\n"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("The price must be greater than zero", result);
@@ -493,13 +492,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsModelPriceMixedWhitespace()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Price = "    -35    "
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("The price must be greater than zero", result);
@@ -509,13 +508,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsModelPriceNegative()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Price = "-10"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("The price must be greater than zero", result);
@@ -525,13 +524,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsModelPriceValid()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Price = "9123"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.DoesNotContain("The price must be greater than zero", result);
@@ -542,13 +541,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsModelStockEmpty()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Stock = " "
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("Please enter a stock value", result);
@@ -558,13 +557,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsModelStocCharacters()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Stock = "ABC"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("The value entered for the stock must be an integer", result);
@@ -574,13 +573,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsModelStocCharactersMixed()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Stock = "ABC123"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("The value entered for the stock must be an integer", result);
@@ -590,13 +589,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsModelStocCtrlChars()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Stock = "\t-35\n"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("The stock must be greater than zero", result);
@@ -606,13 +605,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsModelStocMixedWhitespace()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Stock = "    -35    "
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("The stock must be greater than zero", result);
@@ -622,13 +621,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsModelStocNegative()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Stock = "-10"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.Contains("The stock must be greater than zero", result);
@@ -638,13 +637,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestCheckProductModelErrorsModelStocValid()
         {
             // Arrange
-            ProductViewModel testObject = new ProductViewModel
+            var testObject = new ProductViewModel
             {
                 Stock = "9123"
             };
 
             // Act
-            List<string> result = _productService.CheckProductModelErrors(testObject);
+            var result = _productService.CheckProductModelErrors(testObject);
 
             // Assert
             Assert.DoesNotContain("The stock must be greater than zero", result);

@@ -165,8 +165,6 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         private readonly OrderViewModel _testOrderViewModel;
         private readonly P3Referential _context;
         private readonly ICart _cart;
-        private readonly IProductService _productService;
-        private readonly IOrderRepository _orderRepository;
         private readonly IOrderService _orderService;
 
         public OrderServiceUpdateTests()
@@ -190,11 +188,11 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             _cart = new Cart();
 
-            _orderRepository = new OrderRepository(_context);
+            IOrderRepository orderRepository = new OrderRepository(_context);
 
-            _productService = new ProductService(_cart, null, _orderRepository, null);
+            IProductService productService = new ProductService(_cart, null, orderRepository, null);
 
-            _orderService = new OrderService(_cart, _orderRepository, _productService);
+            _orderService = new OrderService(_cart, orderRepository, productService);
         }
 
         public void Dispose()
@@ -207,14 +205,11 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         [Fact]
         public void TestSaveOrderNullOrder()
         {
-            // Arrange
-            OrderViewModel testOrder = null;
-
             // Act
-            void testAction() => _orderService.SaveOrder(testOrder);
+            void TestAction() => _orderService.SaveOrder(null);
 
             // Assert
-            Assert.Throws<NullReferenceException>(testAction);
+            Assert.Throws<NullReferenceException>(TestAction);
         }
 
         [Fact]
@@ -224,10 +219,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var testOrder = new OrderViewModel();
 
             // Act
-            void testAction() => _orderService.SaveOrder(testOrder);
+            void TestAction() => _orderService.SaveOrder(testOrder);
 
             // Assert
-            Assert.Throws<NullReferenceException>(testAction);
+            Assert.Throws<NullReferenceException>(TestAction);
         }
 
         [Fact]
@@ -240,10 +235,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             };
 
             // Act
-            void testAction() => _orderService.SaveOrder(testObject);
+            void TestAction() => _orderService.SaveOrder(testObject);
 
             // Assert
-            Assert.Throws<NullReferenceException>(testAction);
+            Assert.Throws<NullReferenceException>(TestAction);
         }
 
         [Fact]
@@ -257,10 +252,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             };
 
             // Act
-            void testAction() => _orderService.SaveOrder(testObject);
+            void TestAction() => _orderService.SaveOrder(testObject);
 
             // Assert
-            Assert.Throws<NullReferenceException>(testAction);
+            Assert.Throws<NullReferenceException>(TestAction);
         }
 
         [Fact]
@@ -275,10 +270,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             };
 
             // Act
-            void testAction() => _orderService.SaveOrder(testObject);
+            void TestAction() => _orderService.SaveOrder(testObject);
 
             // Assert
-            Assert.Throws<NullReferenceException>(testAction);
+            Assert.Throws<NullReferenceException>(TestAction);
         }
 
         [Fact]
@@ -294,10 +289,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             };
 
             // Act
-            void testAction() => _orderService.SaveOrder(testObject);
+            void TestAction() => _orderService.SaveOrder(testObject);
 
             // Assert
-            Assert.Throws<NullReferenceException>(testAction);
+            Assert.Throws<NullReferenceException>(TestAction);
         }
 
         [Fact]
@@ -314,10 +309,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             };
 
             // Act
-            void testAction() => _orderService.SaveOrder(testObject);
+            void TestAction() => _orderService.SaveOrder(testObject);
 
             // Assert
-            Assert.Throws<NullReferenceException>(testAction);
+            Assert.Throws<NullReferenceException>(TestAction);
         }
 
         [Fact]
@@ -335,10 +330,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             };
 
             // Act
-            void testAction() => _orderService.SaveOrder(testObject);
+            void TestAction() => _orderService.SaveOrder(testObject);
 
             // Assert
-            Assert.Throws<NullReferenceException>(testAction);
+            Assert.Throws<NullReferenceException>(TestAction);
         }
 
         [Fact]
@@ -470,10 +465,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             };
 
             // Act
-            void testAction() => _orderService.SaveOrder(testObject);
+            void TestAction() => _orderService.SaveOrder(testObject);
 
             // Assert
-            Assert.Throws<NullReferenceException>(testAction);
+            Assert.Throws<NullReferenceException>(TestAction);
         }
 
         [Fact]

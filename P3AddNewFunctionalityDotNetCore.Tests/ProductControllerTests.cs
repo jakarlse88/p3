@@ -11,13 +11,12 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 {
     public class ProductControllerTests
     {
-        private readonly IEnumerable<ProductViewModel> _testProductViewModelsList;
         private readonly Mock<IProductService> _mockProductService;
         private readonly ProductViewModel _testProductViewModel;
 
         public ProductControllerTests()
         {
-            _testProductViewModelsList = new List<ProductViewModel>
+            IEnumerable<ProductViewModel> testProductViewModelsList = new List<ProductViewModel>
             {
                 new ProductViewModel
                 {
@@ -48,13 +47,13 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 }
             };
 
-            _testProductViewModel = _testProductViewModelsList.First();
+            _testProductViewModel = testProductViewModelsList.First();
 
             _mockProductService = new Mock<IProductService>();
             
             _mockProductService
                 .Setup(x => x.GetAllProductsViewModel())
-                .Returns(_testProductViewModelsList.ToList());
+                .Returns(testProductViewModelsList.ToList());
 
             _mockProductService
                 .Setup(x => x.CheckProductModelErrors(It.IsAny<ProductViewModel>()))

@@ -19,18 +19,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
     {
         private readonly Mock<UserManager<IdentityUser>> _mockUserManager;
         private readonly Mock<SignInManager<IdentityUser>> _mockSignInManager;
-        private readonly IdentityUser _testUser;
         private readonly LoginModel _testLoginModel;
-        private readonly List<IdentityUser> _testUsersList;
 
         public AccountControllerTests()
         {
-            _testUser = new IdentityUser
-            {
-                Id = "1",
-                NormalizedUserName = "NormalizedName"
-            };
-
             _testLoginModel = new LoginModel
             {
                 Name = "name one",
@@ -38,7 +30,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 ReturnUrl = "/test"
             };
 
-            _testUsersList = new List<IdentityUser>{
+            var testUsersList = new List<IdentityUser>{
                 new IdentityUser {
                     UserName = "name one"
                 },
@@ -72,7 +64,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             _mockUserManager
                 .Setup(x => x.FindByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync((string name) => _testUsersList
+                .ReturnsAsync((string name) => testUsersList
                     .FirstOrDefault(u => u.UserName == name));
 
             _mockSignInManager
@@ -181,7 +173,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
-            var model = Assert.IsType<LoginModel>(viewResult.Model);
+            Assert.IsType<LoginModel>(viewResult.Model);
             Assert.False(accountController.ModelState.IsValid);
         }
 

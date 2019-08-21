@@ -14,8 +14,6 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
     [Collection("DbReadCollection")]
     public class ProductServiceReadTests
     {
-        private readonly P3Referential _context;
-        private readonly IProductRepository _productRepository;
         private readonly IProductService _productService;
 
         public ProductServiceReadTests()
@@ -24,11 +22,11 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 .UseSqlServer("Server=.;Database=P3Referential-2f561d3b-493f-46fd-83c9-6e2643e7bd0a;Trusted_Connection=True;MultipleActiveResultSets=true")
                 .Options;
 
-            _context = new P3Referential(options);
+            var context = new P3Referential(options);
 
-            _productRepository = new ProductRepository(_context);
+            IProductRepository productRepository = new ProductRepository(context);
 
-            _productService = new ProductService(null, _productRepository, null, null);
+            _productService = new ProductService(null, productRepository, null, null);
         }
 
         [Fact]

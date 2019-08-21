@@ -33,11 +33,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
     public class AddToCartTests
     {
         private readonly Mock<IProductService> _mockProductService;
-        private readonly IEnumerable<Product> _testProductList;
 
         public AddToCartTests()
         {
-            _testProductList = new List<Product>
+            IEnumerable<Product> testProductList = new List<Product>
             {
                 new Product
                 {
@@ -60,11 +59,11 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             _mockProductService
                 .Setup(x => x.GetAllProducts())
-                .Returns(_testProductList.ToList());
+                .Returns(testProductList.ToList());
 
             _mockProductService
                 .Setup(x => x.GetProductById(It.IsAny<int>()))
-                .Returns((int id) => _testProductList.FirstOrDefault(p => p.Id == id));
+                .Returns((int id) => testProductList.FirstOrDefault(p => p.Id == id));
         }
 
         [Fact]

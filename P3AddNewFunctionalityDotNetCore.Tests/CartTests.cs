@@ -1,7 +1,6 @@
-﻿using P3AddNewFunctionalityDotNetCore.Models;
+﻿using System.Diagnostics;
+using P3AddNewFunctionalityDotNetCore.Models;
 using P3AddNewFunctionalityDotNetCore.Models.Entities;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -23,7 +22,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Details = "test details"
             };
 
-            _testProductsArr = new Product[]
+            _testProductsArr = new []
             {
                     new Product { Id = 1, Price = 10 },
                     new Product { Id = 2, Price = 20 },
@@ -35,55 +34,55 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestClear()
         {
             // Arrange
-            var _cart = new Cart();
+            var cart = new Cart();
 
             foreach (var p in _testProductsArr)
             {
-                _cart.AddItem(p, 1);
+                cart.AddItem(p, 1);
             }
 
             // Act
-            _cart.Clear();
+            cart.Clear();
 
             // Assert
-            Assert.NotNull(_cart.Lines);
-            Assert.Empty(_cart.Lines);
+            Assert.NotNull(cart.Lines);
+            Assert.Empty(cart.Lines);
         }
 
         [Fact]
         public void TestAddItemSingleProduct()
         {
             // Arrange
-            var _cart = new Cart();
+            var cart = new Cart();
 
             const int testQuantity = 1;
 
             // Act
-            _cart.AddItem(_testProduct, testQuantity);
+            cart.AddItem(_testProduct, testQuantity);
 
             // Assert
-            Assert.NotEmpty(_cart.Lines);
-            Assert.Contains(_cart.Lines, l => l.Product.Name == "test product");
+            Assert.NotEmpty(cart.Lines);
+            Assert.Contains(cart.Lines, l => l.Product.Name == "test product");
         }
 
         [Fact]
         public void TestAddItemProductAlreadyInCart()
         {
             // Arrange
-            var _cart = new Cart();
+            var cart = new Cart();
 
             const int initialQuantity = 1;
             const int incrementQuantity = 2;
             const int expectedTotalQuantity = initialQuantity + incrementQuantity;
 
             // Act
-            _cart.AddItem(_testProduct, initialQuantity);
-            _cart.AddItem(_testProduct, incrementQuantity);
+            cart.AddItem(_testProduct, initialQuantity);
+            cart.AddItem(_testProduct, incrementQuantity);
 
             // Assert
-            var actual = _cart.Lines.FirstOrDefault(l => l.Product.Name == "test product");
+            var actual = cart.Lines.FirstOrDefault(l => l.Product.Name == "test product");
 
-            Assert.Single(_cart.Lines);
+            Assert.Single(cart.Lines);
             Assert.Equal(expectedTotalQuantity, actual.Quantity);
         }
 
@@ -91,17 +90,17 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestAddItemProductAlreadyInCartNegativeQuantity()
         {
             // Arrange
-            var _cart = new Cart();
+            var cart = new Cart();
 
             const int testQuantity = -5;
 
             // Act
-            _cart.AddItem(_testProduct, testQuantity);
+            cart.AddItem(_testProduct, testQuantity);
 
             // Assert
-            CartLine actual = _cart.Lines.FirstOrDefault(l => l.Product.Name == "test product");
+            CartLine actual = cart.Lines.FirstOrDefault(l => l.Product.Name == "test product");
 
-            Assert.Single(_cart.Lines);
+            Assert.Single(cart.Lines);
             Assert.Equal(testQuantity, actual.Quantity);
         }
 
@@ -109,52 +108,50 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestAddItemNullProduct()
         {
             // Arrange
-            var _cart = new Cart();
-
-            Product testProduct = null;
+            var cart = new Cart();
 
             const int testQuantity = 1;
 
-            // Actsynara
-            _cart.AddItem(testProduct, testQuantity);
+            // Act
+            cart.AddItem(null, testQuantity);
 
             // Assert
-            Assert.Single(_cart.Lines);
+            Assert.Single(cart.Lines);
         }
 
         [Fact]
         public void TestRemoveLine()
         {
             // Arrange
-            var _cart = new Cart();
+            var cart = new Cart();
 
             const int testQuantity = 1;
             const int testProductIndex = 2;
 
             foreach (var p in _testProductsArr)
             {
-                _cart.AddItem(p, testQuantity);
+                cart.AddItem(p, testQuantity);
             }
 
             // Act
-            _cart.RemoveLine(_testProductsArr[testProductIndex]);
+            cart.RemoveLine(_testProductsArr[testProductIndex]);
 
             // Assert
-            Assert.NotNull(_cart.Lines);
-            Assert.NotEmpty(_cart.Lines);
-            Assert.DoesNotContain(_cart.Lines, l => l.Product?.Id == _testProductsArr[testProductIndex].Id);
+            Assert.NotNull(cart.Lines);
+            Assert.NotEmpty(cart.Lines);
+            Assert.DoesNotContain(cart.Lines, l => l.Product?.Id == _testProductsArr[testProductIndex].Id);
         }
 
         [Fact]
         public void TestReturnTotalValueEmptyCart()
         {
             // Arrange
-            var _cart = new Cart();
+            var cart = new Cart();
 
             const double expected = 0;
 
             // Act
-            double result = _cart.GetTotalValue();
+            double result = cart.GetTotalValue();
 
             // Assert
             Assert.Equal(expected, result);
@@ -164,14 +161,14 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestGetTotalValueCartSingleItem()
         {
             // Arrange
-            var _cart = new Cart();
+            var cart = new Cart();
 
             int testQuantity = 1;
             double expected = 10;
-            _cart.AddItem(_testProduct, testQuantity);
+            cart.AddItem(_testProduct, testQuantity);
 
             // Act
-            double result = _cart.GetTotalValue();
+            double result = cart.GetTotalValue();
 
             // Assert
             Assert.Equal(expected, result);
@@ -181,17 +178,17 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestGetTotalValueCartMultipleItems()
         {
             // Arrange
-            var _cart = new Cart();
+            var cart = new Cart();
 
             foreach (var p in _testProductsArr)
             {
-                _cart.AddItem(p, 1);
+                cart.AddItem(p, 1);
             }
 
             const double expected = 60;
 
             // Act
-            double result = _cart.GetTotalValue();
+            double result = cart.GetTotalValue();
 
             // Assert
             Assert.Equal(expected, result);
@@ -201,17 +198,17 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestGetTotalValueCartMultipleItemsVaryingQuantities()
         {
             // Arrange
-            var _cart = new Cart();
+            var cart = new Cart();
 
             for (int i = 0; i < _testProductsArr.Length; i++)
             {
-                _cart.AddItem(_testProductsArr[i], i + 1);
+                cart.AddItem(_testProductsArr[i], i + 1);
             }
 
             const double expected = 140;
 
             // Act
-            double result = _cart.GetTotalValue();
+            double result = cart.GetTotalValue();
 
             // Assert
             Assert.Equal(expected, result);
@@ -221,12 +218,12 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestGetAverageValueEmptyCart()
         {
             // Arrange
-            var _cart = new Cart();
+            var cart = new Cart();
 
             const double expected = 0;
 
             // Act
-            double result = _cart.GetAverageValue();
+            double result = cart.GetAverageValue();
 
             // Assert
             Assert.Equal(expected, result);
@@ -236,7 +233,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestGetAverageValueCartSingleItem()
         {
             // Arrange
-            var _cart = new Cart();
+            var cart = new Cart();
 
             var testProduct = new Product
             {
@@ -246,10 +243,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             const int testQuantity = 1;
             const double expected = 10;
-            _cart.AddItem(testProduct, testQuantity);
+            cart.AddItem(testProduct, testQuantity);
 
             // Act
-            double result = _cart.GetAverageValue();
+            double result = cart.GetAverageValue();
 
             // Assert
             Assert.Equal(expected, result);
@@ -259,17 +256,17 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestGetAverageValueCartMultipleItems()
         {
             // Arrange
-            var _cart = new Cart();
+            var cart = new Cart();
 
             foreach (var p in _testProductsArr)
             {
-                _cart.AddItem(p, 1);
+                cart.AddItem(p, 1);
             }
 
             const double expected = 20;
 
             // Act
-            double result = _cart.GetAverageValue();
+            double result = cart.GetAverageValue();
 
             // Assert
             Assert.Equal(expected, result);
@@ -279,17 +276,17 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestGetAverageValueCartMultipleItemsVaryingQuantities()
         {
             // Arrange
-            var _cart = new Cart();
+            var cart = new Cart();
 
             for (int i = 0; i < _testProductsArr.Length; i++)
             {
-                _cart.AddItem(_testProductsArr[i], i + 1);
+                cart.AddItem(_testProductsArr[i], i + 1);
             }
 
             const double expected = 20;
 
             // Act
-            double result = _cart.GetAverageValue();
+            double result = cart.GetAverageValue();
 
             // Assert
             Assert.Equal(expected, result);

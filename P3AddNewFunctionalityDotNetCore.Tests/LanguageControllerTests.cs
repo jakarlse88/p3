@@ -32,7 +32,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Language = "English"
             };
 
-            string testReturnUrl = "/test";
+            var testReturnUrl = "/test";
 
             // Act
             var result = languageController.ChangeUiLanguage(testModel, testReturnUrl);
@@ -56,7 +56,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Language = null
             };
 
-            string testReturnUrl = "/test";
+            var testReturnUrl = "/test";
 
             // Act
             var result = languageController.ChangeUiLanguage(testModel, testReturnUrl);
@@ -75,18 +75,16 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var languageController = new LanguageController(_mockLanguageService.Object);
 
-            LanguageViewModel testModel = null;
-
-            string testReturnUrl = "/test";
+            var testReturnUrl = "/test";
 
             // Act
-            Action testAction = () => languageController.ChangeUiLanguage(testModel, testReturnUrl);
+            void TestAction() => languageController.ChangeUiLanguage(null, testReturnUrl);
 
             // Assert
             _mockLanguageService
                 .Verify(x => x.ChangeUiLanguage(It.IsAny<HttpContext>(), It.IsAny<string>()), Times.Never);
 
-            Assert.Throws<NullReferenceException>(testAction);
+            Assert.Throws<NullReferenceException>(TestAction);
         }
     }
 }

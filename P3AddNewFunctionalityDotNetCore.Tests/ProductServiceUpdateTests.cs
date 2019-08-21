@@ -304,10 +304,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var productService = new ProductService(null, null, null, null);
 
             // Act
-            void testAction() => productService.SaveProduct(testObject);
+            void TestAction() => productService.SaveProduct(testObject);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testAction);
+            Assert.Throws<ArgumentNullException>(TestAction);
         }
 
         [Fact]
@@ -327,10 +327,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var productService = new ProductService(null, null, null, null);
 
             // Act
-            void testAction() => productService.SaveProduct(testObject);
+            void TestAction() => productService.SaveProduct(testObject);
 
             // Assert
-            Assert.Throws<ArgumentNullException>(testAction);
+            Assert.Throws<ArgumentNullException>(TestAction);
         }
 
         [Theory]
@@ -354,10 +354,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var productService = new ProductService(null, null, null, null);
 
             // Act
-            void testAction() => productService.SaveProduct(testObject);
+            void TestAction() => productService.SaveProduct(testObject);
 
             // Assert
-            Assert.Throws<FormatException>(testAction);
+            Assert.Throws<FormatException>(TestAction);
         }
 
         [Theory]
@@ -381,10 +381,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var productService = new ProductService(null, null, null, null);
 
             // Act
-            void testAction() => productService.SaveProduct(testObject);
+            void TestAction() => productService.SaveProduct(testObject);
 
             // Assert
-            Assert.Throws<FormatException>(testAction);
+            Assert.Throws<FormatException>(TestAction);
         }
 
         [Theory]
@@ -603,10 +603,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 var productService = new ProductService(cart, productRepository, null, null);
 
                 // Act
-                void testAction() => productService.UpdateProductQuantities();
+                void TestAction() => productService.UpdateProductQuantities();
 
                 // Assert
-                Assert.Throws<InvalidOperationException>(testAction);
+                Assert.Throws<InvalidOperationException>(TestAction);
             }
         }
 
@@ -719,10 +719,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 var productService = new ProductService(cart, productRepository, null, null);
 
                 // Act
-                void testAction() => productService.DeleteProduct(testId);
+                void TestAction() => productService.DeleteProduct(testId);
 
                 // Assert
-                Assert.Throws<NullReferenceException>(testAction);
+                Assert.Throws<NullReferenceException>(TestAction);
             }
         }
 

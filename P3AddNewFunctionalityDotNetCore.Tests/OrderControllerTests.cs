@@ -22,7 +22,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         {
             _testOrderViewModelList = new List<OrderViewModel>();
 
-            _testProductsArr = new Product[]
+            _testProductsArr = new []
             {
                 new Product { Name = "product one" },
                 new Product { Name = "product two" },
@@ -83,7 +83,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             _mockOrderService
                 .Verify(x => x.SaveOrder(It.IsAny<OrderViewModel>()), Times.Once);
 
-            var actionResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.IsType<RedirectToActionResult>(result);
             Assert.Single(_testOrderViewModelList);
         }
 
@@ -101,7 +101,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var result = orderController.Index(testOrder);
 
             // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
+            Assert.IsType<ViewResult>(result);
             Assert.False(orderController.ModelState.IsValid);
         }
 
@@ -122,7 +122,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var result = orderController.Completed();
 
             // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
+            Assert.IsType<ViewResult>(result);
             Assert.Empty(cart.Lines);
         }
     }
