@@ -12,6 +12,7 @@ using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
+    [Collection("DbReadCollection")]
     public class ProductRepositoryTests
     {
         private readonly P3Referential _context;

@@ -13,14 +13,11 @@ using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
-    public class ProductServiceUpdateMethodsTests : IDisposable
+    [Collection("InMemDbCollection")]
+    public class ProductServiceUpdateMethodsTests
     {
         private readonly ProductViewModel _testProductViewModel;
         private readonly IEnumerable<Product> _testProductsList;
-        private readonly P3Referential _context;
-        private readonly IProductRepository _productRepository;
-        private readonly ICart _cart;
-        private readonly IProductService _productService;
 
         public ProductServiceUpdateMethodsTests()
         {
@@ -64,50 +61,58 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                     Price = 30
                 }
             };
+        }
 
-            var options = new DbContextOptionsBuilder<P3Referential>()
-                .UseInMemoryDatabase("product_service_test_db", new InMemoryDatabaseRoot())
+        private DbContextOptions<P3Referential> TestDbContextOptionsBuilder()
+        {
+            return new DbContextOptionsBuilder<P3Referential>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString(), new InMemoryDatabaseRoot())
                 .Options;
-
-            _context = new P3Referential(options);
-
-            _productRepository = new ProductRepository(_context);
-
-            _cart = new Cart();
-
-            _productService = new ProductService(_cart, _productRepository, null, null);
         }
 
-        // Ensure fresh context for each test
-        public void Dispose()
+        private void SeedTestDb(DbContextOptions<P3Referential> options)
         {
-            _cart.Clear();
-            _context.Database.EnsureDeleted();
-            _context.Dispose();
-        }
-
-
-        private void SeedTestDb()
-        {
-            foreach (Product p in _testProductsList)
+            using (var context = new P3Referential(options))
             {
-                _context.Product.Add(p);
-            }
+                foreach (Product p in _testProductsList)
+                {
+                    context.Product.Add(p);
+                }
 
-            _context.SaveChanges();
+                context.SaveChanges();
+            }
         }
 
         [Fact]
         public void TestSaveProductPopulatedProduct()
         {
-            // Act
-            _productService.SaveProduct(_testProductViewModel);
-            var result = _context.Product.ToList();
+            // Arrange
+            var options = TestDbContextOptionsBuilder();
 
-            // Assert
-            Assert.Single(result);
-            Assert.IsAssignableFrom<List<Product>>(result);
-            Assert.Equal("Test Product", result.First().Name);
+            using (var context = new P3Referential(options))
+            {
+                var cart = new Cart();
+
+                var productRepository = new ProductRepository(context);
+
+                var productService = new ProductService(cart, productRepository, null, null);
+
+                // Act
+                productService.SaveProduct(_testProductViewModel);
+            }
+
+            using (var context = new P3Referential(options))
+            {
+                var result = context.Product.ToList();
+
+                // Assert
+                Assert.Single(result);
+                Assert.IsAssignableFrom<List<Product>>(result);
+                Assert.Equal("Test Product", result.First().Name);
+
+                context.Database.EnsureDeleted();
+                context.Dispose();
+            }
         }
 
         [Fact]
@@ -123,15 +128,32 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Price = _testProductViewModel.Price
             };
 
-            // Act
-            _productService.SaveProduct(testObject);
+            var options = TestDbContextOptionsBuilder();
 
-            var result = _context.Product.ToList();
+            using (var context = new P3Referential(options))
+            {
+                var cart = new Cart();
 
-            // Assert
-            Assert.Single(result);
-            Assert.IsAssignableFrom<List<Product>>(result);
-            Assert.Equal(1, result.First().Id);
+                var productRepository = new ProductRepository(context);
+
+                var productService = new ProductService(cart, productRepository, null, null);
+
+                // Act
+                productService.SaveProduct(testObject);
+            }
+
+            using (var context = new P3Referential(options))
+            {
+                var result = context.Product.ToList();
+
+                // Assert
+                Assert.Single(result);
+                Assert.IsAssignableFrom<List<Product>>(result);
+                Assert.Equal(1, result.First().Id);
+
+                context.Database.EnsureDeleted();
+                context.Dispose();
+            }
         }
 
         [Fact]
@@ -148,16 +170,33 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Price = _testProductViewModel.Price
             };
 
-            // Act
-            _productService.SaveProduct(testObject);
+            var options = TestDbContextOptionsBuilder();
 
-            var result = _context.Product.ToList();
+            using (var context = new P3Referential(options))
+            {
+                var cart = new Cart();
 
-            // Assert
-            Assert.NotNull(result.First());
-            Assert.Single(result);
-            Assert.IsAssignableFrom<List<Product>>(result);
-            Assert.Null(result.First().Name);
+                var productRepository = new ProductRepository(context);
+
+                var productService = new ProductService(cart, productRepository, null, null);
+
+                // Act
+                productService.SaveProduct(testObject);
+            }
+
+            using (var context = new P3Referential(options))
+            {
+                var result = context.Product.ToList();
+
+                // Assert
+                Assert.NotNull(result.First());
+                Assert.Single(result);
+                Assert.IsAssignableFrom<List<Product>>(result);
+                Assert.Null(result.First().Name);
+
+                context.Database.EnsureDeleted();
+                context.Dispose();
+            }
         }
 
         [Fact]
@@ -174,16 +213,34 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Price = _testProductViewModel.Price
             };
 
+            var options = TestDbContextOptionsBuilder();
+
+            using (var context = new P3Referential(options))
+            {
+                var cart = new Cart();
+
+                var productRepository = new ProductRepository(context);
+
+                var productService = new ProductService(cart, productRepository, null, null);
+
+                // Act
+                productService.SaveProduct(testObject);
+            }
+
             // Act
-            _productService.SaveProduct(testObject);
+            using (var context = new P3Referential(options))
+            {
+                var result = context.Product.ToList();
 
-            var result = _context.Product.ToList();
+                // Assert
+                Assert.NotNull(result.First());
+                Assert.Single(result);
+                Assert.IsAssignableFrom<List<Product>>(result);
+                Assert.Null(result.First().Description);
 
-            // Assert
-            Assert.NotNull(result.First());
-            Assert.Single(result);
-            Assert.IsAssignableFrom<List<Product>>(result);
-            Assert.Null(result.First().Description);
+                context.Database.EnsureDeleted();
+                context.Dispose();
+            }
         }
 
         [Fact]
@@ -200,16 +257,34 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Price = _testProductViewModel.Price
             };
 
+            var options = TestDbContextOptionsBuilder();
+
+            using (var context = new P3Referential(options))
+            {
+                var cart = new Cart();
+
+                var productRepository = new ProductRepository(context);
+
+                var productService = new ProductService(cart, productRepository, null, null);
+
+                // Act
+                productService.SaveProduct(testObject);
+            }
+
             // Act
-            _productService.SaveProduct(testObject);
+            using (var context = new P3Referential(options))
+            {
+                var result = context.Product.ToList();
 
-            var result = _context.Product.ToList();
+                // Assert
+                Assert.NotNull(result.First());
+                Assert.Single(result);
+                Assert.IsAssignableFrom<List<Product>>(result);
+                Assert.Null(result.First().Details);
 
-            // Assert
-            Assert.NotNull(result.First());
-            Assert.Single(result);
-            Assert.IsAssignableFrom<List<Product>>(result);
-            Assert.Null(result.First().Details);
+                context.Database.EnsureDeleted();
+                context.Dispose();
+            }
         }
 
         [Fact]
@@ -225,8 +300,11 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Stock = null,
                 Price = _testProductViewModel.Price
             };
+
+            var productService = new ProductService(null, null, null, null);
+
             // Act
-            Action testAction = () => _productService.SaveProduct(testObject);
+            void testAction() => productService.SaveProduct(testObject);
 
             // Assert
             Assert.Throws<ArgumentNullException>(testAction);
@@ -246,8 +324,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Price = null
             };
 
+            var productService = new ProductService(null, null, null, null);
+
             // Act
-            Action testAction = () => _productService.SaveProduct(testObject);
+            void testAction() => productService.SaveProduct(testObject);
 
             // Assert
             Assert.Throws<ArgumentNullException>(testAction);
@@ -271,8 +351,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Price = _testProductViewModel.Price
             };
 
+            var productService = new ProductService(null, null, null, null);
+
             // Act
-            Action testAction = () => _productService.SaveProduct(testObject);
+            void testAction() => productService.SaveProduct(testObject);
 
             // Assert
             Assert.Throws<FormatException>(testAction);
@@ -296,8 +378,10 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Price = testString
             };
 
+            var productService = new ProductService(null, null, null, null);
+
             // Act
-            Action testAction = () => _productService.SaveProduct(testObject);
+            void testAction() => productService.SaveProduct(testObject);
 
             // Assert
             Assert.Throws<FormatException>(testAction);
@@ -318,16 +402,33 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Price = testString
             };
 
-            // Act
-            _productService.SaveProduct(testObject);
+            var options = TestDbContextOptionsBuilder();
 
-            var result = _context.Product.ToList();
+            using (var context = new P3Referential(options))
+            {
+                var cart = new Cart();
 
-            // Assert
-            Assert.NotNull(result.First());
-            Assert.Single(result);
-            Assert.IsAssignableFrom<List<Product>>(result);
-            Assert.IsAssignableFrom<double>(result.First().Price);
+                var productRepository = new ProductRepository(context);
+
+                var productService = new ProductService(cart, productRepository, null, null);
+
+                // Act
+                productService.SaveProduct(testObject);
+            }
+
+            using (var context = new P3Referential(options))
+            {
+                var result = context.Product.ToList();
+
+                // Assert
+                Assert.NotNull(result.First());
+                Assert.Single(result);
+                Assert.IsAssignableFrom<List<Product>>(result);
+                Assert.IsAssignableFrom<double>(result.First().Price);
+
+                context.Database.EnsureDeleted();
+                context.Dispose();
+            }
         }
 
         [Theory]
@@ -345,72 +446,139 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Price = testString
             };
 
+            var options = TestDbContextOptionsBuilder();
+
+            using (var context = new P3Referential(options))
+            {
+                var cart = new Cart();
+
+                var productRepository = new ProductRepository(context);
+
+                var productService = new ProductService(cart, productRepository, null, null);
+
+                // Act
+                productService.SaveProduct(testObject);
+            }
+
             // Act
-            _productService.SaveProduct(testObject);
+            using (var context = new P3Referential(options))
+            {
+                var result = context.Product.ToList();
 
-            var result = _context.Product.ToList();
+                // Assert
+                Assert.NotNull(result.First());
+                Assert.Single(result);
+                Assert.IsAssignableFrom<List<Product>>(result);
+                Assert.IsAssignableFrom<double>(result.First().Price);
 
-            // Assert
-            Assert.NotNull(result.First());
-            Assert.Single(result);
-            Assert.IsAssignableFrom<List<Product>>(result);
-            Assert.IsAssignableFrom<double>(result.First().Price);
+                context.Database.EnsureDeleted();
+                context.Dispose();
+            }
         }
 
         [Fact]
         public void TestUpdateProductQuantitiesEmptyCart()
         {
             // Arrange
-            SeedTestDb();
+            var options = TestDbContextOptionsBuilder();
 
-            // Act
-            _productService.UpdateProductQuantities();
-            var result = _context.Product.ToList();
+            SeedTestDb(options);
 
-            // Assert
-            Assert.Equal(2, result.FirstOrDefault(p => p.Name == "one name").Quantity);
-            Assert.Equal(4, result.FirstOrDefault(p => p.Name == "two name").Quantity);
-            Assert.Equal(6, result.FirstOrDefault(p => p.Name == "three name").Quantity);
+            using (var context = new P3Referential(options))
+            {
+                var cart = new Cart();
+
+                var productService = new ProductService(cart, null, null, null);
+
+                // Act
+                productService.UpdateProductQuantities();
+            }
+
+            using (var context = new P3Referential(options))
+            {
+                var result = context.Product.ToList();
+
+                // Assert
+                Assert.Equal(2,
+                    result.FirstOrDefault(p => p.Name == "one name").Quantity);
+                Assert.Equal(4,
+                    result.FirstOrDefault(p => p.Name == "two name").Quantity);
+                Assert.Equal(6,
+                    result.FirstOrDefault(p => p.Name == "three name").Quantity);
+
+                context.Database.EnsureDeleted();
+                context.Dispose();
+            }
         }
 
         [Theory]
         [InlineData(1, 1, 1)]
         [InlineData(2, 2, 2)]
         [InlineData(3, 3, 3)]
-        public void TestUpdateProductQuantitiesSingleItemCart(int testProdId, int testQty, int expectedQty)
+        public void TestUpdateProductQuantitiesSingleItemCart(
+            int testProdId, int testQty, int expectedQty)
         {
             // Arrange
-            SeedTestDb();
+            var options = TestDbContextOptionsBuilder();
 
-            _cart.AddItem(_testProductsList.FirstOrDefault(p => p.Id == testProdId), testQty);
+            SeedTestDb(options);
 
-            // Act
-            _productService.UpdateProductQuantities();
+            using (var context = new P3Referential(options))
+            {
+                var cart = new Cart();
+                cart.AddItem(
+                    _testProductsList.FirstOrDefault(p => p.Id == testProdId), testQty);
 
-            // Assert
-            Assert.Equal(expectedQty,
-                _context.Product.ToList().FirstOrDefault(p => p.Id == testProdId).Quantity);
+                var productRepository = new ProductRepository(context);
+
+                var productService = new ProductService(cart, productRepository, null, null);
+
+                // Act
+                productService.UpdateProductQuantities();
+            }
+
+            using (var context = new P3Referential(options))
+            {
+                // Assert
+                Assert.Equal(expectedQty,
+                    context.Product.ToList().FirstOrDefault(p => p.Id == testProdId).Quantity);
+            }
         }
 
         [Fact]
         public void TestUpdateProductQuantitiesMultipleItemsCart()
         {
             // Arrange
-            SeedTestDb();
+            var options = TestDbContextOptionsBuilder();
 
-            for (int i = 0; i < _testProductsList.ToList().Count; i++)
+            SeedTestDb(options);
+
+            using (var context = new P3Referential(options))
             {
-                _cart.AddItem(_testProductsList.ToArray()[i], i + 1);
+                var cart = new Cart();
+
+                for (int i = 0; i < _testProductsList.ToList().Count; i++)
+                {
+                    cart.AddItem(_testProductsList.ToArray()[i], i + 1);
+                }
+
+                var productRepository = new ProductRepository(context);
+
+                var productService = new ProductService(cart, productRepository, null, null);
+
+                // Act
+                productService.UpdateProductQuantities();
             }
 
-            // Act
-            _productService.UpdateProductQuantities();
-            var result = _context.Product.ToList();
+            using (var context = new P3Referential(options))
+            {
+                var result = context.Product.ToList();
 
-            // Assert
-            Assert.Equal(1, result.FirstOrDefault(p => p.Id == 1).Quantity);
-            Assert.Equal(2, result.FirstOrDefault(p => p.Id == 2).Quantity);
-            Assert.Equal(3, result.FirstOrDefault(p => p.Id == 3).Quantity);
+                // Assert
+                Assert.Equal(1, result.FirstOrDefault(p => p.Id == 1).Quantity);
+                Assert.Equal(2, result.FirstOrDefault(p => p.Id == 2).Quantity);
+                Assert.Equal(3, result.FirstOrDefault(p => p.Id == 3).Quantity);
+            }
         }
 
         [Theory]
@@ -420,60 +588,113 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestUpdateProductQuantitiesInvalidProductId(int prodId)
         {
             // Arrange
-            SeedTestDb();
+            var options = TestDbContextOptionsBuilder();
 
-            _cart.AddItem(new Product { Id = prodId }, 1);
+            SeedTestDb(options);
 
-            // Act
-            Action testAction = () => _productService.UpdateProductQuantities();
+            using (var context = new P3Referential(options))
+            {
+                var cart = new Cart();
 
-            // Assert
-            Assert.Throws<InvalidOperationException>(testAction);
+                cart.AddItem(new Product { Id = prodId }, 1);
+
+                var productRepository = new ProductRepository(context);
+
+                var productService = new ProductService(cart, productRepository, null, null);
+
+                // Act
+                void testAction() => productService.UpdateProductQuantities();
+
+                // Assert
+                Assert.Throws<InvalidOperationException>(testAction);
+            }
         }
 
         [Fact]
         public void TestUpdateProductQuantitiesCartQuantityExceedingProductStock()
         {
             // Arrange
-            SeedTestDb();
+            var options = TestDbContextOptionsBuilder();
 
-            _cart.AddItem(_testProductsList.First(), 3);
+            SeedTestDb(options);
 
-            // Act
-            _productService.UpdateProductQuantities();
+            using (var context = new P3Referential(options))
+            {
+                var cart = new Cart();
+
+                cart.AddItem(_testProductsList.First(), 3);
+
+                var productRepository = new ProductRepository(context);
+
+                var productService = new ProductService(cart, productRepository, null, null);
+
+                // Act
+                productService.UpdateProductQuantities();
+            }
 
             // Assert
-            Assert.Equal(-1, _context.Product.ToList().First().Quantity);
+            using (var context = new P3Referential(options))
+            {
+                Assert.Equal(-1, context.Product.First().Quantity);
+            }
         }
 
         [Fact]
         public void TestUpdateProductQuantitiesCartQuantityEqualProductStock()
         {
             // Arrange
-            SeedTestDb();
+            var options = TestDbContextOptionsBuilder();
 
-            _cart.AddItem(_testProductsList.First(), 2);
+            SeedTestDb(options);
 
-            // Act
-            _productService.UpdateProductQuantities();
+            using (var context = new P3Referential(options))
+            {
+                var cart = new Cart();
+
+                cart.AddItem(_testProductsList.First(), 2);
+
+                var productRepository = new ProductRepository(context);
+
+                var productService = new ProductService(cart, productRepository, null, null);
+
+                // Act
+                productService.UpdateProductQuantities();
+            }
 
             // Assert
-            Assert.Null(_context.Product.ToList().FirstOrDefault(p => p.Id == 1));
+            using (var context = new P3Referential(options))
+            {
+                Assert.Null(context.Product.ToList().FirstOrDefault(p => p.Id == 1));
+            }
         }
 
         [Fact]
         public void TestUpdateProductQuantitiesCartQuantityLessProductStock()
         {
             // Arrange
-            SeedTestDb();
+            var options = TestDbContextOptionsBuilder();
 
-            _cart.AddItem(_testProductsList.ToList().FirstOrDefault(p => p.Id == 3), 3);
+            SeedTestDb(options);
 
-            // Act
-            _productService.UpdateProductQuantities();
+            using (var context = new P3Referential(options))
+            {
+                var cart = new Cart();
 
-            // Assert
-            Assert.Equal(3, _context.Product.ToList().FirstOrDefault(p => p.Id ==3).Quantity);
+                cart.AddItem(_testProductsList.ToList().FirstOrDefault(p => p.Id == 3), 3);
+
+                var productRepository = new ProductRepository(context);
+
+                var productService = new ProductService(cart, productRepository, null, null);
+
+                // Act
+                productService.UpdateProductQuantities();
+            }
+
+            using (var context = new P3Referential(options))
+            {
+                // Assert
+                Assert.Equal(3, context.Product.ToList().FirstOrDefault(p => p.Id == 3).Quantity);
+            }
         }
 
         [Theory]
@@ -483,65 +704,119 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestDeleteProductIdInvalidId(int testId)
         {
             // Arrange
-            SeedTestDb();
+            var options = TestDbContextOptionsBuilder();
 
-            // Act
-            Action testAction = () => _productService.DeleteProduct(testId);
+            SeedTestDb(options);
 
-            // Assert
-            Assert.Throws<InvalidOperationException>(testAction);
+            using (var context = new P3Referential(options))
+            {
+                var cart = new Cart();
+
+                cart.AddItem(_testProductsList.ToList().FirstOrDefault(p => p.Id == 3), 3);
+
+                var productRepository = new ProductRepository(context);
+
+                var productService = new ProductService(cart, productRepository, null, null);
+
+                // Act
+                void testAction() => productService.DeleteProduct(testId);
+
+                // Assert
+                Assert.Throws<NullReferenceException>(testAction);
+            }
         }
 
         [Fact]
         public void TestDeleteProductValidIdEmptyCart()
         {
             // Arrange
-            SeedTestDb();
+            var options = TestDbContextOptionsBuilder();
 
-            // Act
-            _productService.DeleteProduct(2);
+            SeedTestDb(options);
 
-            // Assert
-            Assert.Equal(2, _context.Product.ToList().Count);
-            Assert.DoesNotContain(_context.Product.ToList(), p => p.Id == 2);
+            using (var context = new P3Referential(options))
+            {
+                var cart = new Cart();
+
+                var productRepository = new ProductRepository(context);
+
+                var productService = new ProductService(cart, productRepository, null, null);
+
+                // Act
+                productService.DeleteProduct(2);
+            }
+
+            using (var context = new P3Referential(options))
+            {
+                // Assert
+                Assert.Equal(2, context.Product.ToList().Count);
+                Assert.DoesNotContain(context.Product.ToList(), p => p.Id == 2);
+            }
         }
 
         [Fact]
         public void TestDeleteProductValidIdCartSingleItem()
         {
             // Arrange
-            SeedTestDb();
-            var cart = _cart as Cart;
-            cart.AddItem(_context.Product.ToList().First(p => p.Id == 2), 2);
+            var options = TestDbContextOptionsBuilder();
 
-            // Act
-            _productService.DeleteProduct(2);
+            SeedTestDb(options);
 
-            // Assert
-            Assert.Equal(2, _context.Product.ToList().Count);
-            Assert.DoesNotContain(_context.Product.ToList(), p => p.Id == 2);
-            Assert.Empty(cart.Lines.ToList());
+            var cart = new Cart();
+
+            using (var context = new P3Referential(options))
+            {
+                cart.AddItem(context.Product.ToList().First(p => p.Id == 2), 2);
+
+                var productRepository = new ProductRepository(context);
+
+                var productService = new ProductService(cart, productRepository, null, null);
+
+                // Act
+                productService.DeleteProduct(2);
+            }
+
+            using (var context = new P3Referential(options))
+            {
+                // Assert
+                Assert.Equal(2, context.Product.ToList().Count);
+                Assert.DoesNotContain(context.Product.ToList(), p => p.Id == 2);
+                Assert.Empty(cart.Lines.ToList());
+            }
         }
 
         [Fact]
         public void TestDeleteProductValidIdCartMultipleItems()
         {
             // Arrange
-            SeedTestDb();
+            var options = TestDbContextOptionsBuilder();
 
-            var cart = _cart as Cart;
-            cart.AddItem(_context.Product.ToList().First(p => p.Id == 1), 1);
-            cart.AddItem(_context.Product.ToList().First(p => p.Id == 2), 2);
+            SeedTestDb(options);
 
-            // Act
-            _productService.DeleteProduct(2);
+            var cart = new Cart();
 
-            // Assert
-            Assert.Equal(2, _context.Product.ToList().Count);
-            Assert.DoesNotContain(_context.Product.ToList(), p => p.Id == 2);
-            Assert.Single(cart.Lines.ToList());
-            Assert.Equal("one name", 
-                cart.Lines.FirstOrDefault(p => p.OrderLineId == 0).Product.Name);
+            using (var context = new P3Referential(options))
+            {
+                cart.AddItem(context.Product.First(p => p.Id == 1), 1);
+                cart.AddItem(context.Product.First(p => p.Id == 2), 2);
+
+                var productRepository = new ProductRepository(context);
+
+                var productService = new ProductService(cart, productRepository, null, null);
+
+                // Act
+                productService.DeleteProduct(2);
+            }
+
+            using (var context = new P3Referential(options))
+            {
+                // Assert
+                Assert.Equal(2, context.Product.ToList().Count);
+                Assert.DoesNotContain(context.Product.ToList(), p => p.Id == 2);
+                Assert.Single(cart.Lines.ToList());
+                Assert.Equal("one name",
+                    cart.Lines.FirstOrDefault(p => p.OrderLineId == 0).Product.Name);
+            }
         }
     }
 }

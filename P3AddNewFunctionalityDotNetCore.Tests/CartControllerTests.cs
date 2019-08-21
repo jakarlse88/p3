@@ -10,12 +10,32 @@ using Xunit;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
-    public class CartControllerTests
+    public class IndexTests
+    {
+        [Fact]
+        public void TestIndex()
+        {
+            // Arrange
+            var cart = new Cart();
+
+            var cartController = new CartController(cart, null);
+
+            // Act
+            var result = cartController.Index();
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var model = Assert.IsType<Cart>(viewResult.ViewData.Model);
+            Assert.NotNull(model);
+        }
+    }
+
+    public class AddToCartTests
     {
         private readonly Mock<IProductService> _mockProductService;
         private readonly IEnumerable<Product> _testProductList;
 
-        public CartControllerTests()
+        public AddToCartTests()
         {
             _testProductList = new List<Product>
             {
@@ -45,24 +65,6 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             _mockProductService
                 .Setup(x => x.GetProductById(It.IsAny<int>()))
                 .Returns((int id) => _testProductList.FirstOrDefault(p => p.Id == id));
-
-        }
-
-        [Fact]
-        public void TestIndex()
-        {
-            // Arrange
-            var cart = new Cart();
-
-            var cartController = new CartController(cart, null);
-
-            // Act
-            var result = cartController.Index();
-
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            var model = Assert.IsType<Cart>(viewResult.ViewData.Model);
-            Assert.NotNull(model);
         }
 
         [Fact]
@@ -99,6 +101,44 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             Assert.Equal("Index", actionResult.ActionName);
             Assert.Equal("Product", actionResult.ControllerName);
             Assert.Empty(cart.Lines);
+        }
+    }
+
+    public class RemoveFromCartTests
+    {
+        private readonly Mock<IProductService> _mockProductService;
+        private readonly IEnumerable<Product> _testProductList;
+
+        public RemoveFromCartTests()
+        {
+            _testProductList = new List<Product>
+            {
+                new Product
+                {
+                    Id = 1,
+                    Name = "one name"
+                },
+                new Product
+                {
+                    Id = 2,
+                    Name = "two name"
+                },
+                new Product
+                {
+                    Id = 3,
+                    Name = "three name"
+                },
+            };
+
+            _mockProductService = new Mock<IProductService>();
+
+            _mockProductService
+                .Setup(x => x.GetAllProducts())
+                .Returns(_testProductList.ToList());
+
+            _mockProductService
+                .Setup(x => x.GetProductById(It.IsAny<int>()))
+                .Returns((int id) => _testProductList.FirstOrDefault(p => p.Id == id));
         }
 
         [Fact]
