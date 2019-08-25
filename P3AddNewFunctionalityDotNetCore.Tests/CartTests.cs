@@ -98,7 +98,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             cart.AddItem(_testProduct, testQuantity);
 
             // Assert
-            CartLine actual = cart.Lines.FirstOrDefault(l => l.Product.Name == "test product");
+            var actual = cart.Lines.FirstOrDefault(l => l.Product.Name == "test product");
 
             Assert.Single(cart.Lines);
             Assert.Equal(testQuantity, actual.Quantity);
@@ -151,7 +151,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             const double expected = 0;
 
             // Act
-            double result = cart.GetTotalValue();
+            var result = cart.GetTotalValue();
 
             // Assert
             Assert.Equal(expected, result);
@@ -163,12 +163,12 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var cart = new Cart();
 
-            int testQuantity = 1;
+            var testQuantity = 1;
             double expected = 10;
             cart.AddItem(_testProduct, testQuantity);
 
             // Act
-            double result = cart.GetTotalValue();
+            var result = cart.GetTotalValue();
 
             // Assert
             Assert.Equal(expected, result);
@@ -188,7 +188,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             const double expected = 60;
 
             // Act
-            double result = cart.GetTotalValue();
+            var result = cart.GetTotalValue();
 
             // Assert
             Assert.Equal(expected, result);
@@ -200,7 +200,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var cart = new Cart();
 
-            for (int i = 0; i < _testProductsArr.Length; i++)
+            for (var i = 0; i < _testProductsArr.Length; i++)
             {
                 cart.AddItem(_testProductsArr[i], i + 1);
             }
@@ -208,7 +208,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             const double expected = 140;
 
             // Act
-            double result = cart.GetTotalValue();
+            var result = cart.GetTotalValue();
 
             // Assert
             Assert.Equal(expected, result);
@@ -223,7 +223,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             const double expected = 0;
 
             // Act
-            double result = cart.GetAverageValue();
+            var result = cart.GetAverageValue();
 
             // Assert
             Assert.Equal(expected, result);
@@ -246,7 +246,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             cart.AddItem(testProduct, testQuantity);
 
             // Act
-            double result = cart.GetAverageValue();
+            var result = cart.GetAverageValue();
 
             // Assert
             Assert.Equal(expected, result);
@@ -266,7 +266,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             const double expected = 20;
 
             // Act
-            double result = cart.GetAverageValue();
+            var result = cart.GetAverageValue();
 
             // Assert
             Assert.Equal(expected, result);
@@ -278,7 +278,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var cart = new Cart();
 
-            for (int i = 0; i < _testProductsArr.Length; i++)
+            for (var i = 0; i < _testProductsArr.Length; i++)
             {
                 cart.AddItem(_testProductsArr[i], i + 1);
             }
@@ -286,7 +286,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             const double expected = 20;
 
             // Act
-            double result = cart.GetAverageValue();
+            var result = cart.GetAverageValue();
 
             // Assert
             Assert.Equal(expected, result);

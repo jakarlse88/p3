@@ -35,7 +35,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 .Setup(x => x.SaveOrder(It.IsAny<OrderViewModel>()))
                 .Callback((OrderViewModel order) => _testOrderViewModelList.Add(order));
 
-            var cartEmptyKey = "Sorry, your cart is empty!";
+            const string cartEmptyKey = "Sorry, your cart is empty!";
             var localizedCartEmptyString = new LocalizedString(cartEmptyKey, cartEmptyKey);
             _mockLocalizer = new Mock<IStringLocalizer<OrderController>>();
             _mockLocalizer
@@ -111,7 +111,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Arrange
             var cart = new Cart();
 
-            for (int i = 0; i < _testProductsArr.Length; i++)
+            for (var i = 0; i < _testProductsArr.Length; i++)
             {
                 cart.AddItem(_testProductsArr[i], i+1);
             }

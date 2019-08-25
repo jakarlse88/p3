@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Sdk;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
@@ -81,19 +82,22 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
         }
 
-        [Fact]
-        public void TestLoginReturnUrl()
+        [Theory]
+        [InlineData("/test")]
+        [InlineData("gibberish")]
+        [InlineData(("  whitespace  "))]
+        public void TestLoginReturnUrl(string testReturnUrl)
         {
             // Arrange
             var accountController = new AccountController(null, null);
 
             // Act
-            var result = accountController.Login("/test");
+            var result = accountController.Login(testReturnUrl);
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsType<LoginModel>(viewResult.Model);
-            Assert.Equal("/test", model.ReturnUrl);
+            Assert.Equal(testReturnUrl, model.ReturnUrl);
         }
 
         [Fact]

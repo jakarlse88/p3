@@ -13,7 +13,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
     public class IndexTests
     {
         [Fact]
-        public void TestIndex()
+        public void TestIndexEmptyCart()
         {
             // Arrange
             var cart = new Cart();
@@ -26,6 +26,26 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsType<Cart>(viewResult.ViewData.Model);
+            Assert.NotNull(model);
+        }
+        
+        [Fact]
+        public void TestIndexPopulatedCart()
+        {
+            // Arrange
+            var cart = new Cart();
+            cart.AddItem(new Product { Name = "testProduct"}, 1);
+
+            var cartController = new CartController(cart, null);
+
+            // Act
+            var result = cartController.Index();
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var model = Assert.IsType<Cart>(viewResult.ViewData.Model);
+            Assert.Single(model.Lines);
+            Assert.Equal("testProduct", model.Lines.First().Product.Name);
             Assert.NotNull(model);
         }
     }
@@ -84,8 +104,11 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             Assert.Contains(cart.Lines, l => l.OrderLineId == 0);
         }
 
-        [Fact]
-        public void TestAddToCartInvalidProductId()
+        [Theory]
+        [InlineData(4)]
+        [InlineData(-4)]
+        [InlineData(0)]
+        public void TestAddToCartInvalidProductId(int testId)
         {
             // Arrange
             var cart = new Cart();
@@ -93,7 +116,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var cartController = new CartController(cart, _mockProductService.Object);
 
             // Act
-            var result = cartController.AddToCart(4);
+            var result = cartController.AddToCart(testId);
 
             // Assert
             var actionResult = Assert.IsType<RedirectToActionResult>(result);

@@ -109,6 +109,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
 
             // Assert
             _mockProductService
+                .Verify(x => x.CheckProductModelErrors(It.IsAny<ProductViewModel>()), Times.Once);
+            _mockProductService
                 .Verify(x => x.SaveProduct(It.IsAny<ProductViewModel>()), Times.Once);
             
             var actionResult = Assert.IsType<RedirectToActionResult>(result);
@@ -129,8 +131,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             var result = productController.Create(_testProductViewModel);
 
             // Assert
-            _mockProductService
-                .Verify(x => x.CheckProductModelErrors(It.IsAny<ProductViewModel>()), Times.Once);
+            _mockProductService.Verify(x => x.CheckProductModelErrors(It.IsAny<ProductViewModel>()), Times.Once);
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.IsAssignableFrom<ProductViewModel>(viewResult.Model);
         }

@@ -34,8 +34,9 @@ namespace P3AddNewFunctionalityDotNetCore.Controllers
         {
             if (ModelState.IsValid)
             {
-                IdentityUser user =
+                var user =
                     await _userManager.FindByNameAsync(loginModel.Name);
+                
                 if (user != null)
                 {
                     await _signInManager.SignOutAsync();

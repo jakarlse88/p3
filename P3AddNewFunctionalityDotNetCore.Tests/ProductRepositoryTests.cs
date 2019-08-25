@@ -86,7 +86,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public async Task TestGetProduct()
         {
             // Arrange
-            ProductRepository productRepository = new ProductRepository(_context);
+            var productRepository = new ProductRepository(_context);
 
             // Act
             var result = await productRepository.GetProduct();
@@ -100,7 +100,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         public void TestGetAllProducts()
         {
             // Arrange
-            ProductRepository productRepository = new ProductRepository(_context);
+            var productRepository = new ProductRepository(_context);
 
             // Act
             var result = productRepository.GetAllProducts().ToList();

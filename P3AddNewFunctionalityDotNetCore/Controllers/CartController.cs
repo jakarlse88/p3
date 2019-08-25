@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using P3AddNewFunctionalityDotNetCore.Models;
-using P3AddNewFunctionalityDotNetCore.Models.Entities;
 using P3AddNewFunctionalityDotNetCore.Models.Services;
 
 namespace P3AddNewFunctionalityDotNetCore.Controllers
@@ -19,14 +18,14 @@ namespace P3AddNewFunctionalityDotNetCore.Controllers
 
         public ViewResult Index()
         {
-            Cart cart = _cart as Cart;
+            var cart = _cart as Cart;
             return View(cart);
         }
 
         [HttpPost]
         public RedirectToActionResult AddToCart(int id)
         {
-            Product product = _productService.GetProductById(id);
+            var product = _productService.GetProductById(id);
 
             if (product != null)
             {
@@ -41,7 +40,7 @@ namespace P3AddNewFunctionalityDotNetCore.Controllers
 
         public RedirectToActionResult RemoveFromCart(int id)
         {
-            Product product = _productService.GetAllProducts()
+            var product = _productService.GetAllProducts()
                 .FirstOrDefault(p => p.Id == id);
 
             if (product != null)
