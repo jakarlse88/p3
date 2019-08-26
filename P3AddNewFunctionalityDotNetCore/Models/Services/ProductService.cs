@@ -35,8 +35,8 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
 
         private static List<ProductViewModel> MapToViewModel(IEnumerable<Product> productEntities)
         {
-            List<ProductViewModel> products = new List<ProductViewModel>();
-            foreach (Product product in productEntities)
+            var products = new List<ProductViewModel>();
+            foreach (var product in productEntities)
             {
                 products.Add(new ProductViewModel
                 {
@@ -54,19 +54,19 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
 
         public List<Product> GetAllProducts()
         {
-            IEnumerable<Product> productEntities = _productRepository.GetAllProducts();
+            var productEntities = _productRepository.GetAllProducts();
             return productEntities?.ToList();
         }
 
         public ProductViewModel GetProductByIdViewModel(int id)
         {
-            List<ProductViewModel> products = GetAllProductsViewModel().ToList();
+            var products = GetAllProductsViewModel().ToList();
             return products.Find(p => p.Id == id);
         }
 
         public Product GetProductById(int id)
         {
-            List<Product> products = GetAllProducts().ToList();
+            var products = GetAllProducts().ToList();
             return products.Find(p => p.Id == id);
         }
 
@@ -84,8 +84,8 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
 
         public void UpdateProductQuantities()
         {
-            Cart cart = (Cart)_cart;
-            foreach (CartLine line in cart.Lines)
+            var cart = (Cart)_cart;
+            foreach (var line in cart.Lines)
             {
                 _productRepository.UpdateProductStocks(line.Product.Id, line.Quantity);
             }
@@ -96,8 +96,14 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
         /// </summary>
         public List<string> CheckProductModelErrors(ProductViewModel product)
         {
-            List<string> modelErrors = new List<string>();
+            var modelErrors = new List<string>();
 
+            if (product == null)
+            {
+                modelErrors.Add(_localizer["ProductNull"]);
+                return modelErrors;
+            }
+            
             if (product.Name == null || string.IsNullOrWhiteSpace(product.Name))
             {
                 modelErrors.Add(_localizer["MissingName"]);
@@ -125,7 +131,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
                 modelErrors.Add(_localizer["MissingPrice"]);
             }
 
-            if (!Double.TryParse(product.Price, out double pc))
+            if (!Double.TryParse(product.Price, out var pc))
             {
                 modelErrors.Add(_localizer["PriceNotANumber"]);
             }
@@ -140,7 +146,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
                 modelErrors.Add(_localizer["MissingStock"]);
             }
 
-            if (!int.TryParse(product.Stock, out int qt))
+            if (!int.TryParse(product.Stock, out var qt))
             {
                 modelErrors.Add(_localizer["StockNotAnInteger"]);
             }
@@ -204,7 +210,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
 
         private static Product MapToProductEntity(ProductViewModel product)
         {
-            Product productEntity = new Product
+            var productEntity = new Product
             {
                 Name = product.Name,
                 Price = double.Parse(product.Price),

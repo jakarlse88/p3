@@ -34,7 +34,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 { "StockNotGreaterThanZero", "The stock must be greater than zero" },
                 { "NameIllegalCharacter", "Illegal character in name" },
                 { "DetailsIllegalCharacter", "Illegal character in details" },
-                { "DescriptionIllegalCharacter", "Illegal character in description" }
+                { "DescriptionIllegalCharacter", "Illegal character in description" },
+                { "ProductNull", "Product cannot be null" }
             };
 
             // Localizer mock:
@@ -70,6 +71,16 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             Assert.Contains("The value entered for the stock must be an integer", result);
         }
 
+        [Fact]
+        public void TestCheckProductModelErrorsProductNull()
+        {
+            // Act
+            var result = _productService.CheckProductModelErrors(null);
+
+            // Assert
+            Assert.Contains("Product cannot be null", result);
+        }
+        
         [Fact]
         public void TestCheckProductModelErrorsNameNull()
         {
