@@ -514,6 +514,22 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             // Assert
             Assert.Contains("The price must be greater than zero", result);
         }
+        
+        [Fact]
+        public void TestCheckProductModelErrorsModelPriceMixedWhitespaceBetween()
+        {
+            // Arrange
+            var testObject = new ProductViewModel
+            {
+                Price = "    -3     5    "
+            };
+
+            // Act
+            var result = _productService.CheckProductModelErrors(testObject);
+
+            // Assert
+            Assert.Contains("The price must be greater than zero", result);
+        }
 
         [Fact]
         public void TestCheckProductModelErrorsModelPriceNegative()

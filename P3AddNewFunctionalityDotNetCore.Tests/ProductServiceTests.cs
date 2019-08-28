@@ -78,8 +78,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         [InlineData(0)]
         [InlineData(6)]
         [InlineData(-7)]
-        [InlineData(Int32.MaxValue)]
-        [InlineData(Int32.MinValue)]
+        [InlineData(int.MaxValue)]
+        [InlineData(int.MinValue)]
         public void TestGetProductByIdInvalidId(int testId)
         {
             // Act
@@ -110,8 +110,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         [InlineData(0)]
         [InlineData(6)]
         [InlineData(-7)]
-        [InlineData(Int32.MaxValue)]
-        [InlineData(Int32.MinValue)]
+        [InlineData(int.MaxValue)]
+        [InlineData(int.MinValue)]
         public async void TestGetProductInvalidId(int testId)
         {
             // Act
@@ -142,8 +142,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         [InlineData(0)]
         [InlineData(6)]
         [InlineData(-7)]
-        [InlineData(Int32.MaxValue)]
-        [InlineData(Int32.MinValue)]
+        [InlineData(int.MaxValue)]
+        [InlineData(int.MinValue)]
         public void TestGetProductByIdViewModelInvalidId(int testId)
         {
             // Act
@@ -227,7 +227,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
         {
             using (var context = new P3Referential(options))
             {
-                foreach (Product p in _testProductsList)
+                foreach (var p in _testProductsList)
                 {
                     context.Product.Add(p);
                 }
@@ -264,7 +264,6 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Assert.Equal("Test Product", result.First().Name);
 
                 context.Database.EnsureDeleted();
-                context.Dispose();
             }
         }
 
@@ -303,9 +302,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Assert.Single(result);
                 Assert.IsAssignableFrom<List<Product>>(result);
                 Assert.Equal(1, result.First().Id);
-
+                
                 context.Database.EnsureDeleted();
-                context.Dispose();
             }
         }
 
@@ -346,9 +344,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Assert.Single(result);
                 Assert.IsAssignableFrom<List<Product>>(result);
                 Assert.Null(result.First().Name);
-
+                
                 context.Database.EnsureDeleted();
-                context.Dispose();
             }
         }
 
@@ -390,9 +387,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Assert.Single(result);
                 Assert.IsAssignableFrom<List<Product>>(result);
                 Assert.Null(result.First().Description);
-
+                
                 context.Database.EnsureDeleted();
-                context.Dispose();
             }
         }
 
@@ -434,9 +430,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Assert.Single(result);
                 Assert.IsAssignableFrom<List<Product>>(result);
                 Assert.Null(result.First().Details);
-
+                
                 context.Database.EnsureDeleted();
-                context.Dispose();
             }
         }
 
@@ -578,9 +573,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Assert.Single(result);
                 Assert.IsAssignableFrom<List<Product>>(result);
                 Assert.IsAssignableFrom<double>(result.First().Price);
-
+                
                 context.Database.EnsureDeleted();
-                context.Dispose();
             }
         }
 
@@ -623,9 +617,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Assert.Single(result);
                 Assert.IsAssignableFrom<List<Product>>(result);
                 Assert.IsAssignableFrom<double>(result.First().Price);
-
+                
                 context.Database.EnsureDeleted();
-                context.Dispose();
             }
         }
 
@@ -658,9 +651,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                     result.FirstOrDefault(p => p.Name == "two name").Quantity);
                 Assert.Equal(6,
                     result.FirstOrDefault(p => p.Name == "three name").Quantity);
-
+                
                 context.Database.EnsureDeleted();
-                context.Dispose();
             }
         }
 
@@ -695,6 +687,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 // Assert
                 Assert.Equal(expectedQty,
                     context.Product.ToList().FirstOrDefault(p => p.Id == testProdId).Quantity);
+                
+                context.Database.EnsureDeleted();
             }
         }
 
@@ -710,7 +704,7 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             {
                 var cart = new Cart();
 
-                for (int i = 0; i < _testProductsList.ToList().Count; i++)
+                for (var i = 0; i < _testProductsList.ToList().Count; i++)
                 {
                     cart.AddItem(_testProductsList.ToArray()[i], i + 1);
                 }
@@ -731,6 +725,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Assert.Equal(1, result.FirstOrDefault(p => p.Id == 1).Quantity);
                 Assert.Equal(2, result.FirstOrDefault(p => p.Id == 2).Quantity);
                 Assert.Equal(3, result.FirstOrDefault(p => p.Id == 3).Quantity);
+                
+                context.Database.EnsureDeleted();
             }
         }
 
@@ -789,6 +785,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             using (var context = new P3Referential(options))
             {
                 Assert.Equal(-1, context.Product.First().Quantity);
+                
+                context.Database.EnsureDeleted();
             }
         }
 
@@ -818,6 +816,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             using (var context = new P3Referential(options))
             {
                 Assert.Null(context.Product.ToList().FirstOrDefault(p => p.Id == 1));
+                
+                context.Database.EnsureDeleted();
             }
         }
 
@@ -847,6 +847,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
             {
                 // Assert
                 Assert.Equal(3, context.Product.ToList().FirstOrDefault(p => p.Id == 3).Quantity);
+                
+                context.Database.EnsureDeleted();
             }
         }
 
@@ -904,6 +906,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 // Assert
                 Assert.Equal(2, context.Product.ToList().Count);
                 Assert.DoesNotContain(context.Product.ToList(), p => p.Id == 2);
+                
+                context.Database.EnsureDeleted();
             }
         }
 
@@ -935,6 +939,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Assert.Equal(2, context.Product.ToList().Count);
                 Assert.DoesNotContain(context.Product.ToList(), p => p.Id == 2);
                 Assert.Empty(cart.Lines.ToList());
+                
+                context.Database.EnsureDeleted();
             }
         }
 
@@ -969,6 +975,8 @@ namespace P3AddNewFunctionalityDotNetCore.Tests
                 Assert.Single(cart.Lines.ToList());
                 Assert.Equal("one name",
                     cart.Lines.FirstOrDefault(p => p.OrderLineId == 0).Product.Name);
+                
+                context.Database.EnsureDeleted();
             }
         }
     }

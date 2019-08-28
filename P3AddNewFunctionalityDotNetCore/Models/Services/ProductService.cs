@@ -131,7 +131,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
                 modelErrors.Add(_localizer["MissingPrice"]);
             }
 
-            if (!Double.TryParse(product.Price, out var pc))
+            if (!double.TryParse(product.Price, out var pc))
             {
                 modelErrors.Add(_localizer["PriceNotANumber"]);
             }
@@ -214,7 +214,7 @@ namespace P3AddNewFunctionalityDotNetCore.Models.Services
             {
                 Name = product.Name,
                 Price = double.Parse(product.Price),
-                Quantity = Int32.Parse(product.Stock),
+                Quantity = int.Parse(product.Stock),
                 Description = product.Description,
                 Details = product.Details
             };
